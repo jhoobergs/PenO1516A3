@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">SensorApp</string>
+
+    <string name="action_settings">Settings</string>
+
+    <string name="magneticF">Magnetisch veld</string>
+    <string name="light">Lichtsensor</string>
+    <string name="gyroscope">Gyroscoop</string>
+    <string name="temp">Thermometer</string>
+    <string name="accelerometer">Accelerometer</string>
+    <string name="detail_activity">rechtstreekse output</string>
+
+</resources>
