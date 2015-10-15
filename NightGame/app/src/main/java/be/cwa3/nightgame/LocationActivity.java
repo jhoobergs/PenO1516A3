@@ -2,10 +2,7 @@ package be.cwa3.nightgame;
 
 import android.location.Location;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -20,7 +17,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by jesse on 15/10/2015.
@@ -49,18 +48,22 @@ public class LocationActivity extends AppCompatActivity implements GoogleApiClie
 
     @Override
     public void onMapReady(GoogleMap map) {
-        LatLng sydney = new LatLng(-33.867, 151.206);
+        //LatLng sydney = new LatLng(-33.867, 151.206);
+        List<LatLng> locations = new ArrayList<>();
 
         if(mCurrentLocation != null)
-            sydney = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+            locations.add(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()));
 
-        map.setMyLocationEnabled(true);
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 13));
-
-        map.addMarker(new MarkerOptions()
-                .title("Sydney")
-                .snippet("The most populous city in Australia.")
-                .position(sydney));
+        if(locations.size() > 0) {
+            map.setMyLocationEnabled(true);
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(locations.get(0), 13));
+        }
+        for (LatLng loc : locations) {
+            map.addMarker(new MarkerOptions()
+                    .title("Sydney")
+                    .snippet("The most populous city in Australia.")
+                    .position(loc));
+        }
     }
 
     protected synchronized void buildGoogleApiClient() {
