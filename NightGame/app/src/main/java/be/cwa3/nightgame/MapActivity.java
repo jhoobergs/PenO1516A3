@@ -37,4 +37,3 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .position(sydney));
     }
 }
-// Jean'kee
