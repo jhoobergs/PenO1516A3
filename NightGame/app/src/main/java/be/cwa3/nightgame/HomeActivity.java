@@ -22,7 +22,7 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 buttonPlay.setEnabled(false);
-                Intent intent = new Intent(getApplicationContext(), MapActivity.class);
+                Intent intent = new Intent(getApplicationContext(), PlayActivity.class);
                 startActivity(intent);
             }
         });
