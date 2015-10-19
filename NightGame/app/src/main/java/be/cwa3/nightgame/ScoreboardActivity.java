@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -61,7 +62,11 @@ public class ScoreboardActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                view.findViewById(R.id.extra_data).setVisibility(View.VISIBLE);
+                LinearLayout linearLayoutextraData = (LinearLayout) view.findViewById(R.id.extra_data);
+                if(linearLayoutextraData.getVisibility() == View.VISIBLE)
+                    linearLayoutextraData.setVisibility(View.GONE);
+                else
+                    linearLayoutextraData.setVisibility(View.VISIBLE);
 
             }
         });
