@@ -11,7 +11,7 @@ import android.widget.Button;
  * Created by jesse on 12/10/2015.
  */
 public class HomeActivity extends AppCompatActivity {
-    Button buttonPlay;
+    Button buttonPlay, buttonScoreBoard;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,5 +24,14 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        buttonScoreBoard = (Button) findViewById(R.id.button_scoreboard);
+        buttonScoreBoard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), LocationActivity.class);
+                startActivity(intent);
+            }
+        });
+
     }
 }
