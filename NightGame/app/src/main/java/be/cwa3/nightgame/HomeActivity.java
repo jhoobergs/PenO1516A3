@@ -16,10 +16,12 @@ public class HomeActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
         buttonPlay = (Button) findViewById(R.id.button_play);
         buttonPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                buttonPlay.setEnabled(false);
                 Intent intent = new Intent(getApplicationContext(), MapActivity.class);
                 startActivity(intent);
             }
@@ -28,6 +30,7 @@ public class HomeActivity extends AppCompatActivity {
         buttonScoreBoard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                buttonScoreBoard.setEnabled(false);
                 Intent intent = new Intent(getApplicationContext(), ScoreboardActivity.class);
                 startActivity(intent);
             }
@@ -37,9 +40,18 @@ public class HomeActivity extends AppCompatActivity {
         buttonFriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                buttonFriend.setEnabled(false);
                 Intent intent = new Intent(getApplicationContext(), FriendsActivity.class);
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        buttonPlay.setEnabled(true);
+        buttonFriend.setEnabled(true);
+        buttonScoreBoard.setEnabled(true);
     }
 }
