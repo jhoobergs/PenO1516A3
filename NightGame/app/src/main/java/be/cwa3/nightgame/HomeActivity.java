@@ -11,7 +11,7 @@ import android.widget.Button;
  * Created by jesse on 12/10/2015.
  */
 public class HomeActivity extends AppCompatActivity {
-    Button buttonPlay, buttonScoreBoard;
+    Button buttonPlay, buttonScoreBoard, buttonFriend;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,5 +33,13 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+        buttonFriend = (Button) findViewById(R.id.button_friends);
+        buttonFriend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), FriendsActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }

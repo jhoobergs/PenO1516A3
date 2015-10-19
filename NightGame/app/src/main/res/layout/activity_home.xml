@@ -6,7 +6,7 @@
         android:id="@+id/button_play"
         android:layout_gravity="center"
         android:textSize="40sp"
-        android:text="@string/Play"
+        android:text="@string/play"
         android:layout_margin="20dp"
         style="@style/ButtonHomeScreenStyle"/>
     <Button
@@ -17,7 +17,7 @@
         android:layout_margin="20dp"
         style="@style/ButtonHomeScreenStyle"/>
     <Button
-        android:id="@+id/button_friens"
+        android:id="@+id/button_friends"
         android:layout_gravity="center"
         android:textSize="30sp"
         android:text="@string/friends"

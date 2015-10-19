@@ -47,6 +47,13 @@
             android:name=".LocationActivity"
             android:label="@string/app_name" >
         </activity>
+        <activity
+            android:name=".FriendsActivity"
+            android:label="@string/friends">
+                <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".HomeActivity" />
+        </activity>
     </application>
 
 </manifest>
