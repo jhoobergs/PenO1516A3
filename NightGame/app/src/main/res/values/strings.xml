@@ -9,4 +9,9 @@
     <string name="number_of_players">Number of players:</string>
     <string name="enter_minimum">min</string>
     <string name="enter_maximum">max</string>
+    <string name="from">from</string>
+    <string name="minimum">minimum</string>
+    <string name="maximum">maximum</string>
+    <string name="min">min</string>
+    <string name="max">max</string>
 </resources>

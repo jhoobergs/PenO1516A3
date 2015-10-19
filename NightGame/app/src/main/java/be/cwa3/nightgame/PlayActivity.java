@@ -19,14 +19,9 @@ public class PlayActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
         String[] myStringArray={"A","B","C","D","E","F","G","H","J","K","L","M","N","O","P","Q","R","S","T","U","V","W"};
-        ArrayAdapter<String> myAdapter=new
-                ArrayAdapter<String>(
-                this,
-                android.R.layout.simple_list_item_1,
-                myStringArray);
-        ListView myList=
-                (ListView) findViewById(R.id.listView);
-        myList.setAdapter(myAdapter);
+        ArrayAdapter<String> adapter=new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, myStringArray);
+        ListView listViewLobbies= (ListView) findViewById(R.id.listViewLobbies);
+        listViewLobbies.setAdapter(adapter);
 
     }
 
