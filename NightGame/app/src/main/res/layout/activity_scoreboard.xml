@@ -3,18 +3,10 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="30sp"
-        android:inputType="textPersonName"
-        android:hint="Name"
-        android:ems="10"
-        android:id="@+id/editText" />
-
     <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/listViewRecentContact"
+        android:id="@+id/listViewScores"
         android:layout_gravity="center_horizontal" />
+
 </LinearLayout>

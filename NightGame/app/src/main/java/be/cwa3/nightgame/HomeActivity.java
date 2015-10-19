@@ -28,7 +28,7 @@ public class HomeActivity extends AppCompatActivity {
         buttonScoreBoard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), LocationActivity.class);
+                Intent intent = new Intent(getApplicationContext(), ScoreboardActivity.class);
                 startActivity(intent);
             }
         });
