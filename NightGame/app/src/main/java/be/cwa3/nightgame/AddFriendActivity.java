@@ -32,7 +32,7 @@ public class AddFriendActivity extends AppCompatActivity {
         fakeData.add("test1");
 
 
-        listView.setAdapter(new FriendsAdapter(this, fakeData));
+        //listView.setAdapter(new FriendsAdapter(this, fakeData));
     }
     }
 

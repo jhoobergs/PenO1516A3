@@ -9,22 +9,25 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
 
+import be.cwa3.nightgame.Data.FriendData;
 import be.cwa3.nightgame.FriendsActivity;
 import be.cwa3.nightgame.R;
 
 /**
  * Created by kevin on 19/10/2015.
  */
-public class FriendsAdapter extends ArrayAdapter<String>{
+public class FriendsAdapter extends ArrayAdapter<FriendData>{
 
-    private List<String> data;
+    private List<FriendData> data;
     private Context context;
 
     private static final int layoutResourceId = R.layout.list_friends;
 
-    public FriendsAdapter(Context context, List<String> data){
+    public FriendsAdapter(Context context, List<FriendData> data){
         super(context, layoutResourceId,data);
         this.context = context;
         this.data = data;
@@ -40,7 +43,8 @@ public class FriendsAdapter extends ArrayAdapter<String>{
             row = inflater.inflate(layoutResourceId, parent, false);
 
             holder = new Holder();
-            holder.text1 = (TextView) row.findViewById(R.id.text1);
+            holder.textViewName = (TextView) row.findViewById(R.id.TextViewName);
+            holder.imageViewProfileImage = (ImageView) row.findViewById(R.id.ImageViewProfileImage);
 
 
             row.setTag(holder);
@@ -48,14 +52,19 @@ public class FriendsAdapter extends ArrayAdapter<String>{
             holder = (Holder) row.getTag();
         }
 
-        String menuItem = data.get(position);
+        FriendData menuItem = data.get(position);
 
-        holder.text1.setText(menuItem);
+        holder.textViewName.setText(menuItem.Name);
+        if(menuItem.ImageURL != null)
+            Picasso.with(context).load(menuItem.ImageURL).into(holder.imageViewProfileImage);
+
+
 
         return row;
     }
 
     static class Holder {
-        TextView text1;
+        TextView textViewName;
+        ImageView imageViewProfileImage;
     }
 }
