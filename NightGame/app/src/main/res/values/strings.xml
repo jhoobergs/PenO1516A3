@@ -16,4 +16,15 @@
     <string name="min">min</string>
     <string name="max">max</string>
     <string name="create_new_lobby">Create new lobby</string>
+    <string name="login">Login</string>
+    <string name="enter_name">Enter Name</string>
+    <string name="password">Password:</string>
+    <string name="enter_password">Enter Password</string>
+    <string name="button_login">Login</string>
+    <string name="button_create_new_account">Create New Account</string>
+    <string name="create_new_account">Create New Account</string>
+    <string name="button_create">Create</string>
+    <string name="create">Create</string>
+    <string name="repeat_password">Repeat Password</string>
+    <string name="enter_email">Enter Email Adress</string>
 </resources>
