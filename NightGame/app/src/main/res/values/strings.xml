@@ -16,4 +16,5 @@
     <string name="min">min</string>
     <string name="max">max</string>
     <string name="create_new_lobby">Create new lobby</string>
+    <string name="create">create</string>
 </resources>
