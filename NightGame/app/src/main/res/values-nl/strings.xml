@@ -9,7 +9,7 @@
     <string name="button_login">Aanmelden</string>
     <string name="create">Maak aan</string>
     <string name="create_new_account">Maak nieuw account aan</string>
-    <string name="create_new_lobby">Maak nieuwe lobbie aan</string>
+    <string name="create_new_lobby">Nieuwe lobbie</string>
     <string name="enter_email">Vul emailadres in</string>
     <string name="enter_group_name">Kies een groepsnaam</string>
     <string name="enter_maximum">Max</string>

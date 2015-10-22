@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
 import android.view.KeyEvent;
 import android.view.View;
@@ -23,7 +25,6 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         buttonLogin = (Button) findViewById(R.id.button_login);
         enterName = (EditText) findViewById(R.id.enter_name);
-
         enterPassword = (EditText) findViewById(R.id.enter_password);
         enterPassword.setTypeface(Typeface.DEFAULT);
         enterPassword.setTransformationMethod(new PasswordTransformationMethod());
@@ -31,21 +32,41 @@ public class LoginActivity extends AppCompatActivity {
         createNewAccount = (TextView) findViewById(R.id.textview_create_new_account);
 
         buttonLogin.setEnabled(false);
-        enterName.setOnKeyListener(new View.OnKeyListener() {
+
+        enterName.addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
                 HandleButtonLogin();
-                return false;
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
 
-        enterPassword.setOnKeyListener(new View.OnKeyListener() {
+        enterPassword.addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
                 HandleButtonLogin();
-                return false;
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
+
 
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
