@@ -1,6 +1,33 @@
 <resources>
     <string name="app_name">Bike Knight</string>
-    <string name="Play">Speel</string>
     <string name="scoreboard">Scorebord</string>
     <string name="friends">Vrienden</string>
+    <string name="add">Voeg toe</string>
+    <string name="addfriend">Voeg vriend toe</string>
+    <string name="button_create">Maak aan</string>
+    <string name="button_create_new_account">Maak nieuw account aan</string>
+    <string name="button_login">Aanmelden</string>
+    <string name="create">Maak aan</string>
+    <string name="create_new_account">Maak nieuw account aan</string>
+    <string name="create_new_lobby">Maak nieuwe lobbie aan</string>
+    <string name="enter_email">Vul emailadres in</string>
+    <string name="enter_group_name">Kies een groepsnaam</string>
+    <string name="enter_maximum">Max</string>
+    <string name="enter_minimum">Min</string>
+    <string name="enter_name">Kies een naam</string>
+    <string name="enter_password">Kies een wachtwoord</string>
+    <string name="from">Van</string>
+    <string name="games">Spelen</string>
+    <string name="login">Aanmelden</string>
+    <string name="max">Max</string>
+    <string name="maximum">Maximum</string>
+    <string name="min">Min</string>
+    <string name="minimum">Minimum</string>
+    <string name="missions">Missies</string>
+    <string name="name">Naam:</string>
+    <string name="number_of_players">Aantal spelers:</string>
+    <string name="password">Wachtwoord:</string>
+    <string name="play">Speel</string>
+    <string name="repeat_password">Herhaal wachtwoord</string>
+    <string name="wins">Overwinningen</string>
 </resources>

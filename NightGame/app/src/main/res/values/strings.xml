@@ -8,13 +8,10 @@
     <string name="name">Name:</string>
     <string name="enter_group_name">Enter group name</string>
     <string name="number_of_players">Number of players:</string>
-    <string name="enter_minimum">min</string>
-    <string name="enter_maximum">max</string>
-    <string name="from">from</string>
-    <string name="minimum">minimum</string>
-    <string name="maximum">maximum</string>
-    <string name="min">min</string>
-    <string name="max">max</string>
+    <string name="from">From</string>
+    <string name="minimum">Minimum</string>
+    <string name="maximum">Maximum</string>
+    <string name="max">Max</string>
     <string name="create_new_lobby">Create new lobby</string>
     <string name="games">Games</string>
     <string name="wins">Wins</string>
@@ -30,5 +27,8 @@
     <string name="create">Create</string>
     <string name="repeat_password">Repeat Password</string>
     <string name="enter_email">Enter Email Adress</string>
+    <string name="enter_maximum">Max</string>
+    <string name="enter_minimum">Min</string>
+    <string name="min">Min</string>
 
 </resources>
