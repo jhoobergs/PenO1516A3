@@ -1,18 +1,32 @@
 package be.cwa3.nightgame;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
-import android.view.KeyEvent;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import be.cwa3.nightgame.Data.LoginRequestData;
+import be.cwa3.nightgame.Data.LoginReturnData;
+import be.cwa3.nightgame.Http.Api.ApiInterface;
+import retrofit.Call;
+import retrofit.Callback;
+import retrofit.GsonConverterFactory;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -20,9 +34,17 @@ public class LoginActivity extends AppCompatActivity {
     private EditText enterName;
     private EditText enterPassword;
     private TextView createNewAccount;
+    private SharedPreferences sharedPref;
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        sharedPref = getPreferences(Context.MODE_PRIVATE);
+
+        if(!sharedPref.getString(SharedPreferencesKeys.TokenString, "").equals("")){
+            Intent i = new Intent(this, HomeActivity.class);
+            startActivity(i);
+        }
+
         buttonLogin = (Button) findViewById(R.id.button_login);
         enterName = (EditText) findViewById(R.id.enter_name);
         enterPassword = (EditText) findViewById(R.id.enter_password);
@@ -72,9 +94,8 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(HandleButtonLogin()){
-                    Toast.makeText(getApplicationContext(), "Ingelogd als xXx_Pussyslayer_69_xXx", Toast.LENGTH_LONG).show();
-                    Intent i = new Intent(getApplicationContext(), HomeActivity.class);
-                    startActivity(i);
+                    LoginRequestData data = new LoginRequestData(enterName.getText().toString(), enterPassword.getText().toString());
+                    makeloginCall(data);
                 }
                 else{
                     Toast.makeText(getApplicationContext(), "Fucking Android", Toast.LENGTH_LONG).show();
@@ -100,5 +121,34 @@ public class LoginActivity extends AppCompatActivity {
             buttonLogin.setEnabled(true);
             return true;
         }
+    }
+
+    private void makeloginCall(LoginRequestData data){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BuildConfig.API_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        ApiInterface apiInterface = retrofit.create(ApiInterface.class);
+        Call<LoginReturnData> call = apiInterface.sendLoginRequest(data);
+        call.enqueue(new Callback<LoginReturnData>() {
+            @Override
+            public void onResponse(Response<LoginReturnData> response, Retrofit retrofit) {
+                if (response.isSuccess()) {
+                    //Logged in
+                    Log.d("token", new Gson().toJson(response.body()));
+                    sharedPref.edit().putString(SharedPreferencesKeys.TokenString, response.body().Token).apply();
+                    Toast.makeText(getApplicationContext(), String.format("Ingelogd als %s", response.body().Username), Toast.LENGTH_LONG).show();
+                    Intent i = new Intent(getApplicationContext(), HomeActivity.class);
+                    startActivity(i);
+
+                } else
+                    Toast.makeText(getApplicationContext(), "No succes", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Toast.makeText(getApplicationContext(), "failed", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
