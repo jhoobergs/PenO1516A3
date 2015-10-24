@@ -9,15 +9,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import be.cwa3.nightgame.Data.LoginRequestData;
 import be.cwa3.nightgame.Data.LoginReturnData;
@@ -95,7 +91,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(HandleButtonLogin()){
                     LoginRequestData data = new LoginRequestData(enterName.getText().toString(), enterPassword.getText().toString());
-                    makeloginCall(data);
+                    makeLoginCall(data);
                 }
                 else{
                     Toast.makeText(getApplicationContext(), "Fucking Android", Toast.LENGTH_LONG).show();
@@ -123,7 +119,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void makeloginCall(LoginRequestData data){
+    private void makeLoginCall(LoginRequestData data){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BuildConfig.API_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -135,7 +131,6 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(Response<LoginReturnData> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
                     //Logged in
-                    Log.d("token", new Gson().toJson(response.body()));
                     sharedPref.edit().putString(SharedPreferencesKeys.TokenString, response.body().Token).apply();
                     Toast.makeText(getApplicationContext(), String.format("Ingelogd als %s", response.body().Username), Toast.LENGTH_LONG).show();
                     Intent i = new Intent(getApplicationContext(), HomeActivity.class);
