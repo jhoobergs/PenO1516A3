@@ -18,7 +18,7 @@ app.use(bodyParser.json());
 
 require('./friends.js')(app);
 require('./scoreboard.js')(app);
-require('./user.js')(app, AWS);
+require('./user.js')(app, AWS, bcrypt,dd);
 
 returnData = function(res, status, result, error){
     res.send({

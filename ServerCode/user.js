@@ -1,67 +1,12 @@
-exports = module.exports = function(app, AWS){
+exports = module.exports = function(app, AWS, bcrypt,dd){
 
 app.post('/user/login', function(req, res) {
     var dynamodbDoc = new AWS.DynamoDB.DocumentClient();
 console.log(req.body);
-var error = "";
 if(req.body != null){
-    console.log("Querying for Users with id.");
     if(req.body.Username == null ||req.body.Password == null){
-        res.send("{Not all params present}");
-    }
-    else{
-        var params = {
-            TableName : "Users",
-            KeyConditionExpression: "#username = :name",
-            ExpressionAttributeNames:{
-                "#username": "Username"
-            },
-            ExpressionAttributeValues: {
-                ":name":req.body.Username
-            }
-        };
-    
-
-        dynamodbDoc.query(params, function(err, data) {
-            if (err) {
-                console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
-            } else {
-                console.log("Logging in");
-                if(data.Items.length == 1){
-                    if(bcrypt.compareSync(req.body.Password, data.Items[0].Password)){
-                            createToken(data.Items[0].Username, function(token) {
-                            var result = {
-                                'Username' : data.Items[0].Username,
-                                'Token' : token
-                            };
-                            res.send(result)
-                        });                    
-                    
-                    }                
-                    else{
-                        res.send("{Wrong Password}");
-                    }
-                }
-                else{
-                        res.send("{User Not found}");
-                    }
-            }
-        });
-    }
-}
-else{
-    res.send("{No body}");
-}  
-});
-
-app.post('/user/create', function(req, res) {
-    var dynamodbDoc = new AWS.DynamoDB.DocumentClient();
-console.log(req.body);
-var error = "";
-if(req.body != null){
-    console.log("Creating for Users with id.");
-    if(req.body.Username == null ||req.body.Password == null || req.body.Password != req.body.PasswordRepeat || req.body.Email == null){
-        res.send("{Not all params present}");
+        //res.send("{Not all params present}");
+        returnData(res, 0, null, '{Not all params present}');
     }
     else{
         var params = {
@@ -79,7 +24,63 @@ if(req.body != null){
             if (err) {
                 console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
             } else {
-                console.log("Query succeeded.");
+                //console.log("Logging in");
+                if(data.Items.length == 1){
+                    if(bcrypt.compareSync(req.body.Password, data.Items[0].Password)){
+                            createToken(data.Items[0].Username, function(token) {
+                            var result = {
+                                'Username' : data.Items[0].Username,
+                                'Token' : token
+                            };
+                            returnData(res, 1, result, null);
+                        });                    
+                    
+                    }                
+                    else{
+                        var error = {'Errors' : [1]};
+                        returnData(res, 2, null, error);
+                                        
+                    }
+                }
+                else{
+                        var error = {'Errors' : [1]};
+                        returnData(res, 2, null, error);
+                    }
+            }
+        });
+    }
+}
+else{
+    returnData(res, 0, null, '{Not all params present}');
+}  
+});
+
+app.post('/user/create', function(req, res) {
+    var dynamodbDoc = new AWS.DynamoDB.DocumentClient();
+console.log(req.body);
+var error = "";
+if(req.body != null){
+    //console.log("Creating for Users with id.");
+    if(req.body.Username == null ||req.body.Password == null || req.body.Password != req.body.PasswordRepeat || req.body.Email == null){
+        returnData(res, 0, null, '{Not all params present}');
+    }
+    else{
+        var params = {
+            TableName : "Users",
+            KeyConditionExpression: "#username = :name",
+            ExpressionAttributeNames:{
+                "#username": "Username"
+            },
+            ExpressionAttributeValues: {
+                ":name":req.body.Username
+            }
+        };    
+
+        dynamodbDoc.query(params, function(err, data) {
+            if (err) {
+                console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
+            } else {
+                //console.log("Query succeeded.");
                 if(data.Items.length == 0){
                     //Ok, we can create the user                            
                     putnewUserItem(req.body);
@@ -92,14 +93,15 @@ if(req.body != null){
                     });                    
                 }
                 else{
-                returnData(res, 0,{}, "Username does allready exist.");
+                var error = {'Errors' : [2]};
+                returnData(res, 2, null, error);
                 }
             }
         });
     }
 }
 else{
-    res.send("{No body}");
+    returnData(res, 0, null, '{Not all params present}');
 }  
 });
 

@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import be.cwa3.nightgame.Data.LoginRequestData;
 import be.cwa3.nightgame.Data.LoginReturnData;
+import be.cwa3.nightgame.Data.ReturnData;
 import be.cwa3.nightgame.Http.Api.ApiInterface;
 import retrofit.Call;
 import retrofit.Callback;
@@ -125,14 +126,14 @@ public class LoginActivity extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         ApiInterface apiInterface = retrofit.create(ApiInterface.class);
-        Call<LoginReturnData> call = apiInterface.sendLoginRequest(data);
-        call.enqueue(new Callback<LoginReturnData>() {
+        Call<ReturnData<LoginReturnData>> call = apiInterface.sendLoginRequest(data);
+        call.enqueue(new Callback<ReturnData<LoginReturnData>>() {
             @Override
-            public void onResponse(Response<LoginReturnData> response, Retrofit retrofit) {
+            public void onResponse(Response<ReturnData<LoginReturnData>> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
                     //Logged in
-                    sharedPref.edit().putString(SharedPreferencesKeys.TokenString, response.body().Token).apply();
-                    Toast.makeText(getApplicationContext(), String.format("Ingelogd als %s", response.body().Username), Toast.LENGTH_LONG).show();
+                    sharedPref.edit().putString(SharedPreferencesKeys.TokenString, response.body().body.Token).apply();
+                    Toast.makeText(getApplicationContext(), String.format("Ingelogd als %s", response.body().body.Username), Toast.LENGTH_LONG).show();
                     Intent i = new Intent(getApplicationContext(), HomeActivity.class);
                     startActivity(i);
 

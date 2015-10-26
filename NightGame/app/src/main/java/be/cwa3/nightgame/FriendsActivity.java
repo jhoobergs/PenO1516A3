@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import be.cwa3.nightgame.Adapters.FriendsAdapter;
 import be.cwa3.nightgame.Data.FriendListData;
+import be.cwa3.nightgame.Data.ReturnData;
 import be.cwa3.nightgame.Http.Api.ApiInterface;
 import retrofit.Call;
 import retrofit.Callback;
@@ -44,12 +45,12 @@ public class FriendsActivity extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         ApiInterface apiInterface = retrofit.create(ApiInterface.class);
-        Call<FriendListData> call = apiInterface.loadFriends();
-        call.enqueue(new Callback<FriendListData>() {
+        Call<ReturnData<FriendListData>> call = apiInterface.loadFriends();
+        call.enqueue(new Callback<ReturnData<FriendListData>>() {
             @Override
-            public void onResponse(Response<FriendListData> response, Retrofit retrofit) {
+            public void onResponse(Response<ReturnData<FriendListData>> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
-                    listView.setAdapter(new FriendsAdapter(FriendsActivity.this, response.body().List));
+                    listView.setAdapter(new FriendsAdapter(FriendsActivity.this, response.body().body.List));
                 }
                 else
                     Toast.makeText(getApplicationContext(), "No succes", Toast.LENGTH_SHORT).show();

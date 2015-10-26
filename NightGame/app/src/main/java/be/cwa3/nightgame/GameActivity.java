@@ -1,8 +1,14 @@
 package be.cwa3.nightgame;
 
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.View;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -24,18 +30,23 @@ import java.util.List;
 /**
  * Created by jesse on 15/10/2015.
  */
-public class LocationActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, OnMapReadyCallback {
+public class GameActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, OnMapReadyCallback, SensorEventListener {
     private boolean mRequestingLocationUpdates = true;
     private Location mCurrentLocation;
     private String mLastUpdateTime;
     private GoogleApiClient mGoogleApiClient;
     LocationRequest mLocationRequest;
     MapFragment mapFragment;
+    private boolean mapHasBeenReady = false;
+    private SensorManager sensorManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT),
+                sensorManager.SENSOR_DELAY_NORMAL);
         mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -56,7 +67,12 @@ public class LocationActivity extends AppCompatActivity implements GoogleApiClie
 
         if(locations.size() > 0) {
             map.setMyLocationEnabled(true);
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(locations.get(0), 13));
+            if(!mapHasBeenReady) {
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(locations.get(0), 13));
+                mapHasBeenReady = true;
+            }
+            else
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(locations.get(0), map.getCameraPosition().zoom));
         }
         for (LatLng loc : locations) {
             map.addMarker(new MarkerOptions()
@@ -76,8 +92,8 @@ public class LocationActivity extends AppCompatActivity implements GoogleApiClie
 
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(1000);
-        mLocationRequest.setFastestInterval(500);
+        mLocationRequest.setInterval(5000);
+        mLocationRequest.setFastestInterval(4000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
@@ -134,5 +150,25 @@ public class LocationActivity extends AppCompatActivity implements GoogleApiClie
     protected void stopLocationUpdates() {
         LocationServices.FusedLocationApi.removeLocationUpdates(
                 mGoogleApiClient, this);
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        int type = event.sensor.getType();
+        if(type==Sensor.TYPE_LIGHT) {
+            float sv = event.values[0];
+            Log.d("sensor", String.valueOf(sv));
+            if (mapFragment.getView() != null) {
+                if (sv < 100)
+                    mapFragment.getView().setVisibility(View.INVISIBLE);
+                else
+                    mapFragment.getView().setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
     }
 }

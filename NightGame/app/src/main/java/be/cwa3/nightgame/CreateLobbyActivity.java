@@ -8,6 +8,8 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.NumberPicker;
 
+import com.google.android.gms.games.Game;
+
 /**
  * Created by Gebruiker on 19/10/2015.
  */
@@ -38,6 +40,8 @@ public class CreateLobbyActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.create:
+                Intent intent = new Intent(this, GameActivity.class);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

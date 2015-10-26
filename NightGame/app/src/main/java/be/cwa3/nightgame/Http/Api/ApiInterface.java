@@ -14,13 +14,13 @@ import retrofit.http.GET;
 
 public interface ApiInterface {
     @GET("/friends/list")
-    Call<FriendListData> loadFriends();
+    Call<ReturnData<FriendListData>> loadFriends();
 
     @GET("/scoreboard/list")
-    Call<ScoreboardListData> loadScoreboard();
+    Call<ReturnData<ScoreboardListData>> loadScoreboard();
 
     @POST("/user/login")
-    Call<LoginReturnData> sendLoginRequest(@Body LoginRequestData data);
+    Call<ReturnData<LoginReturnData>> sendLoginRequest(@Body LoginRequestData data);
 
     @POST("/user/create")
     Call<ReturnData<LoginReturnData>> sendCreateNewAccountRequest(@Body CreateNewAccountRequestData data);
