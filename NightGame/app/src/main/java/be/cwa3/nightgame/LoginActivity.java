@@ -131,11 +131,17 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResponse(Response<ReturnData<LoginReturnData>> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
-                    //Logged in
-                    sharedPref.edit().putString(SharedPreferencesKeys.TokenString, response.body().body.Token).apply();
-                    Toast.makeText(getApplicationContext(), String.format("Ingelogd als %s", response.body().body.Username), Toast.LENGTH_LONG).show();
-                    Intent i = new Intent(getApplicationContext(), HomeActivity.class);
-                    startActivity(i);
+                    if(response.body().statusCode == 1) {
+                        //Logged in
+                        sharedPref.edit().putString(SharedPreferencesKeys.TokenString, response.body().body.Token).apply();
+                        Toast.makeText(getApplicationContext(), String.format("Ingelogd als %s", response.body().body.Username), Toast.LENGTH_LONG).show();
+                        Intent i = new Intent(getApplicationContext(), HomeActivity.class);
+                        startActivity(i);
+                    }
+                    else if(response.body().statusCode == 2){
+                        String error = "Error".concat(response.body().error.Errors.get(0).toString());
+                        Toast.makeText(getApplicationContext(), error, Toast.LENGTH_SHORT).show();
+                    }
 
                 } else
                     Toast.makeText(getApplicationContext(), "No succes", Toast.LENGTH_SHORT).show();

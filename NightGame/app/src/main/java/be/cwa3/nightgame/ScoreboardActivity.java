@@ -9,6 +9,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import be.cwa3.nightgame.Adapters.ScoreboardAdapter;
+import be.cwa3.nightgame.Classes.ScoreboardRequestData;
 import be.cwa3.nightgame.Data.ReturnData;
 import be.cwa3.nightgame.Data.ScoreboardListData;
 import be.cwa3.nightgame.Http.Api.ApiInterface;
@@ -41,13 +42,19 @@ public class ScoreboardActivity extends AppCompatActivity {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         ApiInterface apiInterface = retrofit.create(ApiInterface.class);
-        Call<ReturnData<ScoreboardListData>> call = apiInterface.loadScoreboard();
+        Call<ReturnData<ScoreboardListData>> call = apiInterface.loadScoreboard(new ScoreboardRequestData("Wins"));
         call.enqueue(new Callback<ReturnData<ScoreboardListData>>() {
             @Override
             public void onResponse(Response<ReturnData<ScoreboardListData>> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
-                    scoreboardListData = response.body().body;
-                    setListView();
+                    if(response.body().statusCode == 1) {
+                        scoreboardListData = response.body().body;
+                        setListView();
+                    }
+                    else{
+                        //Should not happen
+                        Toast.makeText(getApplicationContext(), "Should not happen", Toast.LENGTH_SHORT).show();
+                    }
                 } else
                     Toast.makeText(getApplicationContext(), "No succes", Toast.LENGTH_SHORT).show();
             }

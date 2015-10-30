@@ -50,7 +50,13 @@ public class FriendsActivity extends AppCompatActivity {
             @Override
             public void onResponse(Response<ReturnData<FriendListData>> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
-                    listView.setAdapter(new FriendsAdapter(FriendsActivity.this, response.body().body.List));
+                    if(response.body().statusCode == 1) {
+                        listView.setAdapter(new FriendsAdapter(FriendsActivity.this, response.body().body.List));
+                    }
+                    else{
+                        //should not happen
+                        Toast.makeText(getApplicationContext(), "Should not happen", Toast.LENGTH_SHORT).show();
+                    }
                 }
                 else
                     Toast.makeText(getApplicationContext(), "No succes", Toast.LENGTH_SHORT).show();

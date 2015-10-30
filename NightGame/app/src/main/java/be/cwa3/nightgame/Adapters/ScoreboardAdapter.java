@@ -58,7 +58,7 @@ public class ScoreboardAdapter extends ArrayAdapter<ScoreboardData>{
 
         ScoreboardData menuItem = data.get(position);
 
-        holder.textViewName.setText(menuItem.Name);
+        holder.textViewName.setText(menuItem.Username);
         holder.textViewGames.setText(String.valueOf(menuItem.Games));
         holder.textViewWins.setText(String.valueOf(menuItem.Wins));
         holder.textViewMissions.setText(String.valueOf(menuItem.Missions));

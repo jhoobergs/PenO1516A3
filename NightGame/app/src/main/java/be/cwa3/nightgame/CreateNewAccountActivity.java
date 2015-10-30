@@ -186,8 +186,9 @@ public class CreateNewAccountActivity extends AppCompatActivity {
                         Intent i = new Intent(getApplicationContext(), HomeActivity.class);
                         startActivity(i);
                     }
-                    else if(response.body().statusCode == 0){
-                        Toast.makeText(getApplicationContext(), response.body().error, Toast.LENGTH_SHORT).show();
+                    else if(response.body().statusCode == 2){
+                        String error = "Error".concat(response.body().error.Errors.get(0).toString());
+                        Toast.makeText(getApplicationContext(), error, Toast.LENGTH_SHORT).show();
                     }
 
                 } else

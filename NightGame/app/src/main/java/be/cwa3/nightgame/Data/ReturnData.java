@@ -6,5 +6,5 @@ package be.cwa3.nightgame.Data;
 public class ReturnData<T> {
     public int statusCode;
     public T body;
-    public String error;
+    public ErrorData error;
 }

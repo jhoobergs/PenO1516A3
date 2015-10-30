@@ -1,5 +1,6 @@
 package be.cwa3.nightgame.Http.Api;
 
+import be.cwa3.nightgame.Classes.ScoreboardRequestData;
 import be.cwa3.nightgame.Data.CreateNewAccountRequestData;
 import be.cwa3.nightgame.Data.FriendListData;
 import be.cwa3.nightgame.Data.LoginRequestData;
@@ -16,8 +17,8 @@ public interface ApiInterface {
     @GET("/friends/list")
     Call<ReturnData<FriendListData>> loadFriends();
 
-    @GET("/scoreboard/list")
-    Call<ReturnData<ScoreboardListData>> loadScoreboard();
+    @POST("/scoreboard/list")
+    Call<ReturnData<ScoreboardListData>> loadScoreboard(@Body ScoreboardRequestData data);
 
     @POST("/user/login")
     Call<ReturnData<LoginReturnData>> sendLoginRequest(@Body LoginRequestData data);
