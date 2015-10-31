@@ -1,4 +1,4 @@
-package be.cwa3.nightgame.Classes;
+package be.cwa3.nightgame.Data;
 
 /**
  * Created by jesse on 29/10/2015.

@@ -9,7 +9,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import be.cwa3.nightgame.Adapters.ScoreboardAdapter;
-import be.cwa3.nightgame.Classes.ScoreboardRequestData;
+import be.cwa3.nightgame.Data.ScoreboardRequestData;
 import be.cwa3.nightgame.Data.ReturnData;
 import be.cwa3.nightgame.Data.ScoreboardListData;
 import be.cwa3.nightgame.Http.Api.ApiInterface;

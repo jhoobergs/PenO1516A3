@@ -1,6 +1,6 @@
 package be.cwa3.nightgame.Http.Api;
 
-import be.cwa3.nightgame.Classes.ScoreboardRequestData;
+import be.cwa3.nightgame.Data.ScoreboardRequestData;
 import be.cwa3.nightgame.Data.CreateNewAccountRequestData;
 import be.cwa3.nightgame.Data.FriendListData;
 import be.cwa3.nightgame.Data.LoginRequestData;
