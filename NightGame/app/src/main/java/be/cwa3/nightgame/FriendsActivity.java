@@ -13,6 +13,7 @@ import be.cwa3.nightgame.Adapters.FriendsAdapter;
 import be.cwa3.nightgame.Data.FriendListData;
 import be.cwa3.nightgame.Data.ReturnData;
 import be.cwa3.nightgame.Http.Api.ApiInterface;
+import be.cwa3.nightgame.Utils.ApiHelper;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.GsonConverterFactory;
@@ -40,12 +41,7 @@ public class FriendsActivity extends AppCompatActivity {
     }
 
     private void makeCall(){
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BuildConfig.API_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        ApiInterface apiInterface = retrofit.create(ApiInterface.class);
-        Call<ReturnData<FriendListData>> call = apiInterface.loadFriends();
+        Call<ReturnData<FriendListData>> call = new ApiHelper().getApiInterface(this).loadFriends();
         call.enqueue(new Callback<ReturnData<FriendListData>>() {
             @Override
             public void onResponse(Response<ReturnData<FriendListData>> response, Retrofit retrofit) {

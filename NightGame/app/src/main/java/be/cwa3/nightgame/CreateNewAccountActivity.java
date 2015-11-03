@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,6 +19,9 @@ import be.cwa3.nightgame.Data.CreateNewAccountRequestData;
 import be.cwa3.nightgame.Data.LoginReturnData;
 import be.cwa3.nightgame.Data.ReturnData;
 import be.cwa3.nightgame.Http.Api.ApiInterface;
+import be.cwa3.nightgame.Utils.ApiHelper;
+import be.cwa3.nightgame.Utils.Settings;
+import be.cwa3.nightgame.Utils.SharedPreferencesKeys;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.GsonConverterFactory;
@@ -33,12 +35,10 @@ public class CreateNewAccountActivity extends AppCompatActivity {
     private EditText repeatPassword;
     private Button buttonCreate;
     private TextView termsConditions;
-    private SharedPreferences sharedPref;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_new_account);
-        sharedPref = getPreferences(Context.MODE_PRIVATE);
 
         enterName = (EditText) findViewById(R.id.enter_name);
         enterEmail = (EditText) findViewById(R.id.enter_email);
@@ -169,19 +169,14 @@ public class CreateNewAccountActivity extends AppCompatActivity {
     }
 
     private void makeNewAccountCall(CreateNewAccountRequestData data){
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BuildConfig.API_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        ApiInterface apiInterface = retrofit.create(ApiInterface.class);
-        Call<ReturnData<LoginReturnData>> call = apiInterface.sendCreateNewAccountRequest(data);
+        Call<ReturnData<LoginReturnData>> call = new ApiHelper().getApiInterface(this).sendCreateNewAccountRequest(data);
         call.enqueue(new Callback<ReturnData<LoginReturnData>>() {
             @Override
             public void onResponse(Response<ReturnData<LoginReturnData>> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
                     if(response.body().statusCode == 1) {
                         //Logged in
-                        sharedPref.edit().putString(SharedPreferencesKeys.TokenString, response.body().body.Token).apply();
+                        new Settings(getApplicationContext()).setString(SharedPreferencesKeys.TokenString, response.body().body.Token);
                         Toast.makeText(getApplicationContext(), String.format("Ingelogd als %s", response.body().body.Username), Toast.LENGTH_LONG).show();
                         Intent i = new Intent(getApplicationContext(), HomeActivity.class);
                         startActivity(i);

@@ -19,6 +19,9 @@ import be.cwa3.nightgame.Data.LoginRequestData;
 import be.cwa3.nightgame.Data.LoginReturnData;
 import be.cwa3.nightgame.Data.ReturnData;
 import be.cwa3.nightgame.Http.Api.ApiInterface;
+import be.cwa3.nightgame.Utils.ApiHelper;
+import be.cwa3.nightgame.Utils.Settings;
+import be.cwa3.nightgame.Utils.SharedPreferencesKeys;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.GsonConverterFactory;
@@ -31,13 +34,12 @@ public class LoginActivity extends AppCompatActivity {
     private EditText enterName;
     private EditText enterPassword;
     private TextView createNewAccount;
-    private SharedPreferences sharedPref;
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        sharedPref = getPreferences(Context.MODE_PRIVATE);
 
-        if(!sharedPref.getString(SharedPreferencesKeys.TokenString, "").equals("")){
+        if(!new Settings(this).getString(SharedPreferencesKeys.TokenString).equals("")){
             Intent i = new Intent(this, HomeActivity.class);
             startActivity(i);
         }
@@ -121,19 +123,14 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void makeLoginCall(LoginRequestData data){
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BuildConfig.API_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        ApiInterface apiInterface = retrofit.create(ApiInterface.class);
-        Call<ReturnData<LoginReturnData>> call = apiInterface.sendLoginRequest(data);
+        Call<ReturnData<LoginReturnData>> call = new ApiHelper().getApiInterface(this).sendLoginRequest(data);
         call.enqueue(new Callback<ReturnData<LoginReturnData>>() {
             @Override
             public void onResponse(Response<ReturnData<LoginReturnData>> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
                     if(response.body().statusCode == 1) {
                         //Logged in
-                        sharedPref.edit().putString(SharedPreferencesKeys.TokenString, response.body().body.Token).apply();
+                        new Settings(getApplicationContext()).setString(SharedPreferencesKeys.TokenString, response.body().body.Token);
                         Toast.makeText(getApplicationContext(), String.format("Ingelogd als %s", response.body().body.Username), Toast.LENGTH_LONG).show();
                         Intent i = new Intent(getApplicationContext(), HomeActivity.class);
                         startActivity(i);
