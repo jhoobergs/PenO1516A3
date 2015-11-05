@@ -19,6 +19,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -62,8 +64,15 @@ public class GameActivity extends AppCompatActivity implements GoogleApiClient.C
         //LatLng sydney = new LatLng(-33.867, 151.206);
         List<LatLng> locations = new ArrayList<>();
 
-        if(mCurrentLocation != null)
+        if(mCurrentLocation != null) {
             locations.add(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()));
+            locations.add(new LatLng(mCurrentLocation.getLatitude()+0.01, mCurrentLocation.getLongitude()));
+            locations.add(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()+0.01));
+            locations.add(new LatLng(mCurrentLocation.getLatitude()+0.01, mCurrentLocation.getLongitude()+0.01));
+            locations.add(new LatLng(mCurrentLocation.getLatitude()+0.02, mCurrentLocation.getLongitude()));
+            locations.add(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()+0.02));
+            Log.d("url", String.valueOf(mCurrentLocation.getLatitude()));
+        }
 
         if(locations.size() > 0) {
             map.setMyLocationEnabled(true);
@@ -74,12 +83,25 @@ public class GameActivity extends AppCompatActivity implements GoogleApiClient.C
             else
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(locations.get(0), map.getCameraPosition().zoom));
         }
+        map.clear();
+        map.setMyLocationEnabled(false);
+        int number = 0;
         for (LatLng loc : locations) {
+            BitmapDescriptor bitmapDescriptor;
+
+            if(number%2 == 0) {
+                bitmapDescriptor = BitmapDescriptorFactory.fromResource(R.drawable.defender);
+            }
+            else
+                bitmapDescriptor = BitmapDescriptorFactory.fromResource(R.drawable.attacker);
             map.addMarker(new MarkerOptions()
-                    .title("Sydney")
-                    .snippet("The most populous city in Australia.")
+                    .title("Hi")
+                    .snippet("Here you are!")
+                    .icon(bitmapDescriptor)
                     .position(loc));
+            number+=1;
         }
+
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -159,7 +181,7 @@ public class GameActivity extends AppCompatActivity implements GoogleApiClient.C
             float sv = event.values[0];
             Log.d("sensor", String.valueOf(sv));
             if (mapFragment.getView() != null) {
-                if (sv < 100)
+                if (sv < 90)
                     mapFragment.getView().setVisibility(View.INVISIBLE);
                 else
                     mapFragment.getView().setVisibility(View.VISIBLE);
