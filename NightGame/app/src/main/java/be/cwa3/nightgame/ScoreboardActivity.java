@@ -1,7 +1,10 @@
 package be.cwa3.nightgame;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
@@ -9,13 +12,13 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import be.cwa3.nightgame.Adapters.ScoreboardAdapter;
-import be.cwa3.nightgame.Data.ScoreboardRequestData;
 import be.cwa3.nightgame.Data.ReturnData;
 import be.cwa3.nightgame.Data.ScoreboardListData;
-import be.cwa3.nightgame.Http.Api.ApiInterface;
+import be.cwa3.nightgame.Utils.ApiHelper;
+import be.cwa3.nightgame.Utils.Settings;
+import be.cwa3.nightgame.Utils.SharedPreferencesKeys;
 import retrofit.Call;
 import retrofit.Callback;
-import retrofit.GsonConverterFactory;
 import retrofit.Response;
 import retrofit.Retrofit;
 
@@ -37,12 +40,8 @@ public class ScoreboardActivity extends AppCompatActivity {
 
     }
     private void makeCall(){
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BuildConfig.API_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        ApiInterface apiInterface = retrofit.create(ApiInterface.class);
-        Call<ReturnData<ScoreboardListData>> call = apiInterface.loadScoreboard(new ScoreboardRequestData("Wins"));
+        Call<ReturnData<ScoreboardListData>> call =
+                new ApiHelper().getApiInterface(this).loadScoreboard();
         call.enqueue(new Callback<ReturnData<ScoreboardListData>>() {
             @Override
             public void onResponse(Response<ReturnData<ScoreboardListData>> response, Retrofit retrofit) {

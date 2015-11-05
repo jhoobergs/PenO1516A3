@@ -1,12 +1,12 @@
 exports = module.exports = function(app, AWS){
 
-app.post('/scoreboard/list', function(req, res){
+app.get('/scoreboard/list', function(req, res){
 var dynamodbDoc = new AWS.DynamoDB.DocumentClient();
-console.log(req.body);
+/*console.log(req.body);
 if(req.body == null || req.body.Type == null){
     returnData(res, 0, null, '{Not all params present}');
 }
-else{
+else{*/
         var params = {
             TableName : "Users"
         };    
@@ -22,27 +22,30 @@ else{
                     var item = {};
                     item.Username = data.Items[i].Username;
                     item.ImageURL = 'http://www.benveldkamp.nl/images/PERS/Smurfen-bril.jpg';
+                    if(data.Items[i].ImageURL != null)
+                        item.ImageURL = data.Items[i].ImageURL;
                     item.Wins = undefinedIntToZero(data.Items[i].Wins);
                     item.Games = undefinedIntToZero(data.Items[i].Games);
                     item.Missions = undefinedIntToZero(data.Items[i].Missions);
                     
                     var added = false;
-                    for (var i in result) {
+                    /*for (var i in result) {
                         if(checkIfBetter(req.body.Type, result[i], item)){
                             result.splice(i, 0, item);
                             added = true;
                             break;
                         }
-                    }
+                    }*/
                     if(! added)
                         result.push(item);
                     
                 }  
                 console.log(result);
-                returnData(res, 1,result, null);
+                console.log(req.headers);
+                returnData(res, 1,{'List' :result}, null);
             }
         });
-    } 
+    //} 
 });
 
 }
