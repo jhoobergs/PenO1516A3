@@ -3,13 +3,14 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:gravity="center_horizontal"
     >
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text=""
         />
-    <ImageView android:id="@+id/ImageView1" android:layout_width="wrap_content"
+    <ImageView android:id="@+id/ImageView1" android:layout_width="match_parent"
         android:layout_height="wrap_content"></ImageView>
     <Button android:text="Start"
     android:id="@+id/StartStopButton" android:layout_width="wrap_content"
