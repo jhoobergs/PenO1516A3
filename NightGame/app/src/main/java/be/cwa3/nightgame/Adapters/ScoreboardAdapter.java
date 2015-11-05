@@ -6,23 +6,28 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import be.cwa3.nightgame.Data.ScoreboardData;
 import be.cwa3.nightgame.R;
 
 /**
  * Created by kevin on 19/10/2015.
  */
-public class ScoreboardAdapter extends ArrayAdapter<String>{
+public class ScoreboardAdapter extends ArrayAdapter<ScoreboardData>{
 
-    private List<String> data;
+    private List<ScoreboardData> data;
     private Context context;
 
     private static final int layoutResourceId = R.layout.list_scores;
 
-    public ScoreboardAdapter(Context context, List<String> data){
+    public ScoreboardAdapter(Context context, List<ScoreboardData> data){
         super(context, layoutResourceId,data);
         this.context = context;
         this.data = data;
@@ -38,7 +43,12 @@ public class ScoreboardAdapter extends ArrayAdapter<String>{
             row = inflater.inflate(layoutResourceId, parent, false);
 
             holder = new Holder();
-            holder.scores = (TextView) row.findViewById(R.id.scores);
+            holder.textViewName = (TextView) row.findViewById(R.id.TextViewName);
+            holder.textViewMissions = (TextView) row.findViewById(R.id.TextViewMissions);
+            holder.textViewGames = (TextView) row.findViewById(R.id.TextViewGames);
+            holder.textViewWins = (TextView) row.findViewById(R.id.TextViewWins);
+            holder.imageViewProfileImage = (ImageView) row.findViewById(R.id.ImageViewProfileImage);
+            holder.linearLayoutExtraData = (LinearLayout) row.findViewById(R.id.LinearLayoutExtraData);
 
 
             row.setTag(holder);
@@ -46,14 +56,25 @@ public class ScoreboardAdapter extends ArrayAdapter<String>{
             holder = (Holder) row.getTag();
         }
 
-        String menuItem = data.get(position);
+        ScoreboardData menuItem = data.get(position);
 
-        holder.scores.setText(menuItem);
+        holder.textViewName.setText(menuItem.Username);
+        holder.textViewGames.setText(String.valueOf(menuItem.Games));
+        holder.textViewWins.setText(String.valueOf(menuItem.Wins));
+        holder.textViewMissions.setText(String.valueOf(menuItem.Missions));
+        if(menuItem.ImageURL != null)
+            Picasso.with(context).load(menuItem.ImageURL).into(holder.imageViewProfileImage);
+        if(menuItem.isOpen)
+            holder.linearLayoutExtraData.setVisibility(View.VISIBLE);
+        else
+            holder.linearLayoutExtraData.setVisibility(View.GONE);
 
         return row;
     }
 
     static class Holder {
-        TextView scores;
+        TextView textViewName, textViewGames, textViewWins, textViewMissions;
+        ImageView imageViewProfileImage;
+        LinearLayout linearLayoutExtraData;
     }
 }

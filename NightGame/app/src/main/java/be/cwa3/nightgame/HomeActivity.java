@@ -6,7 +6,24 @@ import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParser;
+
+import java.util.List;
+
+import be.cwa3.nightgame.Data.FriendData;
+import be.cwa3.nightgame.Data.FriendListData;
+import be.cwa3.nightgame.Http.Api.ApiInterface;
+import retrofit.Call;
+import retrofit.Callback;
+import retrofit.GsonConverterFactory;
+import retrofit.Response;
+import retrofit.Retrofit;
+
+import be.cwa3.nightgame.BuildConfig;
 /**
  * Created by jesse on 12/10/2015.
  */
@@ -16,6 +33,8 @@ public class HomeActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+
 
         buttonPlay = (Button) findViewById(R.id.button_play);
         buttonPlay.setOnClickListener(new View.OnClickListener() {
