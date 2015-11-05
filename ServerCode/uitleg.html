@@ -1,0 +1,183 @@
+<html>
+<head>
+<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+</head>
+<h1>Algemene uitleg api:</h1>
+<p>
+    Er zijn 2 type requests die je naar de server kan sturen. </br>
+(Er bestaan er meer, we gebruiken enkel de 2 belangrijkste.)</br>
+Een GET request sturen we naar de server als we enkel data willen ophalen.</br>
+    Een POST request sturen we als we daarboven ook data naar de server willen sturen. Bij een POST request is er ook altijd een response van de server.
+</p>    
+
+<h2>Bij elke request stuurt de server een response van het type ReturnData</h2>
+<table>
+<tr><td>statusCode</td><td>Uitleg</td></tr>
+<tr><td>0</td><td>Niet alle parameters zijn meegestuurd naar de server. Mag enkel voorkomen bij het aanmaken.</td></tr>
+<tr><td>1</td><td>Succes</td></tr>
+<tr><td>2</td><td>Er is iets mis met de opgestuurde data. (Bijvoorbeeld fout wachtwoord). Error moet aan gebruiker getoond worden.</td></tr>
+</table>
+<table>
+<tr><td>error</td><td>Uitleg</td></tr>
+<tr><td>1</td><td>Gebuikersnaam en Wachtwoord komen niet overeen.</td></tr>
+<tr><td>2</td><td>Deze gebruikersnaam is reeds in gebruik.</td></tr>
+</table>
+<pre class="prettyprint lang-java">
+public class ReturnData<<span class="nocode">T</span>> {
+    public int statusCode;
+    public T body;
+    public ErrorData error;
+}
+T is een parameter zodat:
+ReturnData<<span class="nocode">FriendListData</span>>{
+    public int statusCode;
+    public FriendListData body;
+    public ErrorData error; //Errordata is een lijst van errors.
+} 
+</pre>
+
+<h2>Response van GET request naar /friends/list:</h2>
+<h4>Response:</h4>
+<pre class="prettyprint lang-js">
+{
+  "statusCode": 1,
+  "body": {
+    "List": [
+      {
+        "Name": "Jesse",
+        "ImageURL": "http://www.benveldkamp.nl/images/PERS/Smurfen-bril.jpg"
+      },
+      {
+        "Name": "Jean",
+        "ImageURL": "http://www.benveldkamp.nl/images/PERS/Smurfen-bril.jpg"
+      }
+    ]
+  },
+  "error": null
+} 
+</pre>
+<h4>Java classes FriendListData en FriendData </h4>
+<pre class="prettyprint lang-java">
+public class FriendListData {
+    public List<<span class="nocode">FriendData</span>> List;
+}
+
+public class FriendData {
+    public String Name;
+    public String ImageURL;
+}
+</pre>
+<h2>Response van GET request naar /scoreboard/list:</h2>
+<h4>Response:</h4>
+<pre class="prettyprint lang-js">
+{
+  "statusCode": 1,
+  "body": {
+    "List": [
+      {
+        "Username": "Koen1",
+        "ImageURL": "http://vignette4.wikia.nocookie.net/fantendo/images/6/6e/Small-mario.png/revision/latest/scale-to-width-down/381?cb=20120718024112",
+        "Wins": 5,
+        "Games": 7,
+        "Missions": 10
+      },
+      {
+        "Username": "Koen4",
+        "ImageURL": "http://vignette2.wikia.nocookie.net/mario/images/6/6c/Bowser%2C_Super_Mario_64_DS.png/revision/latest/scale-to-width-down/200?cb=20121106012958",
+        "Wins": 0,
+        "Games": 0,
+        "Missions": 0
+      }
+    ]
+  },
+  "error": null
+}
+</pre>
+<h4>Java classes ScoreboardListData en ScoreboardData </h4>
+<pre class="prettyprint lang-java">
+public class ScoreboardListData {
+public List<<span class="nocode">ScoreboardData</span>> List;
+}
+
+public class ScoreboardData {
+    public String Username;
+    public String ImageURL;
+    public int Wins;
+    public int Missions;
+    public int Games;
+    public transient boolean isOpen = false; //Transient betekent dat deze data niet van server komt.
+}
+</pre>
+
+<h2>Request en Response van POST request naar /user/login:</h2>
+<h4>Request:</h4>
+<pre class="prettyprint lang-js">
+{
+    "Username": "Koen2",
+    "Password": "test"
+}
+</pre>
+<h4>Java class LoginRequestData</h4>
+<pre class="prettyprint lang-java">
+public class LoginRequestData {
+    public String Username;
+    public String Password;
+}
+</pre>
+<h4>Response:</h4>
+<pre class="prettyprint lang-js">
+{
+  "statusCode": 1,
+  "body": {
+    "Username": "Koen2",
+    "Token": "$2a$10$LPfeoOlpLpf3ZhOHNUcbVORXo1ErQ/9soHPXQD0uxNL/6QlZooA5m"
+  },
+  "error": null
+}
+</pre>
+<h4>Java class LoginReturnData</h4>
+<pre class="prettyprint lang-java">
+public class LoginRequestData {
+    public String Username;
+    public String Token;
+}
+</pre>
+
+<h2>Request en Response van POST request naar /user/create:</h2>
+<h4>Request:</h4>
+<pre class="prettyprint lang-js">
+{
+    "Username": "Moran",
+    "Password": "test",
+    "PasswordRepeat": "test",
+    "Email": "test@t.be"
+}
+</pre>
+<h4>Java class CreateNewAccountRequestData</h4>
+<pre class="prettyprint lang-java">
+public class CreateNewAccountRequestData {
+    public String Username;
+    public String Password;
+    public String PasswordRepeat;
+    public String Email;
+}
+</pre>
+<h4>Response: (Momenteel dezelfde als bij login)</h4>
+<pre class="prettyprint lang-js">
+{
+  "statusCode": 1,
+  "body": {
+    "Username": "Moran",
+    "Token": "$2a$10$c3YhB3dTTBlU/rr1lMhCveW9Yu9a4.0J9xdbzkPIPaQI8IPfxMdvG"
+  },
+  "error": null
+}
+</pre>
+<h4>Java class LoginReturnData</h4>
+<pre class="prettyprint lang-java">
+public class LoginRequestData {
+    public String Username;
+    public String Token;
+}
+</pre>
+</html>

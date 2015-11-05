@@ -16,6 +16,17 @@ app.use(function(req, res, next) {
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+app.get('/uitleg', function(req, res) {
+    if(req.query != null && req.query.token == "HEHJHjEZJzhejh2938|kjzodj"){
+    res.sendFile('uitleg.html', {root: __dirname});
+    }
+    else{
+    res.send("");
+    }
+});
+
+
+
 require('./friends.js')(app);
 require('./scoreboard.js')(app, AWS);
 require('./user.js')(app, AWS, bcrypt,dd);

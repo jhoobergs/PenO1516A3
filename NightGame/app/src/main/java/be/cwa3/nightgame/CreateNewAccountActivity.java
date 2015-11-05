@@ -15,11 +15,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.okhttp.ResponseBody;
+
 import be.cwa3.nightgame.Data.CreateNewAccountRequestData;
+import be.cwa3.nightgame.Data.ErrorData;
 import be.cwa3.nightgame.Data.LoginReturnData;
 import be.cwa3.nightgame.Data.ReturnData;
 import be.cwa3.nightgame.Http.Api.ApiInterface;
 import be.cwa3.nightgame.Utils.ApiHelper;
+import be.cwa3.nightgame.Utils.RequestInterface;
+import be.cwa3.nightgame.Utils.RequestUtil;
 import be.cwa3.nightgame.Utils.Settings;
 import be.cwa3.nightgame.Utils.SharedPreferencesKeys;
 import retrofit.Call;
@@ -170,7 +175,7 @@ public class CreateNewAccountActivity extends AppCompatActivity {
 
     private void makeNewAccountCall(CreateNewAccountRequestData data){
         Call<ReturnData<LoginReturnData>> call = new ApiHelper().getApiInterface(this).sendCreateNewAccountRequest(data);
-        call.enqueue(new Callback<ReturnData<LoginReturnData>>() {
+        /*call.enqueue(new Callback<ReturnData<LoginReturnData>>() {
             @Override
             public void onResponse(Response<ReturnData<LoginReturnData>> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
@@ -193,6 +198,33 @@ public class CreateNewAccountActivity extends AppCompatActivity {
             @Override
             public void onFailure(Throwable t) {
                 Toast.makeText(getApplicationContext(), "failed", Toast.LENGTH_SHORT).show();
+            }
+        });*/
+        RequestUtil<LoginReturnData> requestUtil = new RequestUtil<>(call);
+        requestUtil.makeRequest(new RequestInterface<LoginReturnData>() {
+            @Override
+            public void onSucces(LoginReturnData body) {
+                //Logged in
+                new Settings(getApplicationContext()).setString(SharedPreferencesKeys.TokenString, body.Token);
+                Toast.makeText(getApplicationContext(), String.format("Ingelogd als %s", body.Username), Toast.LENGTH_LONG).show();
+                Intent i = new Intent(getApplicationContext(), HomeActivity.class);
+                startActivity(i);
+            }
+
+            @Override
+            public void onError(ErrorData error) {
+                String errorString = "Error ".concat(error.Errors.get(0).toString());
+                Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onServerError(int code, ResponseBody responseBody) {
+                //
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                Toast.makeText(getApplicationContext(), "Connection with server failed.", Toast.LENGTH_SHORT).show();
             }
         });
     }
