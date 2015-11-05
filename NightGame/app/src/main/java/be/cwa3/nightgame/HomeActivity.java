@@ -81,6 +81,10 @@ public class HomeActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), SoundActivity.class);
                 startActivity(intent);
                 return true;
+            case R.id.accelerometer:
+                Intent i = new Intent(getApplicationContext(), AccelerometerActivity.class);
+                startActivity(i);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
