@@ -2,7 +2,33 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:id="@+id/games"
+            android:text="@string/games"
+            android:gravity="center_horizontal"
+            style="ButtonStyle"/>
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:id="@+id/wins"
+            android:text="@string/wins"
+            android:gravity="center_horizontal"/>
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:id="@+id/missions"
+            android:text="@string/missions"
+            android:gravity="center_horizontal"/>
+    </LinearLayout>
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
