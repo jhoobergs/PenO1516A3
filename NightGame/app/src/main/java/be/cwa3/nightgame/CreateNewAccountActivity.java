@@ -2,7 +2,6 @@ package be.cwa3.nightgame;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -21,17 +20,13 @@ import be.cwa3.nightgame.Data.CreateNewAccountRequestData;
 import be.cwa3.nightgame.Data.ErrorData;
 import be.cwa3.nightgame.Data.LoginReturnData;
 import be.cwa3.nightgame.Data.ReturnData;
-import be.cwa3.nightgame.Http.Api.ApiInterface;
-import be.cwa3.nightgame.Utils.ApiHelper;
+import be.cwa3.nightgame.Utils.ApiUtil;
+import be.cwa3.nightgame.Utils.ErrorUtil;
 import be.cwa3.nightgame.Utils.RequestInterface;
 import be.cwa3.nightgame.Utils.RequestUtil;
 import be.cwa3.nightgame.Utils.Settings;
 import be.cwa3.nightgame.Utils.SharedPreferencesKeys;
 import retrofit.Call;
-import retrofit.Callback;
-import retrofit.GsonConverterFactory;
-import retrofit.Response;
-import retrofit.Retrofit;
 
 public class CreateNewAccountActivity extends AppCompatActivity {
     private EditText enterName;
@@ -174,7 +169,7 @@ public class CreateNewAccountActivity extends AppCompatActivity {
     }
 
     private void makeNewAccountCall(CreateNewAccountRequestData data){
-        Call<ReturnData<LoginReturnData>> call = new ApiHelper().getApiInterface(this).sendCreateNewAccountRequest(data);
+        Call<ReturnData<LoginReturnData>> call = new ApiUtil().getApiInterface(this).sendCreateNewAccountRequest(data);
         /*call.enqueue(new Callback<ReturnData<LoginReturnData>>() {
             @Override
             public void onResponse(Response<ReturnData<LoginReturnData>> response, Retrofit retrofit) {
@@ -200,7 +195,7 @@ public class CreateNewAccountActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "failed", Toast.LENGTH_SHORT).show();
             }
         });*/
-        RequestUtil<LoginReturnData> requestUtil = new RequestUtil<>(call);
+        RequestUtil<LoginReturnData> requestUtil = new RequestUtil<>(this, call);
         requestUtil.makeRequest(new RequestInterface<LoginReturnData>() {
             @Override
             public void onSucces(LoginReturnData body) {
@@ -213,19 +208,18 @@ public class CreateNewAccountActivity extends AppCompatActivity {
 
             @Override
             public void onError(ErrorData error) {
-                String errorString = "Error ".concat(error.Errors.get(0).toString());
-                Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), ErrorUtil.getErrorText(getApplicationContext(),error.Errors), Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onServerError(int code, ResponseBody responseBody) {
-                //
+            public void onServerError(Context context, int code, ResponseBody responseBody) {
+                //Niet nodig om te Overriden
             }
 
-            @Override
-            public void onFailure(Throwable t) {
+            /*@Override
+            public void onFailure(Context context, Throwable t) {
                 Toast.makeText(getApplicationContext(), "Connection with server failed.", Toast.LENGTH_SHORT).show();
-            }
+            }*/
         });
     }
 }

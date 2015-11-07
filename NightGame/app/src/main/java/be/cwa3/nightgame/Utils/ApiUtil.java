@@ -18,9 +18,12 @@ import retrofit.Retrofit;
 /**
  * Created by jesse on 2/11/2015.
  */
-public class ApiHelper {
+public class ApiUtil {
 
     public ApiInterface getApiInterface(final Context context) {
+        //Create an instance of an OkHttpClient
+        //This interceptor is used to add an header with name Token to all requests.
+        //The server can see by the Token which user requests the data.
         OkHttpClient httpClient = new OkHttpClient();
         httpClient.interceptors().add(new Interceptor() {
             @Override
@@ -34,8 +37,9 @@ public class ApiHelper {
                 return chain.proceed(request);
             }
         });
+        //Create an instance of retrofit
         Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl(BuildConfig.API_URL)
+            .baseUrl(BuildConfig.API_URL) //Check Build.gradle (Module: app -> android -> buildTypes)
             .addConverterFactory(GsonConverterFactory.create())
             .client(httpClient)
             .build();

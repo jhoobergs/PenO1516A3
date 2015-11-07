@@ -26,9 +26,14 @@
     <string name="button_create">Create</string>
     <string name="create">Create</string>
     <string name="repeat_password">Repeat Password</string>
-    <string name="enter_email">Enter Email Adress</string>
+    <string name="enter_email">Enter Email Address</string>
     <string name="enter_maximum">Max</string>
     <string name="enter_minimum">Min</string>
     <string name="min">Min</string>
+
+
+
+    <string name="error1">Username and password don\'t match.</string>
+    <string name="error2">This username is already in use.</string>
 
 </resources>

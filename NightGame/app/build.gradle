@@ -15,6 +15,9 @@ android {
         versionName "1.0"
     }
     buildTypes {
+        //BuildTypes are used to tell the compiler to do different things on a debug-build or a release-buidl
+        //The Url of the server can be different for debug and release.
+        //For debug you would typically use a testserver.
         debug{
                 minifyEnabled false
                 proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'

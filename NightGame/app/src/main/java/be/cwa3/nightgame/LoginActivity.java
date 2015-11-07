@@ -1,8 +1,6 @@
 package be.cwa3.nightgame;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -18,13 +16,11 @@ import android.widget.Toast;
 import be.cwa3.nightgame.Data.LoginRequestData;
 import be.cwa3.nightgame.Data.LoginReturnData;
 import be.cwa3.nightgame.Data.ReturnData;
-import be.cwa3.nightgame.Http.Api.ApiInterface;
-import be.cwa3.nightgame.Utils.ApiHelper;
+import be.cwa3.nightgame.Utils.ApiUtil;
 import be.cwa3.nightgame.Utils.Settings;
 import be.cwa3.nightgame.Utils.SharedPreferencesKeys;
 import retrofit.Call;
 import retrofit.Callback;
-import retrofit.GsonConverterFactory;
 import retrofit.Response;
 import retrofit.Retrofit;
 
@@ -123,7 +119,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void makeLoginCall(LoginRequestData data){
-        Call<ReturnData<LoginReturnData>> call = new ApiHelper().getApiInterface(this).sendLoginRequest(data);
+        Call<ReturnData<LoginReturnData>> call = new ApiUtil().getApiInterface(this).sendLoginRequest(data);
         call.enqueue(new Callback<ReturnData<LoginReturnData>>() {
             @Override
             public void onResponse(Response<ReturnData<LoginReturnData>> response, Retrofit retrofit) {
