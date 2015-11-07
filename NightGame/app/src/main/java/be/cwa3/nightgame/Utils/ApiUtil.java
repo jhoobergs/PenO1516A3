@@ -31,7 +31,7 @@ public class ApiUtil {
                 Request original = chain.request();
 
                 Request request = original.newBuilder()
-                        .header("Token", new Settings(context).getString(SharedPreferencesKeys.TokenString))
+                        .header("Token", new SettingsUtil(context).getString(SharedPreferencesKeys.TokenString))
                         .method(original.method(), original.body())
                         .build();
                 return chain.proceed(request);

@@ -17,7 +17,7 @@ import be.cwa3.nightgame.Data.LoginRequestData;
 import be.cwa3.nightgame.Data.LoginReturnData;
 import be.cwa3.nightgame.Data.ReturnData;
 import be.cwa3.nightgame.Utils.ApiUtil;
-import be.cwa3.nightgame.Utils.Settings;
+import be.cwa3.nightgame.Utils.SettingsUtil;
 import be.cwa3.nightgame.Utils.SharedPreferencesKeys;
 import retrofit.Call;
 import retrofit.Callback;
@@ -35,7 +35,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        if(!new Settings(this).getString(SharedPreferencesKeys.TokenString).equals("")){
+        if(!new SettingsUtil(this).getString(SharedPreferencesKeys.TokenString).equals("")){
             Intent i = new Intent(this, HomeActivity.class);
             startActivity(i);
         }
@@ -126,7 +126,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (response.isSuccess()) {
                     if(response.body().statusCode == 1) {
                         //Logged in
-                        new Settings(getApplicationContext()).setString(SharedPreferencesKeys.TokenString, response.body().body.Token);
+                        new SettingsUtil(getApplicationContext()).setString(SharedPreferencesKeys.TokenString, response.body().body.Token);
                         Toast.makeText(getApplicationContext(), String.format("Ingelogd als %s", response.body().body.Username), Toast.LENGTH_LONG).show();
                         Intent i = new Intent(getApplicationContext(), HomeActivity.class);
                         startActivity(i);

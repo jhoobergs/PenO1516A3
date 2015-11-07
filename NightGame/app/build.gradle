@@ -34,9 +34,9 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.0.1'
-    compile 'com.google.android.gms:play-services:8.1.0'
-    compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
-    compile 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
-    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.android.support:appcompat-v7:23.0.1' //Always needed when using AppCompatActivity.
+    compile 'com.google.android.gms:play-services:8.1.0' // Needed by google maps and location
+    compile 'com.squareup.retrofit:retrofit:2.0.0-beta2' //Retrofit
+    compile 'com.squareup.retrofit:converter-gson:2.0.0-beta2' // The converter that converts JSON to objects of a class
+    compile 'com.squareup.picasso:picasso:2.5.2' //We use this lib to show images from url and automatic caching.
 }

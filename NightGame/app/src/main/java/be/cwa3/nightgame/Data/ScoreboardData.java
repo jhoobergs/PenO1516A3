@@ -9,5 +9,5 @@ public class ScoreboardData {
     public int Wins;
     public int Missions;
     public int Games;
-    public transient boolean isOpen = false;
+    public transient boolean isOpen = false; //Transient means that this data isn't server related.
 }

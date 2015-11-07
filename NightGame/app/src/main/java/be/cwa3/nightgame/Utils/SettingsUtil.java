@@ -8,11 +8,11 @@ import java.util.Set;
 /**
  * Created by jesse on 2/11/2015.
  */
-public class Settings {
-    //We use this Settings class to make it easier to save data to the local storagefile.
+public class SettingsUtil {
+    //We use this SettingsUtil class to make it easier to save data to the local storagefile.
     private Context context;
     private SharedPreferences sharedPreferences;
-    public Settings(Context context){
+    public SettingsUtil(Context context){
         this.context = context;
         this.sharedPreferences = context.getSharedPreferences(SharedPreferencesKeys.FILE_NAME, Context.MODE_PRIVATE);
     }

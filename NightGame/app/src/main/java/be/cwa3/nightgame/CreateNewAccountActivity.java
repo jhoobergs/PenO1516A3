@@ -24,7 +24,7 @@ import be.cwa3.nightgame.Utils.ApiUtil;
 import be.cwa3.nightgame.Utils.ErrorUtil;
 import be.cwa3.nightgame.Utils.RequestInterface;
 import be.cwa3.nightgame.Utils.RequestUtil;
-import be.cwa3.nightgame.Utils.Settings;
+import be.cwa3.nightgame.Utils.SettingsUtil;
 import be.cwa3.nightgame.Utils.SharedPreferencesKeys;
 import retrofit.Call;
 
@@ -170,37 +170,13 @@ public class CreateNewAccountActivity extends AppCompatActivity {
 
     private void makeNewAccountCall(CreateNewAccountRequestData data){
         Call<ReturnData<LoginReturnData>> call = new ApiUtil().getApiInterface(this).sendCreateNewAccountRequest(data);
-        /*call.enqueue(new Callback<ReturnData<LoginReturnData>>() {
-            @Override
-            public void onResponse(Response<ReturnData<LoginReturnData>> response, Retrofit retrofit) {
-                if (response.isSuccess()) {
-                    if(response.body().statusCode == 1) {
-                        //Logged in
-                        new Settings(getApplicationContext()).setString(SharedPreferencesKeys.TokenString, response.body().body.Token);
-                        Toast.makeText(getApplicationContext(), String.format("Ingelogd als %s", response.body().body.Username), Toast.LENGTH_LONG).show();
-                        Intent i = new Intent(getApplicationContext(), HomeActivity.class);
-                        startActivity(i);
-                    }
-                    else if(response.body().statusCode == 2){
-                        String error = "Error".concat(response.body().error.Errors.get(0).toString());
-                        Toast.makeText(getApplicationContext(), error, Toast.LENGTH_SHORT).show();
-                    }
-
-                } else
-                    Toast.makeText(getApplicationContext(), "No succes", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                Toast.makeText(getApplicationContext(), "failed", Toast.LENGTH_SHORT).show();
-            }
-        });*/
         RequestUtil<LoginReturnData> requestUtil = new RequestUtil<>(this, call);
         requestUtil.makeRequest(new RequestInterface<LoginReturnData>() {
             @Override
             public void onSucces(LoginReturnData body) {
+                //Has to be overriden
                 //Logged in
-                new Settings(getApplicationContext()).setString(SharedPreferencesKeys.TokenString, body.Token);
+                new SettingsUtil(getApplicationContext()).setString(SharedPreferencesKeys.TokenString, body.Token);
                 Toast.makeText(getApplicationContext(), String.format("Ingelogd als %s", body.Username), Toast.LENGTH_LONG).show();
                 Intent i = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(i);
@@ -208,18 +184,15 @@ public class CreateNewAccountActivity extends AppCompatActivity {
 
             @Override
             public void onError(ErrorData error) {
+                //Has to be overriden
                 Toast.makeText(getApplicationContext(), ErrorUtil.getErrorText(getApplicationContext(),error.Errors), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onServerError(Context context, int code, ResponseBody responseBody) {
-                //Niet nodig om te Overriden
+                //Not needed to override this function, the default value is not called now.
+                //so remove this override or add code.
             }
-
-            /*@Override
-            public void onFailure(Context context, Throwable t) {
-                Toast.makeText(getApplicationContext(), "Connection with server failed.", Toast.LENGTH_SHORT).show();
-            }*/
         });
     }
 }
