@@ -40,6 +40,7 @@ public class GameActivity extends AppCompatActivity implements GoogleApiClient.C
     LocationRequest mLocationRequest;
     MapFragment mapFragment;
     private boolean mapHasBeenReady = false;
+    private boolean othersShouldBeInvisibile = false;
     private SensorManager sensorManager;
 
     @Override
@@ -63,14 +64,27 @@ public class GameActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onMapReady(GoogleMap map) {
         //LatLng sydney = new LatLng(-33.867, 151.206);
         List<LatLng> locations = new ArrayList<>();
-
+        List<String> titles = new ArrayList<>();
+        List<String> content = new ArrayList<>();
         if(mCurrentLocation != null) {
             locations.add(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()));
+            titles.add("Jesse");
+            content.add("Verdediger");
             locations.add(new LatLng(mCurrentLocation.getLatitude()+0.01, mCurrentLocation.getLongitude()));
+            titles.add("Koen");
+            content.add("Aanvaller");
             locations.add(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()+0.01));
+            titles.add("Jean");
+            content.add("Verdediger");
             locations.add(new LatLng(mCurrentLocation.getLatitude()+0.01, mCurrentLocation.getLongitude()+0.01));
+            titles.add("Moran");
+            content.add("Aanvaller");
             locations.add(new LatLng(mCurrentLocation.getLatitude()+0.02, mCurrentLocation.getLongitude()));
+            titles.add("Kevin");
+            content.add("Verdediger");
             locations.add(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()+0.02));
+            titles.add("Elisabeth");
+            content.add("Aanvaller");
             Log.d("url", String.valueOf(mCurrentLocation.getLatitude()));
         }
 
@@ -81,7 +95,7 @@ public class GameActivity extends AppCompatActivity implements GoogleApiClient.C
                 mapHasBeenReady = true;
             }
             else
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(locations.get(0), map.getCameraPosition().zoom));
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(map.getCameraPosition().target, map.getCameraPosition().zoom));
         }
         map.clear();
         map.setMyLocationEnabled(false);
@@ -94,9 +108,10 @@ public class GameActivity extends AppCompatActivity implements GoogleApiClient.C
             }
             else
                 bitmapDescriptor = BitmapDescriptorFactory.fromResource(R.drawable.attacker);
+            if(!(number%2 == 1 && othersShouldBeInvisibile))
             map.addMarker(new MarkerOptions()
-                    .title("Hi")
-                    .snippet("Here you are!")
+                    .title(titles.get(number))
+                    .snippet(content.get(number))
                     .icon(bitmapDescriptor)
                     .position(loc));
             number+=1;
@@ -180,12 +195,14 @@ public class GameActivity extends AppCompatActivity implements GoogleApiClient.C
         if(type==Sensor.TYPE_LIGHT) {
             float sv = event.values[0];
             Log.d("sensor", String.valueOf(sv));
-            if (mapFragment.getView() != null) {
-                if (sv < 90)
-                    mapFragment.getView().setVisibility(View.INVISIBLE);
-                else
-                    mapFragment.getView().setVisibility(View.VISIBLE);
-            }
+            boolean before = othersShouldBeInvisibile;
+            if (sv < 90)
+                othersShouldBeInvisibile = true;
+            else
+                othersShouldBeInvisibile = false;
+
+            if(before != othersShouldBeInvisibile)
+                mapFragment.getMapAsync(this);
         }
     }
 
