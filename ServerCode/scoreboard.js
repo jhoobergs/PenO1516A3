@@ -2,11 +2,8 @@ exports = module.exports = function(app, AWS){
 
 app.get('/scoreboard/list', function(req, res){
 var dynamodbDoc = new AWS.DynamoDB.DocumentClient();
-/*console.log(req.body);
-if(req.body == null || req.body.Type == null){
-    returnData(res, 0, null, '{Not all params present}');
-}
-else{*/
+user = getUserByToken(res, req.headers, function(user){
+    if(user != undefined){
         var params = {
             TableName : "Users"
         };    
@@ -16,7 +13,6 @@ else{*/
                 console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
             } else {
                 var result = [];
-                console.log("Query succeeded.");
                 for (var i in data.Items) {
                     value = data.Items[i];
                     var item = {};
@@ -40,12 +36,11 @@ else{*/
                         result.push(item);
                     
                 }  
-                console.log(result);
-                console.log(req.headers);
                 returnData(res, 1,{'List' :result}, null);
             }
         });
-    //} 
+    }
+});
 });
 
 }

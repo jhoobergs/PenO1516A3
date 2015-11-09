@@ -2,29 +2,17 @@ exports = module.exports = function(app, AWS, bcrypt,dd){
 
 app.post('/user/login', function(req, res) {
     var dynamodbDoc = new AWS.DynamoDB.DocumentClient();
-console.log(req.body);
+
 if(req.body != null){
     if(req.body.Username == null ||req.body.Password == null){
         //res.send("{Not all params present}");
         returnData(res, 0, null, '{Not all params present}');
     }
     else{
-        var params = {
-            TableName : "Users",
-            KeyConditionExpression: "#username = :name",
-            ExpressionAttributeNames:{
-                "#username": "Username"
-            },
-            ExpressionAttributeValues: {
-                ":name":req.body.Username
-            }
-        };    
-
-        dynamodbDoc.query(params, function(err, data) {
-            if (err) {
+        getUser(req.body.Username, function(data){
+            if (data == null) {
                 console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
             } else {
-                //console.log("Logging in");
                 if(data.Items.length == 1){
                     if(bcrypt.compareSync(req.body.Password, data.Items[0].Password)){
                             createToken(data.Items[0].Username, function(token) {
@@ -57,7 +45,6 @@ else{
 
 app.post('/user/create', function(req, res) {
     var dynamodbDoc = new AWS.DynamoDB.DocumentClient();
-console.log(req.body);
 var error = "";
 if(req.body != null){
     //console.log("Creating for Users with id.");
@@ -65,21 +52,11 @@ if(req.body != null){
         returnData(res, 0, null, '{Not all params present}');
     }
     else{
-        var params = {
-            TableName : "Users",
-            KeyConditionExpression: "#username = :name",
-            ExpressionAttributeNames:{
-                "#username": "Username"
-            },
-            ExpressionAttributeValues: {
-                ":name":req.body.Username
-            }
-        };    
-
-        dynamodbDoc.query(params, function(err, data) {
-            if (err) {
+        getUser(req.body.Username, function(data){
+            if (data == null) {
                 console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
-            } else {
+            }
+            else {
                 //console.log("Query succeeded.");
                 if(data.Items.length == 0){
                     //Ok, we can create the user                            

@@ -13,7 +13,7 @@ Een GET request sturen we naar de server als we enkel data willen ophalen.</br>
 <h2>Bij elke request stuurt de server een response van het type ReturnData</h2>
 <table>
 <tr><td>statusCode</td><td>Uitleg</td></tr>
-<tr><td>0</td><td>Niet alle parameters zijn meegestuurd naar de server. Mag enkel voorkomen bij het aanmaken.</td></tr>
+<tr><td>0</td><td>Niet alle parameters zijn meegestuurd naar de server. Mag niet voorkomen in de app zelf.</td></tr>
 <tr><td>1</td><td>Succes</td></tr>
 <tr><td>2</td><td>Er is iets mis met de opgestuurde data. (Bijvoorbeeld fout wachtwoord). Error moet aan gebruiker getoond worden.</td></tr>
 </table>
@@ -21,6 +21,7 @@ Een GET request sturen we naar de server als we enkel data willen ophalen.</br>
 <tr><td>error</td><td>Uitleg</td></tr>
 <tr><td>1</td><td>Gebuikersnaam en Wachtwoord komen niet overeen.</td></tr>
 <tr><td>2</td><td>Deze gebruikersnaam is reeds in gebruik.</td></tr>
+<tr><td>3</td><td>Het token is invalid. (log gebruiker uit in de app)</td></tr>
 </table>
 <pre class="prettyprint lang-java">
 public class ReturnData<<span class="nocode">T</span>> {
@@ -56,6 +57,7 @@ ReturnData<<span class="nocode">FriendListData</span>>{
   "error": null
 } 
 </pre>
+<p>Mogelijke errors: 3</p>
 <h4>Java classes FriendListData en FriendData </h4>
 <pre class="prettyprint lang-java">
 public class FriendListData {
@@ -93,6 +95,7 @@ public class FriendData {
   "error": null
 }
 </pre>
+<p>Mogelijke errors: 3</p>
 <h4>Java classes ScoreboardListData en ScoreboardData </h4>
 <pre class="prettyprint lang-java">
 public class ScoreboardListData {
@@ -105,7 +108,7 @@ public class ScoreboardData {
     public int Wins;
     public int Missions;
     public int Games;
-    public transient boolean isOpen = false; //Transient betekent dat deze data niet van server komt.
+    public transient boolean isOpen = false; //Transient means that this data isn't server related.
 }
 </pre>
 
@@ -135,6 +138,7 @@ public class LoginRequestData {
   "error": null
 }
 </pre>
+<p>Mogelijke errors: 1</p>
 <h4>Java class LoginReturnData</h4>
 <pre class="prettyprint lang-java">
 public class LoginRequestData {
@@ -173,6 +177,7 @@ public class CreateNewAccountRequestData {
   "error": null
 }
 </pre>
+<p>Mogelijke errors: 2</p>
 <h4>Java class LoginReturnData</h4>
 <pre class="prettyprint lang-java">
 public class LoginRequestData {
@@ -180,4 +185,225 @@ public class LoginRequestData {
     public String Token;
 }
 </pre>
+
+<h1>De java code</h1>
+Voor de requests naar de server te sturen maken we gebruikt van de library retrofit.
+In de file Build.gradle (Module: App) wordt deze onderaan ingeladen:
+<pre class="prettyprint">
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:23.0.1' //Always needed when using AppCompatActivity.
+    compile 'com.google.android.gms:play-services:8.1.0' // Needed by google maps and location
+    compile 'com.squareup.retrofit:retrofit:2.0.0-beta2' //Retrofit
+    compile 'com.squareup.retrofit:converter-gson:2.0.0-beta2' // The converter that converts JSON to objects of a class
+    compile 'com.squareup.picasso:picasso:2.5.2' //We use this lib to show images from url and automatic caching.
+}
+</pre>
+<h2>Uitleg over de Utils</h2>
+<p>Onder de map <i>Utils</i> staan een aantal classes die het programmeren makkelijker maken.</p>
+<h4>ApiUtil</h4>
+<p>Deze class heeft een methode die een retrofit object teruggeeft.</br>
+De token wordt altijd meegestuurd in de header (hoofding) van elke request.</p>
+<pre class="prettyprint lang-java">
+public class ApiUtil {
+
+    public ApiInterface getApiInterface(final Context context) {
+        //Create an instance of an OkHttpClient
+        //This interceptor is used to add an header with name Token to all requests.
+        //The server can see by the Token which user requests the data.
+        OkHttpClient httpClient = new OkHttpClient();
+        httpClient.interceptors().add(new Interceptor() {
+            @Override
+            public Response intercept(Interceptor.Chain chain) throws IOException {
+                Request original = chain.request();
+
+                Request request = original.newBuilder()
+                        .header("Token", new SettingsUtil(context).getString(SharedPreferencesKeys.TokenString))
+                        .method(original.method(), original.body())
+                        .build();
+                return chain.proceed(request);
+            }
+        });
+        //Create an instance of retrofit
+        Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl(BuildConfig.API_URL) //Check Build.gradle (Module: app -> android -> buildTypes)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(httpClient)
+            .build();
+     return retrofit.create(ApiInterface.class);
+    }
+}
+</pre>
+<p>Bovenstaande class maakt gebruik van de class SettingsUtil</p>
+<h2>SettingsUtil</h2>
+<p>Momenteel is enkel getString en setString geïmplementeerd.</br>
+Anders object-types moeten later misschien ook toegevoegd worden.</p>
+<pre class="prettyprint lang-java">
+public class SettingsUtil {
+    //We use this SettingsUtil class to make it easier to save data to the local storagefile.
+    private Context context;
+    private SharedPreferences sharedPreferences;
+    public SettingsUtil(Context context){
+        this.context = context;
+        this.sharedPreferences = context.getSharedPreferences(SharedPreferencesKeys.FILE_NAME, Context.MODE_PRIVATE);
+    }
+    public String getString(String key){
+        return sharedPreferences.getString(key, "");
+    }
+    public void setString(String key, String value){
+        sharedPreferences.edit().putString(key, value).apply();
+    }
+}
+</pre>
+<h2>RequestUtil</h2>
+<p>Deze class gebruiken we om de requests te maken.</p>
+<pre class="prettyprint lang-java">
+public class RequestUtil<T> {
+    Call<<span class="nocode">ReturnData<T></span>> call;
+    Context context;
+    public RequestUtil(Context context, Call<ReturnData<T>> call)
+    {
+        this.call = call;
+        this.context = context;
+    }
+
+    public void makeRequest(final RequestInterface<T> requestInterface){
+        //This function actually makes the call to the server.
+
+        //call.enqueue is a retrofit command
+        call.enqueue(new Callback<<span class="nocode">ReturnData<T></span>>() {
+            @Override
+            public void onResponse(Response<<span class="nocode">ReturnData<T></p>> response, Retrofit retrofit) {
+                if (response.isSuccess()) {
+                    if (response.body().statusCode == 1) {
+                        //Request was succesful, so we execute the onSucces function
+                        requestInterface.onSucces(response.body().body);
+                    } else if (response.body().statusCode == 2) {
+                        //Request gave an error, so we execute the onError function
+                        requestInterface.onError(response.body().error);
+                    }
+
+                } else {
+                    //We didn't get a succesful response of the server: We call onServerError
+                    requestInterface.onServerError(context, response.code(), response.errorBody());
+                }
+
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                //The request couldn't be made, we call onFailure
+                requestInterface.onFailure(context,t);
+            }
+        });
+    }
+}
+</pre>
+<p>De bovenstaande class gebruik de abstracte class RequestInterface.</br>
+Deze abstracte class heeft enkel functies.</br>
+De onSucces en onError functies hebben geen default waarde, ze moeten dus overriden worden.
+De onServerError en onFailure functie hebben een default waarde, maar kunnen ook overriden worden.</p>
+<h2>RequestInterface</h2>
+<pre class="prettyprint lang-java">
+public abstract class RequestInterface<T> {
+
+    //The onSucces function is called when StatusCode == 1
+    public abstract void onSucces(T body);
+    //The onError functions is called when StatusCode ==1
+    public abstract void onError(ErrorData error);
+    //The onServerError is called when the server can't be reached or doesn't respond.
+    public void onServerError(Context context, int code, ResponseBody responseBody){
+        Toast.makeText(context, "Internal Server Error", Toast.LENGTH_LONG).show();
+    };
+    //The onFailure function is called when the request failed. (When you don't have internet for example)
+    public void onFailure(Context context,Throwable t){
+        if(NetworkUtil.isNetworkAvailable(context)){
+            Toast.makeText(context, "Internal Server Error", Toast.LENGTH_LONG).show();
+        }
+        else {
+            Toast.makeText(context, "Connect to internet please!", Toast.LENGTH_LONG).show();
+        }
+    };
+}
+</pre>
+<h2>Een voorbeeld van een serverCall: CreateNewAccountActivity</h2>
+<pre class="prettyprint lang-java">
+private void makeNewAccountCall(CreateNewAccountRequestData data){
+        Call<<span class="nocode">ReturnData<LoginReturnData></p>> call = new ApiUtil().getApiInterface(this).sendCreateNewAccountRequest(data);
+        RequestUtil<<span class="nocode">LoginReturnData</span> requestUtil = new RequestUtil<>(this, call);
+        requestUtil.makeRequest(new RequestInterface<<span class="nocode">LoginReturnData</span>>() {
+            @Override
+            public void onSucces(LoginReturnData body) {
+                //Has to be overriden
+                //Logged in
+                new SettingsUtil(getApplicationContext()).setString(SharedPreferencesKeys.TokenString, body.Token);
+                Toast.makeText(getApplicationContext(), String.format("Ingelogd als %s", body.Username), Toast.LENGTH_LONG).show();
+                Intent i = new Intent(getApplicationContext(), HomeActivity.class);
+                startActivity(i);
+            }
+
+            @Override
+            public void onError(ErrorData error) {
+                //Has to be overriden
+                Toast.makeText(getApplicationContext(), ErrorUtil.getErrorText(getApplicationContext(),error.Errors), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onServerError(Context context, int code, ResponseBody responseBody) {
+                //Not needed to override this function, the default value is not called now.
+                //so remove this override or add code.
+            }
+        });
+}
+</pre>
+<h3>Onderzoek zelf de werking van ErrorUtil, NetworkUtil en SharedPreferenceKeys</h3>
+
+<h2>Api documentatie</h2>
+<h3>Game</h3>
+<h4>POST: /game/create</h4>
+<p>Op te sturen data:</p>
+<pre class="prettyprint lang-js">
+{
+    "Name": "gk",
+    "MinPlayers": 4,
+    "MaxPlayers": 6
+}
+</pre>
+<p>Response:</p>
+<pre class="prettyprint lang-js">
+{
+  "statusCode": 1,
+  "body": {
+    "GameId": "d23d4f80-86ee-11e5-922d-3d9e008389d0"
+  },
+  "error": null
+}
+</pre>
+<p>Mogelijke errors: 3</p>
+<h3>Friends</h3>
+<h4>POST: /friends/search</h4>
+<p>Op te sturen data:</p>
+<pre class="prettyprint lang-js">
+{
+    "SearchValue" : "jes"
+}
+</pre>
+<p>Response:</p>
+<pre class="prettyprint lang-js">
+{
+  "statusCode": 1,
+  "body": {
+    "List": [
+      {
+        "Name": "jesse2",
+        "ImageURL": "http://vignette3.wikia.nocookie.net/mario/images/6/6c/Wario_pose_screen.png/revision/latest/scale-to-width-down/180?cb=20141218042627"
+      }
+    ]
+  },
+  "error": null
+}
+</pre>
+<p>Mogelijke errors: 3</p>
+
 </html>
