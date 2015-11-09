@@ -1,5 +1,7 @@
 package be.cwa3.nightgame.Http.Api;
 
+import be.cwa3.nightgame.Data.CreateLobbyRequestData;
+import be.cwa3.nightgame.Data.CreateLobbyReturnData;
 import be.cwa3.nightgame.Data.CreateNewAccountRequestData;
 import be.cwa3.nightgame.Data.FriendListData;
 import be.cwa3.nightgame.Data.LoginRequestData;
@@ -24,4 +26,8 @@ public interface ApiInterface {
 
     @POST("/user/create")
     Call<ReturnData<LoginReturnData>> sendCreateNewAccountRequest(@Body CreateNewAccountRequestData data);
+
+    @POST("/game/create")
+    Call<ReturnData<CreateLobbyReturnData>> sendCreateLobbyRequest(@Body CreateLobbyRequestData data);
+
 }
