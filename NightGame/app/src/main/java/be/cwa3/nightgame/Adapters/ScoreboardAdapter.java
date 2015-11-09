@@ -46,7 +46,7 @@ public class ScoreboardAdapter extends ArrayAdapter<ScoreboardData>{
 
             holder = new Holder();
             holder.textViewName = (TextView) row.findViewById(R.id.TextViewName);
-            holder.relevantValue = (TextView) row.findViewById(R.id.RelevantValue);
+            holder.textViewRelevantValue = (TextView) row.findViewById(R.id.TextViewRelevantValue);
             holder.textViewMissions = (TextView) row.findViewById(R.id.TextViewMissions);
             holder.textViewGames = (TextView) row.findViewById(R.id.TextViewGames);
             holder.textViewWins = (TextView) row.findViewById(R.id.TextViewWins);
@@ -61,14 +61,21 @@ public class ScoreboardAdapter extends ArrayAdapter<ScoreboardData>{
         ScoreboardData menuItem = data.get(position);
 
         holder.textViewName.setText(menuItem.Username);
-        if(sorting.equals("Games") && holder.linearLayoutExtraData.getVisibility()==View.GONE){
-            holder.relevantValue.setText(menuItem.Games);
+        holder.textViewRelevantValue.setVisibility(View.VISIBLE);
+        if(sorting.equals("Games")){
+            holder.textViewRelevantValue.setText(String.valueOf(menuItem.Games));
         }
-        else if(sorting.equals("Wins") && holder.linearLayoutExtraData.getVisibility()==View.GONE){
-            holder.relevantValue.setText(menuItem.Wins);
+        else if(sorting.equals("Wins")){
+            holder.textViewRelevantValue.setText(String.valueOf(menuItem.Wins));
         }
-        else if(holder.linearLayoutExtraData.getVisibility()==View.GONE){
-            holder.relevantValue.setText(menuItem.Missions);
+        else if(sorting.equals("Missions")){
+            holder.textViewRelevantValue.setText(String.valueOf(menuItem.Missions));
+        }
+        else{
+            holder.textViewRelevantValue.setVisibility(View.GONE);
+        }
+        if(menuItem.isOpen){
+            holder.textViewRelevantValue.setVisibility(View.GONE);
         }
         holder.textViewGames.setText(String.valueOf(menuItem.Games));
         holder.textViewWins.setText(String.valueOf(menuItem.Wins));
@@ -84,7 +91,7 @@ public class ScoreboardAdapter extends ArrayAdapter<ScoreboardData>{
     }
 
     static class Holder {
-        TextView textViewName,relevantValue, textViewGames, textViewWins, textViewMissions;
+        TextView textViewName, textViewRelevantValue, textViewGames, textViewWins, textViewMissions;
         ImageView imageViewProfileImage;
         LinearLayout linearLayoutExtraData;
     }

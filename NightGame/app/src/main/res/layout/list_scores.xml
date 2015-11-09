@@ -24,13 +24,14 @@
         android:textSize="30sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="testest"
+        tools:text="testest"
         android:id="@+id/TextViewName"/>
     <TextView
-        android:layout_width="wrap_content"
+        android:textSize="30sp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="testest"
-        android:id="@+id/RelevantValue"
+        tools:text="testest"
+        android:id="@+id/TextViewRelevantValue"
         android:gravity="right"/>
     </LinearLayout>
     <LinearLayout
