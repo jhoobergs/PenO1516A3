@@ -188,11 +188,6 @@ public class CreateNewAccountActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), ErrorUtil.getErrorText(getApplicationContext(),error.Errors), Toast.LENGTH_SHORT).show();
             }
 
-            @Override
-            public void onServerError(Context context, int code, ResponseBody responseBody) {
-                //Not needed to override this function, the default value is not called now.
-                //so remove this override or add code.
-            }
         });
     }
 }

@@ -10,9 +10,14 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import be.cwa3.nightgame.Adapters.FriendsAdapter;
+import be.cwa3.nightgame.Data.ErrorData;
 import be.cwa3.nightgame.Data.FriendListData;
+import be.cwa3.nightgame.Data.LoginReturnData;
 import be.cwa3.nightgame.Data.ReturnData;
 import be.cwa3.nightgame.Utils.ApiUtil;
+import be.cwa3.nightgame.Utils.ErrorUtil;
+import be.cwa3.nightgame.Utils.RequestInterface;
+import be.cwa3.nightgame.Utils.RequestUtil;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
@@ -40,25 +45,17 @@ public class FriendsActivity extends AppCompatActivity {
 
     private void makeCall(){
         Call<ReturnData<FriendListData>> call = new ApiUtil().getApiInterface(this).loadFriends();
-        call.enqueue(new Callback<ReturnData<FriendListData>>() {
+        RequestUtil<FriendListData> requestUtil = new RequestUtil<>(this, call);
+        requestUtil.makeRequest(new RequestInterface<FriendListData>() {
             @Override
-            public void onResponse(Response<ReturnData<FriendListData>> response, Retrofit retrofit) {
-                if (response.isSuccess()) {
-                    if(response.body().statusCode == 1) {
-                        listView.setAdapter(new FriendsAdapter(FriendsActivity.this, response.body().body.List));
-                    }
-                    else{
-                        //should not happen
-                        Toast.makeText(getApplicationContext(), "Should not happen", Toast.LENGTH_SHORT).show();
-                    }
-                }
-                else
-                    Toast.makeText(getApplicationContext(), "No succes", Toast.LENGTH_SHORT).show();
+            public void onSucces(FriendListData body) {
+                listView.setAdapter(new FriendsAdapter(FriendsActivity.this, body.List));
             }
 
             @Override
-            public void onFailure(Throwable t) {
-                Toast.makeText(getApplicationContext(), "failed", Toast.LENGTH_SHORT).show();
+            public void onError(ErrorData error) {
+                Toast.makeText(getApplicationContext(), ErrorUtil.getErrorText(getApplicationContext(), error.Errors), Toast.LENGTH_SHORT).show();
+
             }
         });
     }
