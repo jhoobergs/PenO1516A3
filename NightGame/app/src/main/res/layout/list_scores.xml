@@ -26,6 +26,12 @@
         android:layout_height="wrap_content"
         android:text="testest"
         android:id="@+id/TextViewName"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="testest"
+        android:id="@+id/RelevantValue"
+        android:gravity="right"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -79,5 +85,4 @@
                 android:id="@+id/TextViewMissions"/>
         </LinearLayout>
     </LinearLayout>
-
 </LinearLayout>
