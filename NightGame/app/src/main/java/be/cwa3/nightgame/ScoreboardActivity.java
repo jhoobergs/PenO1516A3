@@ -8,6 +8,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Collections;
@@ -123,16 +124,36 @@ public class ScoreboardActivity extends AppCompatActivity {
             for (ScoreboardData scoreboardData : scoreboardListData.List){
                 scoreboardData.isOpen = false;
             }
-            listView.setAdapter(new ScoreboardAdapter(ScoreboardActivity.this, scoreboardListData.List));
+            final String sorting;
+            if(!buttonGames.isEnabled()){
+                sorting = "Games";
+            }
+            else if(!buttonMissions.isEnabled()){
+                sorting = "Wins";
+            }
+            else{
+                sorting = "Missions";
+            }
+            listView.setAdapter(new ScoreboardAdapter(ScoreboardActivity.this, scoreboardListData.List, sorting));
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    LinearLayout linearLayoutextraData = (LinearLayout) view.findViewById(R.id.LinearLayoutExtraData);
+                    LinearLayout linearLayoutExtraData = (LinearLayout) view.findViewById(R.id.LinearLayoutExtraData);
+                    TextView relevantValue = (TextView) view.findViewById(R.id.RelevantValue);
                     scoreboardListData.List.get(position).isOpen ^= true; // This change true to false and false to true
                     if (scoreboardListData.List.get(position).isOpen)
-                        linearLayoutextraData.setVisibility(View.VISIBLE);
+                        linearLayoutExtraData.setVisibility(View.VISIBLE);
                     else
-                        linearLayoutextraData.setVisibility(View.GONE);
+                        linearLayoutExtraData.setVisibility(View.GONE);
+                    if(sorting.equals("Games") && linearLayoutExtraData.getVisibility()==View.GONE){
+                        relevantValue.setText(scoreboardListData.List.get(position).Games);
+                    }
+                    else if(sorting.equals("Wins") && linearLayoutExtraData.getVisibility()==View.GONE){
+                        relevantValue.setText(scoreboardListData.List.get(position).Wins);
+                    }
+                    else if(linearLayoutExtraData.getVisibility()==View.GONE){
+                        relevantValue.setText(scoreboardListData.List.get(position).Missions);
+                    }
                 }
             });
         }
