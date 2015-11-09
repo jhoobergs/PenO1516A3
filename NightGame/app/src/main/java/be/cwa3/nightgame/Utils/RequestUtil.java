@@ -45,6 +45,7 @@ public class RequestUtil<T> {
                             if (err == 3){
                                 new SettingsUtil(context).setString(SharedPreferencesKeys.TokenString,"");
                                 Intent i = new Intent(context, LoginActivity.class);
+                                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 context.startActivity(i);
                             }
                         }
