@@ -35,5 +35,6 @@
 
     <string name="error1">Username and password don\'t match.</string>
     <string name="error2">This username is already in use.</string>
+    <string name="error3">Session expired! Please log-in again.</string>
 
 </resources>

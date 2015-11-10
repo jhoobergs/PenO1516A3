@@ -1,5 +1,6 @@
 package be.cwa3.nightgame;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -13,10 +14,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.okhttp.ResponseBody;
+
+import be.cwa3.nightgame.Data.ErrorData;
 import be.cwa3.nightgame.Data.LoginRequestData;
 import be.cwa3.nightgame.Data.LoginReturnData;
 import be.cwa3.nightgame.Data.ReturnData;
 import be.cwa3.nightgame.Utils.ApiUtil;
+import be.cwa3.nightgame.Utils.ErrorUtil;
+import be.cwa3.nightgame.Utils.RequestInterface;
+import be.cwa3.nightgame.Utils.RequestUtil;
 import be.cwa3.nightgame.Utils.SettingsUtil;
 import be.cwa3.nightgame.Utils.SharedPreferencesKeys;
 import retrofit.Call;
@@ -120,30 +127,24 @@ public class LoginActivity extends AppCompatActivity {
 
     private void makeLoginCall(LoginRequestData data){
         Call<ReturnData<LoginReturnData>> call = new ApiUtil().getApiInterface(this).sendLoginRequest(data);
-        call.enqueue(new Callback<ReturnData<LoginReturnData>>() {
+        RequestUtil<LoginReturnData> requestUtil = new RequestUtil<>(this, call);
+        requestUtil.makeRequest(new RequestInterface<LoginReturnData>() {
             @Override
-            public void onResponse(Response<ReturnData<LoginReturnData>> response, Retrofit retrofit) {
-                if (response.isSuccess()) {
-                    if(response.body().statusCode == 1) {
-                        //Logged in
-                        new SettingsUtil(getApplicationContext()).setString(SharedPreferencesKeys.TokenString, response.body().body.Token);
-                        Toast.makeText(getApplicationContext(), String.format("Ingelogd als %s", response.body().body.Username), Toast.LENGTH_LONG).show();
-                        Intent i = new Intent(getApplicationContext(), HomeActivity.class);
-                        startActivity(i);
-                    }
-                    else if(response.body().statusCode == 2){
-                        String error = "Error".concat(response.body().error.Errors.get(0).toString());
-                        Toast.makeText(getApplicationContext(), error, Toast.LENGTH_SHORT).show();
-                    }
-
-                } else
-                    Toast.makeText(getApplicationContext(), "No succes", Toast.LENGTH_SHORT).show();
+            public void onSucces(LoginReturnData body) {
+                //Has to be overriden
+                //Logged in
+                new SettingsUtil(getApplicationContext()).setString(SharedPreferencesKeys.TokenString, body.Token);
+                Toast.makeText(getApplicationContext(), String.format("Ingelogd als %s", body.Username), Toast.LENGTH_LONG).show();
+                Intent i = new Intent(getApplicationContext(), HomeActivity.class);
+                startActivity(i);
             }
 
             @Override
-            public void onFailure(Throwable t) {
-                Toast.makeText(getApplicationContext(), "failed", Toast.LENGTH_SHORT).show();
+            public void onError(ErrorData error) {
+                //Has to be overriden
+                Toast.makeText(getApplicationContext(), ErrorUtil.getErrorText(getApplicationContext(), error.Errors), Toast.LENGTH_SHORT).show();
             }
+
         });
     }
 }

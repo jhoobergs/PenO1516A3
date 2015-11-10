@@ -129,30 +129,39 @@ public class ScoreboardActivity extends AppCompatActivity {
                 sorting = "Games";
             }
             else if(!buttonMissions.isEnabled()){
-                sorting = "Wins";
+                sorting = "Missiosn";
             }
             else{
-                sorting = "Missions";
+                sorting = "Wins";
             }
             listView.setAdapter(new ScoreboardAdapter(ScoreboardActivity.this, scoreboardListData.List, sorting));
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     LinearLayout linearLayoutExtraData = (LinearLayout) view.findViewById(R.id.LinearLayoutExtraData);
-                    TextView relevantValue = (TextView) view.findViewById(R.id.RelevantValue);
+                    TextView textViewRelevantValue = (TextView) view.findViewById(R.id.TextViewRelevantValue);
                     scoreboardListData.List.get(position).isOpen ^= true; // This change true to false and false to true
-                    if (scoreboardListData.List.get(position).isOpen)
+                    ScoreboardData item = scoreboardListData.List.get(position);
+                    if (item.isOpen)
                         linearLayoutExtraData.setVisibility(View.VISIBLE);
                     else
                         linearLayoutExtraData.setVisibility(View.GONE);
-                    if(sorting.equals("Games") && linearLayoutExtraData.getVisibility()==View.GONE){
-                        relevantValue.setText(scoreboardListData.List.get(position).Games);
+                    textViewRelevantValue.setVisibility(View.VISIBLE);
+                    if(sorting.equals("Games")){
+                        textViewRelevantValue.setText(String.valueOf(item.Games));
                     }
-                    else if(sorting.equals("Wins") && linearLayoutExtraData.getVisibility()==View.GONE){
-                        relevantValue.setText(scoreboardListData.List.get(position).Wins);
+                    else if(sorting.equals("Wins")){
+                        textViewRelevantValue.setText(String.valueOf(item.Wins));
+
                     }
-                    else if(linearLayoutExtraData.getVisibility()==View.GONE){
-                        relevantValue.setText(scoreboardListData.List.get(position).Missions);
+                    else if(sorting.equals("Missions")){
+                        textViewRelevantValue.setText(String.valueOf(item.Missions));
+                    }
+                    else{
+                        textViewRelevantValue.setVisibility(View.GONE);
+                    }
+                    if(linearLayoutExtraData.getVisibility() == View.VISIBLE){
+                        textViewRelevantValue.setVisibility(View.GONE);
                     }
                 }
             });

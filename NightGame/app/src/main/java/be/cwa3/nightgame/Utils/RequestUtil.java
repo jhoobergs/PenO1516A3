@@ -1,8 +1,15 @@
 package be.cwa3.nightgame.Utils;
 
 import android.content.Context;
+import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
 
+import com.squareup.okhttp.ResponseBody;
+
+import be.cwa3.nightgame.Data.ErrorData;
 import be.cwa3.nightgame.Data.ReturnData;
+import be.cwa3.nightgame.HomeActivity;
+import be.cwa3.nightgame.LoginActivity;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
@@ -33,6 +40,15 @@ public class RequestUtil<T> {
                     } else if (response.body().statusCode == 2) {
                         //Request gave an error, so we execute the onError function
                         requestInterface.onError(response.body().error);
+                        ErrorData error = response.body().error;
+                        for (int err: error.Errors){
+                            if (err == 3){
+                                new SettingsUtil(context).setString(SharedPreferencesKeys.TokenString,"");
+                                Intent i = new Intent(context, LoginActivity.class);
+                                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                context.startActivity(i);
+                            }
+                        }
                     }
 
                 } else {

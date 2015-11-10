@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:layout_gravity="center" android:gravity="center" android:background="#8AB8E6">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" android:background="#8AB8E6">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center" >
     <Button
         android:id="@+id/button_play"
         android:layout_gravity="center"
@@ -11,7 +21,7 @@
         style="@style/ButtonHomeScreenStyle"/>
     <Button
         android:id="@+id/button_scoreboard"
-        android:layout_gravity="center"
+        android:layout_gravity="center_horizontal"
         android:textSize="30sp"
         android:text="@string/scoreboard"
         android:layout_margin="20dp"
@@ -24,4 +34,6 @@
         android:layout_margin="20dp"
         style="@style/ButtonHomeScreenStyle"/>
 
+</LinearLayout>
+</ScrollView>
 </LinearLayout>
