@@ -129,7 +129,7 @@ public class ScoreboardActivity extends AppCompatActivity {
                 sorting = "Games";
             }
             else if(!buttonMissions.isEnabled()){
-                sorting = "Missiosn";
+                sorting = "Missions";
             }
             else{
                 sorting = "Wins";
