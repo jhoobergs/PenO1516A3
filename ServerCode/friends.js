@@ -7,18 +7,18 @@ app.get('/friends/list', function(req, res){
             if (data == null) {
                 console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
             } else {
-                console.log(data);
                 var result = [];
                 var number = 0;
                 if(data.Items[0].Friends != null){
+                    //console.log(data.Items[0].Friends);
                     for (var i in data.Items[0].Friends) {
-                        console.log(i);
-                        friend = getUser(data.Items[0].Friends[i], function(friendData){
+                        //console.log(i);
+                        getUser(data.Items[0].Friends[i].Name, function(friendData){
                             if(friendData.Items[0].ImageURL == null)
                                 friendData.Items[0].ImageURL = 'http://www.benveldkamp.nl/images/PERS/Smurfen-bril.jpg';
                             result.push({"Name" : friendData.Items[0].Username, "ImageURL": friendData.Items[0].ImageURL});
                             number++;
-                            if(number == data.Items[0].Friends.length){
+                            if(number == Object.keys(data.Items[0].Friends).length){
                                 returnData(res, 1, {'List' : result}, null);
                             }
                         });                    
@@ -101,8 +101,9 @@ app.post('/friends/add',  function(req, res){
                                 found = true;
                                 break;
                             }
-                        }
+                        }                            
                         if(!found){
+                            console.log("adding");
                             addFriendToUser(req.body.Username, user, function(succes){
                                 if(succes){
                                     addFriendToUser(user, req.body.Username, function(succes){
@@ -142,14 +143,17 @@ addFriendToUser = function(friend, user, callback){
                 "S": friend
             }
         },
-        //UpdateExpression: "ADD #attrName = :user",
-        UpdateExpression : "SET #attrName = list_append(#attrName, :user)",
+        UpdateExpression: "SET #attrName.#attrName2 = :user",
+        //UpdateExpression : "SET #attrName = list_append(#attrName, :user)",
         ExpressionAttributeNames : {
-        "#attrName" : "Friends"
+        "#attrName" : "Friends",
+        "#attrName2" : user
         },
         ExpressionAttributeValues: {
             ":user": {
-                "L": [{"S" : user}]
+                "M": {
+                    "DateAdded" : {"S" : new Date().toISOString()}
+                }
             }
         }
     }, function(err, data) {

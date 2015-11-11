@@ -39,13 +39,12 @@ app.post('/game/join',  function(req, res){
                         var players = data.Items[0].Players;
                         for (var i in players) {
                             value = players[i];
-                            console.log(value);
                             if(value.Name == user){
                                 found = true;
                                 break;
                             }
                         }
-                        if(!found && players.length < data.Items[0].MaxPlayers){
+                        if(!found && Object.keys(players).length< data.Items[0].MaxPlayers){
                             addPlayerToGame(req.body.GameId, user, function(succes){
                                 if(succes){
                                     var result = {};
@@ -77,24 +76,52 @@ app.post('/game/join',  function(req, res){
         }
     }
 });
+    
+app.get('/game/list', function(req, res){
+var dynamodbDoc = new AWS.DynamoDB.DocumentClient();
+user = getUserByToken(res, req.headers, function(user){
+    if(user != undefined){
+        var params = {
+            TableName : "Games"
+        };    
+
+        dynamodbDoc.scan(params, function(err, data) {
+            if (err) {
+                console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
+            } else {
+                var result = [];
+                for (var i in data.Items) {
+                    var gamedata = data.Items[i];
+                    var item = {};
+                    item.GameId = gamedata.GameId;
+                    item.Name = gamedata.Name;
+                    item.MinPlayers = gamedata.MinPlayers;
+                    item.MaxPlayers = gamedata.MaxPlayers;
+                    item.Players = Object.keys(gamedata.Players);
+
+                    result.push(item);
+                    
+                }  
+                returnData(res, 1,{'List' :result}, null);
+            }
+        });
+    }
+});
+});
+                          
 
 putnewGameItem = function(data, username, id) {           
     
     var tableName = 'Games';
+    var players = {"M" : {}};
+    players.M[username] = {"M":{"DateAdded" : {"S" : new Date().toISOString()} }}
     var item = {
 	    'GameId' : { 'S': id },
         'Name' : { 'S' : data.Name},
         'CreatedOn' : {'S' : new Date().toISOString()},
 	    'MinPlayers' : { 'N' : data.MinPlayers.toString()},
         'MaxPlayers' : { 'N' : data.MaxPlayers.toString()},
-        'Players' : {
-            "L": [{
-                "M":{
-                    "Name" : {'S' : username}
-                }
-            }
-                ]
-        }
+        'Players' : players
     };	
     dd.putItem({
         'TableName': tableName,
@@ -113,17 +140,17 @@ addPlayerToGame = function(gameId, user, callback){
             }
         },
         //UpdateExpression: "ADD #attrName = :user",
-        UpdateExpression : "SET #attrName = list_append(#attrName, :user)",
+        //UpdateExpression : "SET #attrName = list_append(#attrName, :user)",
+        UpdateExpression: "SET #attrName.#attrName2 = :user",
         ExpressionAttributeNames : {
-        "#attrName" : "Players"
+        "#attrName" : "Players",
+        "#attrName2" : user
         },
         ExpressionAttributeValues: {
             ":user": {
-                "L": [{
                 "M":{
-                    "Name" : {"S" : user}
+                    "DateAdded" : {"S" : new Date().toISOString()}
                 }
-                }]
             }
         }
     }, function(err, data) {
