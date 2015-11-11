@@ -1,4 +1,4 @@
-exports = module.exports = function(app ,AWS){
+exports = module.exports = function(app ,AWS, dd){
 
 app.get('/friends/list', function(req, res){
     user = getUserByToken(res, req.headers, function(user){
@@ -83,4 +83,84 @@ app.post('/friends/search', function(req, res){
     });
 });
 
+app.post('/friends/add',  function(req, res){
+    var dynamodbDoc = new AWS.DynamoDB.DocumentClient();
+    if(req.body != null){
+        if(req.body.Username == null){
+            returnData(res, 0, null, '{Not all params present}');
+        }
+        else{
+            getUserByToken(res, req.headers, function(user){
+                if(user != undefined){
+                    getUser(user, function(data){
+                        if(data != null){
+                        var friends = data.Items[0].Friends;
+                        var found = false;
+                        for (var i in friends) {
+                            if(friends[i] == req.body.Username){
+                                found = true;
+                                break;
+                            }
+                        }
+                        if(!found){
+                            addFriendToUser(req.body.Username, user, function(succes){
+                                if(succes){
+                                    addFriendToUser(user, req.body.Username, function(succes){
+                                    if(succes){
+                                        var result = {};
+                                        returnData(res, 1, result, null);
+                                    }
+                                    else{
+                                        returnData(res, 0, null, '{UpdateItemError}');
+                                    }
+                                    });
+                                }
+                                else{
+                                    returnData(res, 0, null, '{UpdateItemError}');
+                                }
+                            });
+                        }
+                        else{
+                            var result = {};
+                            returnData(res, 1, result, null);
+                        }
+                        }
+                        
+                    });
+                }
+            });
+        }
+    }
+
+});
+    
+addFriendToUser = function(friend, user, callback){
+    dd.updateItem({
+        TableName: "Users",
+        Key: {
+            "Username": {
+                "S": friend
+            }
+        },
+        //UpdateExpression: "ADD #attrName = :user",
+        UpdateExpression : "SET #attrName = list_append(#attrName, :user)",
+        ExpressionAttributeNames : {
+        "#attrName" : "Friends"
+        },
+        ExpressionAttributeValues: {
+            ":user": {
+                "L": [{"S" : user}]
+            }
+        }
+    }, function(err, data) {
+        if(err){
+            console.log(err);
+            callback(false)
+        }
+        else
+        {
+            callback(true);
+        }
+    });
+}
 }
