@@ -262,21 +262,21 @@ public class SettingsUtil {
 <p>Deze class gebruiken we om de requests te maken.</p>
 <pre class="prettyprint lang-java">
 public class RequestUtil<T> {
-    Call<<span class="nocode">ReturnData<T></span>> call;
+    Call<<span class="nocode">ReturnData<<span class="nocode">T</span>></span>> call;
     Context context;
-    public RequestUtil(Context context, Call<ReturnData<T>> call)
+    public RequestUtil(Context context, Call<<span class="nocode">ReturnData<<span class="nocode">T</span>></span>> call)
     {
         this.call = call;
         this.context = context;
     }
 
-    public void makeRequest(final RequestInterface<T> requestInterface){
+public void makeRequest(final RequestInterface<<span class="nocode">T</span>> requestInterface){
         //This function actually makes the call to the server.
 
         //call.enqueue is a retrofit command
-        call.enqueue(new Callback<<span class="nocode">ReturnData<T></span>>() {
+        call.enqueue(new Callback<<span class="nocode">ReturnData<<span class="nocode">T</span>></span>>() {
             @Override
-            public void onResponse(Response<<span class="nocode">ReturnData<T></p>> response, Retrofit retrofit) {
+            public void onResponse(Response<<span class="nocode">ReturnData<<span class="nocode">T</span>></span>> response, Retrofit retrofit) {
                 if (response.isSuccess()) {
                     if (response.body().statusCode == 1) {
                         //Request was succesful, so we execute the onSucces function
@@ -308,7 +308,7 @@ De onSucces en onError functies hebben geen default waarde, ze moeten dus overri
 De onServerError en onFailure functie hebben een default waarde, maar kunnen ook overriden worden.</p>
 <h2>RequestInterface</h2>
 <pre class="prettyprint lang-java">
-public abstract class RequestInterface<T> {
+public abstract class RequestInterface<<span class="nocode">T</span>> {
 
     //The onSucces function is called when StatusCode == 1
     public abstract void onSucces(T body);
@@ -332,8 +332,8 @@ public abstract class RequestInterface<T> {
 <h2>Een voorbeeld van een serverCall: CreateNewAccountActivity</h2>
 <pre class="prettyprint lang-java">
 private void makeNewAccountCall(CreateNewAccountRequestData data){
-        Call<<span class="nocode">ReturnData<LoginReturnData></p>> call = new ApiUtil().getApiInterface(this).sendCreateNewAccountRequest(data);
-        RequestUtil<<span class="nocode">LoginReturnData</span> requestUtil = new RequestUtil<>(this, call);
+        Call<<span class="nocode">ReturnData<<span class="nocode">LoginReturnData</span>></span>> call = new ApiUtil().getApiInterface(this).sendCreateNewAccountRequest(data);
+        RequestUtil<<span class="nocode">LoginReturnData</span>> requestUtil = new RequestUtil<>(this, call);
         requestUtil.makeRequest(new RequestInterface<<span class="nocode">LoginReturnData</span>>() {
             @Override
             public void onSucces(LoginReturnData body) {
@@ -383,6 +383,48 @@ private void makeNewAccountCall(CreateNewAccountRequestData data){
 }
 </pre>
 <p>Mogelijke errors: 3</p>
+<h4>POST: /game/join</h4>
+<p>Op te sturen data:</p>
+<pre class="prettyprint lang-js">
+{
+    "GameId": "d23d4f80-86ee-11e5-922d-3d9e008389d0"
+}
+</pre>
+<p>Response:</p>
+<pre class="prettyprint lang-js">
+{
+  "statusCode": 1,
+  "body": {},
+  "error": null
+}
+</pre>
+<p>Mogelijke errors: 3, 4, 5</p>
+<h4>GET: /game/list</h4>
+<p>Response:</p>
+<pre class="prettyprint lang-js">
+{
+  "statusCode": 1,
+  "body": {
+    "List": [
+      {
+        "Username": "Koen1",
+        "ImageURL": "http://vignette4.wikia.nocookie.net/fantendo/images/6/6e/Small-mario.png/revision/latest/scale-to-width-down/381?cb=20120718024112",
+        "Wins": 5,
+        "Games": 7,
+        "Missions": 10
+      },
+      {
+        "Username": "test2",
+        "ImageURL": "http://www.benveldkamp.nl/images/PERS/Smurfen-bril.jpg",
+        "Wins": 0,
+        "Games": 0,
+        "Missions": 0
+      }
+      ]
+  }
+}
+</pre>
+<p>Mogelijke errors: 3</p>
 <h3>Friends</h3>
 <h4>POST: /friends/search</h4>
 <p>Op te sturen data:</p>
@@ -403,6 +445,23 @@ private void makeNewAccountCall(CreateNewAccountRequestData data){
       }
     ]
   },
+  "error": null
+}
+</pre>
+<p>Mogelijke errors: 3</p>
+
+<h4>POST: /friends/add</h4>
+<p>Op te sturen data:</p>
+<pre class="prettyprint lang-js">
+{
+    "Username" : "test"
+}
+</pre>
+<p>Response:</p>
+<pre class="prettyprint lang-js">
+{
+  "statusCode": 1,
+  "body": {},
   "error": null
 }
 </pre>

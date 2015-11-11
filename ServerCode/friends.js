@@ -62,13 +62,15 @@ app.post('/friends/search', function(req, res){
             } else {
                 var result = [];
                 for (var i in data.Items) {
-                    value = data.Items[i];
+                    var value = data.Items[i];
                     var item = {};
+                    if(value.Username != user){
                     item.Name = data.Items[i].Username;
                     item.ImageURL = 'http://www.benveldkamp.nl/images/PERS/Smurfen-bril.jpg';
-                    if(data.Items[i].ImageURL != null)
-                        item.ImageURL = data.Items[i].ImageURL;
+                    if(value.ImageURL != null)
+                        item.ImageURL = value.ImageURL;
                     result.push(item);
+                    }
                     
                 }  
                 returnData(res, 1,{'List' :result}, null);
