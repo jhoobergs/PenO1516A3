@@ -49,17 +49,20 @@
             android:textSize="20sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/games"/>
+            android:text="@string/games"
+            android:id="@+id/TextViewTextGames"/>
         <TextView
             android:textSize="20sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/wins"/>
+            android:text="@string/wins"
+            android:id="@+id/TextViewTextWins"/>
         <TextView
             android:textSize="20sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/missions"/>
+            android:text="@string/missions"
+            android:id="@+id/TextViewTextMissions"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="wrap_content"

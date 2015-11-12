@@ -1,6 +1,7 @@
 package be.cwa3.nightgame;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -10,6 +11,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -148,14 +151,13 @@ public class ScoreboardActivity extends AppCompatActivity {
                         linearLayoutExtraData.setVisibility(View.GONE);
                     textViewRelevantValue.setVisibility(View.VISIBLE);
                     if(sorting.equals("Games")){
-                        textViewRelevantValue.setText(String.valueOf(item.Games));
+                        makeBold(item.Games,textViewRelevantValue,view,R.id.TextViewTextGames,R.id.TextViewGames);
                     }
                     else if(sorting.equals("Wins")){
-                        textViewRelevantValue.setText(String.valueOf(item.Wins));
-
+                        makeBold(item.Wins,textViewRelevantValue,view,R.id.TextViewTextWins,R.id.TextViewWins);
                     }
                     else if(sorting.equals("Missions")){
-                        textViewRelevantValue.setText(String.valueOf(item.Missions));
+                        makeBold(item.Missions,textViewRelevantValue,view,R.id.TextViewTextMissions,R.id.TextViewMissions);
                     }
                     else{
                         textViewRelevantValue.setVisibility(View.GONE);
@@ -188,4 +190,16 @@ public class ScoreboardActivity extends AppCompatActivity {
             return -1;
         }
     }
+
+    private void makeBold(int type,TextView textViewRelevantValue, View view,int text, int number) {
+        textViewRelevantValue.setText(String.valueOf(type));
+
+        TextView Text = (TextView) view.findViewById(text);
+        Text.setTypeface(null, Typeface.BOLD);
+        TextView Number = (TextView) view.findViewById(number);
+        Number.setTypeface(null, Typeface.BOLD);
+    }
+
 }
+
+
