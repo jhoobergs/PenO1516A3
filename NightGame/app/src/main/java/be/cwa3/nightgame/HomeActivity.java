@@ -19,6 +19,8 @@ import java.util.List;
 import be.cwa3.nightgame.Data.FriendData;
 import be.cwa3.nightgame.Data.FriendListData;
 import be.cwa3.nightgame.Http.Api.ApiInterface;
+import be.cwa3.nightgame.Utils.SettingsUtil;
+import be.cwa3.nightgame.Utils.SharedPreferencesKeys;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.GsonConverterFactory;
@@ -77,13 +79,20 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.sound:
-                Intent intent = new Intent(getApplicationContext(), SoundActivity.class);
+            case R.id.log_out:
+                new SettingsUtil(getApplicationContext()).setString(SharedPreferencesKeys.TokenString, "");
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 startActivity(intent);
                 return true;
+
+            case R.id.sound:
+                Intent intenta = new Intent(getApplicationContext(), SoundActivity.class);
+                startActivity(intenta);
+                return true;
             case R.id.accelerometer:
-                Intent i = new Intent(getApplicationContext(), AccelerometerActivity.class);
-                startActivity(i);
+                Intent intentb = new Intent(getApplicationContext(), AccelerometerActivity.class);
+                startActivity(intentb);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
