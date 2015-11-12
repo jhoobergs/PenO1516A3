@@ -27,6 +27,8 @@ import be.cwa3.nightgame.Utils.ApiUtil;
 import be.cwa3.nightgame.Utils.ErrorUtil;
 import be.cwa3.nightgame.Utils.RequestInterface;
 import be.cwa3.nightgame.Utils.RequestUtil;
+import be.cwa3.nightgame.Utils.SettingsUtil;
+import be.cwa3.nightgame.Utils.SharedPreferencesKeys;
 import retrofit.Call;
 import retrofit.Callback;
 import retrofit.Response;
@@ -137,7 +139,8 @@ public class ScoreboardActivity extends AppCompatActivity {
             else{
                 sorting = "Wins";
             }
-            listView.setAdapter(new ScoreboardAdapter(ScoreboardActivity.this, scoreboardListData.List, sorting));
+            String Username = new SettingsUtil(this).getString(SharedPreferencesKeys.UsernameString);
+            listView.setAdapter(new ScoreboardAdapter(ScoreboardActivity.this, scoreboardListData.List, sorting, Username));
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
