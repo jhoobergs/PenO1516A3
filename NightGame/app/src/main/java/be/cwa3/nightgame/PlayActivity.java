@@ -7,53 +7,62 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import be.cwa3.nightgame.Adapters.PlayAdapter;
-import be.cwa3.nightgame.Adapters.ScoreboardAdapter;
+import be.cwa3.nightgame.Adapters.LobbyAdapter;
+import be.cwa3.nightgame.Data.ErrorData;
+import be.cwa3.nightgame.Data.LobbiesData;
+import be.cwa3.nightgame.Data.LobbiesListData;
+import be.cwa3.nightgame.Data.ReturnData;
+import be.cwa3.nightgame.Utils.ApiUtil;
+import be.cwa3.nightgame.Utils.ErrorUtil;
+import be.cwa3.nightgame.Utils.RequestInterface;
+import be.cwa3.nightgame.Utils.RequestUtil;
+import retrofit.Call;
 
 /**
  * Created by Koen on 19/10/2015.
+ * Updated by Kevin on 12/11/2015
  */
 public class PlayActivity extends AppCompatActivity {
+
+    ListView LobbyListView;
+    LobbiesListData lobbiesListData;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
-        List<String> fakeData = new ArrayList<>();
-        fakeData.add("Lobby 1");
-        fakeData.add("Lobby 2");
-        fakeData.add("Lobby 3");
-        fakeData.add("Lobby 4");
-        fakeData.add("Lobby 5");
-        fakeData.add("Lobby 6");
-        fakeData.add("Lobby 7");
-        fakeData.add("Lobby 8");
-        fakeData.add("Lobby 9");
-        fakeData.add("Lobby 10");
-//        ArrayAdapter<String> adapter=new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, myStringArray);
-        ListView listViewLobbies= (ListView) findViewById(R.id.listViewLobbies);
-//        listViewLobbies.setAdapter(adapter);
 
-        listViewLobbies.setAdapter(new PlayAdapter(this, fakeData));
-        listViewLobbies.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        makeCall();
+
+        setListView();
+
+        LobbyListView = (ListView) findViewById(R.id.listViewLobbies);
+
+
+
+    }
+
+    private void makeCall(){
+        Call<ReturnData<LobbiesListData>> call = new ApiUtil().getApiInterface(this).loadLobbyList();
+        RequestUtil<LobbiesListData> requestUtil = new RequestUtil<>(this, call);
+        requestUtil.makeRequest(new RequestInterface<LobbiesListData>(){
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                LinearLayout linearLayoutextraData = (LinearLayout) view.findViewById(R.id.lobbies_data);
-                if (linearLayoutextraData.getVisibility() == View.VISIBLE)
-                    linearLayoutextraData.setVisibility(View.GONE);
-                else
-                    linearLayoutextraData.setVisibility(View.VISIBLE);
+            public void onSucces(LobbiesListData body) {
+                lobbiesListData = body;
+                setListView();
+            }
+
+            @Override
+            public void onError(ErrorData error) {
+                Toast.makeText(getApplicationContext(), ErrorUtil.getErrorText(getApplicationContext(), error.Errors), Toast.LENGTH_SHORT).show();
 
             }
         });
-
     }
 
     @Override
@@ -74,4 +83,25 @@ public class PlayActivity extends AppCompatActivity {
         }
     }
 
+    public void setListView() {
+        if (lobbiesListData != null) {
+            for (LobbiesData scoreboardData : lobbiesListData.List) {
+                scoreboardData.isOpen = false;
+            }
+            LobbyListView.setAdapter(new LobbyAdapter(PlayActivity.this, lobbiesListData.List));
+            LobbyListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    LinearLayout linearLayoutExtraData = (LinearLayout) view.findViewById(R.id.lobbies_data);
+                    lobbiesListData.List.get(position).isOpen ^= true; // This change true to false and false to true
+                    LobbiesData item = lobbiesListData.List.get(position);
+                    if (item.isOpen)
+                        linearLayoutExtraData.setVisibility(View.VISIBLE);
+                    else
+                        linearLayoutExtraData.setVisibility(View.GONE);
+                }
+            });
+
+        }
+    }
 }

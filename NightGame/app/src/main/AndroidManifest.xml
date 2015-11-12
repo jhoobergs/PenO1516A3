@@ -121,6 +121,15 @@
                 android:value=".HomeActivity" />
         </activity>
 
+        <activity
+            android:name=".LobbyWaitActivity"
+            android:label="loby_waiting"
+            android:parentActivityName=".PlayActivity">
+            <meta-data
+                android:name="android.suppert.PARENT_ACTIVITY"
+                android:value=".PlayActivity"/>
+        </activity>
+
     </application>
 
 </manifest>
