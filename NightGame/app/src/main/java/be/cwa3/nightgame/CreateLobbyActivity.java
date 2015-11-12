@@ -50,7 +50,7 @@ public class CreateLobbyActivity extends AppCompatActivity {
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
+            switch (item.getItemId()) {
 
 
             case R.id.create:
