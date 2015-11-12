@@ -54,7 +54,7 @@ public class CreateLobbyActivity extends AppCompatActivity {
 
 
             case R.id.create:
-                if (numberPickerMinValue.getValue() >= numberPickerMaxValue.getValue()
+                if (numberPickerMinValue.getValue() > numberPickerMaxValue.getValue()
                         || editTextGroupName.getText().toString().equals(""))
                 {
                     Toast.makeText(CreateLobbyActivity.this, "Data not entered correctly!", Toast.LENGTH_LONG).show();
