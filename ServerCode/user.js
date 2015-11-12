@@ -89,7 +89,8 @@ putnewUserItem = function(data) {
     var item = {
 	    'Username' : { 'S': data.Username },
 	    'Password' : { 'S' : hash},
-        'Email' : { 'S' : data.Email}
+        'Email' : { 'S' : data.Email},
+        'Friends' : { 'M' : {}}
     };	
     dd.putItem({
         'TableName': tableName,

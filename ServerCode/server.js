@@ -80,15 +80,38 @@ getUser = function(username, callback){
         });
 }
 
+getGame = function(gameId, callback){
+    var params = {
+            TableName : "Games",
+            KeyConditionExpression: "#gameId = :gameId",
+            ExpressionAttributeNames:{
+                "#gameId": "GameId"
+            },
+            ExpressionAttributeValues: {
+                ":gameId":gameId
+            }
+        }; 
+
+        dynamodbDoc.query(params, function(err, data) {
+            if (err) {
+                console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
+                callback(null);
+            } else {
+                callback(data);
+            }
+        });
+}
+
 getTimeBaseUniqueId = function(){
     return uuid.v1();
 }
 
 //Username to lowercase when saving. First letter to Uppercase when returning.
-require('./friends.js')(app, AWS);
+require('./friends.js')(app, AWS, dd);
 require('./scoreboard.js')(app, AWS);
 require('./game.js')(app, AWS, dd);
 require('./user.js')(app, AWS, bcrypt,dd);
+require('./Websocket.js')();
 
 
 
