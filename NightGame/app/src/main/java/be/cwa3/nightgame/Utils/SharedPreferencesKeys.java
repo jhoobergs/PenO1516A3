@@ -10,4 +10,5 @@ public class SharedPreferencesKeys {
     public static final String FILE_NAME = "be.cwa3.nightgame.preferences";
     public static String TokenString = "Token";
     public static String GameIDString = "GameID";
+    public static String UsernameString = "Username";
 }

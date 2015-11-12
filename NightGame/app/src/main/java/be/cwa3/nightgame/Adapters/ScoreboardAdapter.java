@@ -2,6 +2,9 @@ package be.cwa3.nightgame.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
+import android.speech.tts.TextToSpeech;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,14 +28,17 @@ public class ScoreboardAdapter extends ArrayAdapter<ScoreboardData>{
     private List<ScoreboardData> data;
     private Context context;
     private String sorting;
+    private String username;
 
     private static final int layoutResourceId = R.layout.list_scores;
 
-    public ScoreboardAdapter(Context context, List<ScoreboardData> data, String sorting){
+    public ScoreboardAdapter(Context context, List<ScoreboardData> data, String sorting,String username){
+
         super(context, layoutResourceId,data);
         this.context = context;
         this.data = data;
         this.sorting = sorting;
+        this.username = username;
     }
 
     @Override
@@ -61,6 +67,12 @@ public class ScoreboardAdapter extends ArrayAdapter<ScoreboardData>{
         ScoreboardData menuItem = data.get(position);
 
         holder.textViewName.setText(menuItem.Username);
+        if (username.equals(menuItem.Username)){
+            holder.textViewName.setTextColor(Color.rgb(0, 200, 0));
+        }
+        else {
+            holder.textViewName.setTextColor(Color.GRAY);
+        }
         holder.textViewRelevantValue.setVisibility(View.VISIBLE);
         if(sorting.equals("Games")){
             holder.textViewRelevantValue.setText(String.valueOf(menuItem.Games));

@@ -134,6 +134,7 @@ public class LoginActivity extends AppCompatActivity {
                 //Has to be overriden
                 //Logged in
                 new SettingsUtil(getApplicationContext()).setString(SharedPreferencesKeys.TokenString, body.Token);
+                new SettingsUtil(getApplicationContext()).setString(SharedPreferencesKeys.UsernameString, body.Username);
                 Toast.makeText(getApplicationContext(), String.format("Ingelogd als %s", body.Username), Toast.LENGTH_LONG).show();
                 Intent i = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(i);
