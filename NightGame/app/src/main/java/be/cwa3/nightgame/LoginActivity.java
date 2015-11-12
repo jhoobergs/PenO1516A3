@@ -136,7 +136,8 @@ public class LoginActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), error, Toast.LENGTH_SHORT).show();
                     }
 
-                } else
+                }
+                else
                     Toast.makeText(getApplicationContext(), "No succes", Toast.LENGTH_SHORT).show();
             }
 

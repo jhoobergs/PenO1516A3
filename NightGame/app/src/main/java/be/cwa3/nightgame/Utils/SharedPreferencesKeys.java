@@ -9,4 +9,5 @@ public class SharedPreferencesKeys {
     //so when we want to change "Token" to "token", we will only need to change it here.
     public static final String FILE_NAME = "be.cwa3.nightgame.preferences";
     public static String TokenString = "Token";
+    public static String GameIDString = "GameID";
 }

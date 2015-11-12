@@ -20,6 +20,8 @@ import be.cwa3.nightgame.Utils.ApiUtil;
 import be.cwa3.nightgame.Utils.ErrorUtil;
 import be.cwa3.nightgame.Utils.RequestInterface;
 import be.cwa3.nightgame.Utils.RequestUtil;
+import be.cwa3.nightgame.Utils.SettingsUtil;
+import be.cwa3.nightgame.Utils.SharedPreferencesKeys;
 import retrofit.Call;
 
 /**
@@ -84,6 +86,7 @@ public class CreateLobbyActivity extends AppCompatActivity {
                 Log.d("test", body.GameId);
                 Intent intent = new Intent(getApplicationContext(), GameActivity.class);
                 startActivity(intent);
+                new SettingsUtil(getApplicationContext()).setString(SharedPreferencesKeys.GameIDString, body.GameId);
             }
 
             @Override
