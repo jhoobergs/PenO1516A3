@@ -91,7 +91,7 @@
             android:label="@string/login" >
         </activity>
         <activity
-            android:name=".CreateNewAccountActivity"
+            android:name=".CreateAccountActivity"
             android:label="@string/create_new_account"
             android:parentActivityName=".LoginActivity">
             <meta-data

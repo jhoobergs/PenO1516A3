@@ -1,6 +1,7 @@
 package be.cwa3.nightgame;
 
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -18,6 +19,7 @@ import be.cwa3.nightgame.Data.ErrorData;
 import be.cwa3.nightgame.Data.ReturnData;
 import be.cwa3.nightgame.Utils.ApiUtil;
 import be.cwa3.nightgame.Utils.ErrorUtil;
+import be.cwa3.nightgame.Utils.LocationDataActivity;
 import be.cwa3.nightgame.Utils.RequestInterface;
 import be.cwa3.nightgame.Utils.RequestUtil;
 import be.cwa3.nightgame.Utils.SettingsUtil;
@@ -27,7 +29,7 @@ import retrofit.Call;
 /**
  * Created by Gebruiker on 19/10/2015.
  */
-public class CreateLobbyActivity extends AppCompatActivity {
+public class CreateLobbyActivity extends LocationDataActivity {
     NumberPicker numberPickerMinValue, numberPickerMaxValue;
     EditText editTextGroupName;
 
@@ -66,7 +68,9 @@ public class CreateLobbyActivity extends AppCompatActivity {
                     data.Name = editTextGroupName.getText().toString();
                     data.MinPlayers = numberPickerMinValue.getValue();
                     data.MaxPlayers = numberPickerMaxValue.getValue();
-
+                    Location userLocation = getLocation();
+                    data.CenterLocationLatitude = userLocation.getLatitude();
+                    data.CenterLocationLongitude = userLocation.getLongitude();
                     makeCreateLobbyCall(data);
 
                 }

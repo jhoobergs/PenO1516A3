@@ -1,6 +1,5 @@
 package be.cwa3.nightgame;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -14,8 +13,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.squareup.okhttp.ResponseBody;
-
 import be.cwa3.nightgame.Data.ErrorData;
 import be.cwa3.nightgame.Data.LoginRequestData;
 import be.cwa3.nightgame.Data.LoginReturnData;
@@ -27,9 +24,6 @@ import be.cwa3.nightgame.Utils.RequestUtil;
 import be.cwa3.nightgame.Utils.SettingsUtil;
 import be.cwa3.nightgame.Utils.SharedPreferencesKeys;
 import retrofit.Call;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -108,7 +102,7 @@ public class LoginActivity extends AppCompatActivity {
         createNewAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent create = new Intent(getApplicationContext(), CreateNewAccountActivity.class);
+                Intent create = new Intent(getApplicationContext(), CreateAccountActivity.class);
                 startActivity(create);
             }
         });

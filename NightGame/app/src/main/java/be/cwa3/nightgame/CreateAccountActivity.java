@@ -1,6 +1,5 @@
 package be.cwa3.nightgame;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -14,8 +13,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.squareup.okhttp.ResponseBody;
-
 import be.cwa3.nightgame.Data.CreateNewAccountRequestData;
 import be.cwa3.nightgame.Data.ErrorData;
 import be.cwa3.nightgame.Data.LoginReturnData;
@@ -28,7 +25,7 @@ import be.cwa3.nightgame.Utils.SettingsUtil;
 import be.cwa3.nightgame.Utils.SharedPreferencesKeys;
 import retrofit.Call;
 
-public class CreateNewAccountActivity extends AppCompatActivity {
+public class CreateAccountActivity extends AppCompatActivity {
     private EditText enterName;
     private EditText enterEmail;
     private EditText enterPassword;
@@ -131,7 +128,7 @@ public class CreateNewAccountActivity extends AppCompatActivity {
                         || enterName.getText().toString().equals("")
                         || enterPassword.getText().toString().equals("")
                         || !repeatPassword.getText().toString().equals(enterPassword.getText().toString())) {
-                    Toast.makeText(CreateNewAccountActivity.this, "Data not entered correct!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(CreateAccountActivity.this, "Data not entered correct!", Toast.LENGTH_LONG).show();
                 }
                 else{
                     CreateNewAccountRequestData data = new CreateNewAccountRequestData();
@@ -149,7 +146,7 @@ public class CreateNewAccountActivity extends AppCompatActivity {
         termsConditions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(CreateNewAccountActivity.this, "Our legal department advised us to implement this button, however, it has no use.", Toast.LENGTH_LONG).show();
+                Toast.makeText(CreateAccountActivity.this, "Our legal department advised us to implement this button, however, it has no use.", Toast.LENGTH_LONG).show();
             }
         });
     }
