@@ -68,7 +68,7 @@ public class ScoreboardAdapter extends ArrayAdapter<ScoreboardData>{
 
         holder.textViewName.setText(menuItem.Username);
         if (username.equals(menuItem.Username)){
-            holder.textViewName.setTextColor(Color.rgb(0, 200, 0));
+            holder.textViewName.setTextColor(context.getResources().getColor(R.color.colorPrimary));
         }
         else {
             holder.textViewName.setTextColor(Color.GRAY);
