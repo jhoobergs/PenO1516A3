@@ -39,4 +39,8 @@ dependencies {
     compile 'com.squareup.retrofit:retrofit:2.0.0-beta2' //Retrofit
     compile 'com.squareup.retrofit:converter-gson:2.0.0-beta2' // The converter that converts JSON to objects of a class
     compile 'com.squareup.picasso:picasso:2.5.2' //We use this lib to show images from url and automatic caching.
+    /*compile 'com.github.orangegangsters:library:1.2.9@aar' //The library to use a circular progress bar
+    compile 'com.viewpagerindicator:library:2.4.1@aar'*/ //wordt niet meer gebruikt
+    compile 'com.github.lzyzsd:circleprogress:1.1.0@aar' //circular bar
+
 }

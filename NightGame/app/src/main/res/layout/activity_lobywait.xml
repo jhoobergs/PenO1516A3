@@ -1,21 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center">
 
-
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        tools:text="countdown"
-        android:textSize="50sp"
+        android:text="New Text"
         android:id="@+id/textView"
-        android:layout_gravity="center" />
+        android:layout_gravity="center_horizontal" />
+
+    <com.github.lzyzsd.circleprogress.DonutProgress
+        android:layout_gravity="center"
+        android:id="@+id/donut_progress"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:rotation="90"
+        custom:donut_progress="80"
+        custom:donut_text = "test"/>
 
 
 </LinearLayout>
