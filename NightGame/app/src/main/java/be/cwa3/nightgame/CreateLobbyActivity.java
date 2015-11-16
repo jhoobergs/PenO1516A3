@@ -1,5 +1,7 @@
 package be.cwa3.nightgame;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
@@ -35,6 +37,7 @@ import be.cwa3.nightgame.Utils.RequestInterface;
 import be.cwa3.nightgame.Utils.RequestUtil;
 import be.cwa3.nightgame.Utils.SettingsUtil;
 import be.cwa3.nightgame.Utils.SharedPreferencesKeys;
+import be.cwa3.nightgame.custom.CustomScrollView;
 import retrofit.Call;
 
 /**
@@ -45,6 +48,7 @@ public class CreateLobbyActivity extends LocationDataActivity implements OnMapRe
     EditText editTextGroupName;
     private boolean mRequestingLocationUpdates = true;
     private GoogleApiClient mGoogleApiClient;
+    private CustomScrollView customScrollView;
     LocationRequest mLocationRequest;
     MapFragment mapFragment;
 
@@ -52,6 +56,8 @@ public class CreateLobbyActivity extends LocationDataActivity implements OnMapRe
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_createlobby);
+        customScrollView = (CustomScrollView) findViewById(R.id.scrollview);
+
         editTextGroupName = (EditText) findViewById(R.id.editTextGroupName);
         numberPickerMaxValue = (NumberPicker) findViewById(R.id.numberPickerMaxValue);
         numberPickerMinValue = (NumberPicker) findViewById(R.id.numberPickerMinValue);
@@ -61,15 +67,15 @@ public class CreateLobbyActivity extends LocationDataActivity implements OnMapRe
         mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        createLocationRequest();
-        buildGoogleApiClient();
-        if (mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
-            startLocationUpdates();
-        }
+
+
+
     }
 
     @Override
     public void onMapReady(GoogleMap map) {
+        customScrollView.addInterceptScrollView(mapFragment.getView());
+        Log.d("url", "werk");
     }
 
     public void setMinAndMaxOfNumberPicker(NumberPicker np, int min, int max) {
@@ -128,19 +134,5 @@ public class CreateLobbyActivity extends LocationDataActivity implements OnMapRe
         });
     }
 
-    protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-    }
-
-    protected void createLocationRequest() {
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(5000);
-        mLocationRequest.setFastestInterval(4000);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-    }
 
 }
