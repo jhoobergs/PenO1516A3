@@ -47,17 +47,15 @@ ReturnData<<span class="nocode">FriendListData</span>>{
   "body": {
     "List": [
       {
-        "Name": "Jesse",
-        "ImageURL": "http://www.benveldkamp.nl/images/PERS/Smurfen-bril.jpg"
-      },
-      {
-        "Name": "Jean",
-        "ImageURL": "http://www.benveldkamp.nl/images/PERS/Smurfen-bril.jpg"
+        "Name": "new",
+        "ImageURL": "http://www.benveldkamp.nl/images/PERS/Smurfen-bril.jpg",
+        "Accepted": false,
+        "IsSender": false
       }
     ]
   },
   "error": null
-} 
+}
 </pre>
 <p>Mogelijke errors: 3</p>
 <h4>Java classes FriendListData en FriendData </h4>
@@ -369,7 +367,9 @@ private void makeNewAccountCall(CreateNewAccountRequestData data){
 {
     "Name": "gk",
     "MinPlayers": 4,
-    "MaxPlayers": 6
+    "MaxPlayers": 6,
+    "CenterLocationLatitude": 51.0673677,
+    "CenterLocationLongitude": 5.1247541
 }
 </pre>
 <p>Response:</p>
@@ -407,18 +407,30 @@ private void makeNewAccountCall(CreateNewAccountRequestData data){
   "body": {
     "List": [
       {
-        "Username": "Koen1",
-        "ImageURL": "http://vignette4.wikia.nocookie.net/fantendo/images/6/6e/Small-mario.png/revision/latest/scale-to-width-down/381?cb=20120718024112",
-        "Wins": 5,
-        "Games": 7,
-        "Missions": 10
+        "GameId": "d7977ba0-8ba2-11e5-af6d-4fdac7b10ef3",
+        "Name": "test",
+        "MinPlayers": 4,
+        "MaxPlayers": 5,
+        "Players": [
+          "test"
+        ],
+        "CenterLocation": {
+          "Latitude": 51.0673677,
+          "Longitude": 5.1247541
+        }
       },
       {
-        "Username": "test2",
-        "ImageURL": "http://www.benveldkamp.nl/images/PERS/Smurfen-bril.jpg",
-        "Wins": 0,
-        "Games": 0,
-        "Missions": 0
+        "GameId": "f94bbaf0-8ba6-11e5-8c9d-b1d919c69429",
+        "Name": "test location",
+        "MinPlayers": 4,
+        "MaxPlayers": 5,
+        "Players": [
+          "test"
+        ],
+        "CenterLocation": {
+          "Latitude": 51.0673677,
+          "Longitude": 5.1247541
+        }
       }
       ]
   }
