@@ -3,6 +3,7 @@ package be.cwa3.nightgame;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,11 +40,10 @@ public class PlayActivity extends AppCompatActivity {
 
         makeCall();
 
-        setListView();
 
         LobbyListView = (ListView) findViewById(R.id.listViewLobbies);
 
-
+        setListView();
 
     }
 
@@ -85,20 +85,20 @@ public class PlayActivity extends AppCompatActivity {
 
     public void setListView() {
         if (lobbiesListData != null) {
-            for (LobbiesData scoreboardData : lobbiesListData.List) {
-                scoreboardData.isOpen = false;
-            }
             LobbyListView.setAdapter(new LobbyAdapter(PlayActivity.this, lobbiesListData.List));
             LobbyListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    LinearLayout linearLayoutExtraData = (LinearLayout) view.findViewById(R.id.lobbies_data);
+                    LinearLayout linearLayoutExtraData = (LinearLayout) view.findViewById(R.id.Lobbies_data);
+
                     lobbiesListData.List.get(position).isOpen ^= true; // This change true to false and false to true
+
                     LobbiesData item = lobbiesListData.List.get(position);
                     if (item.isOpen)
                         linearLayoutExtraData.setVisibility(View.VISIBLE);
                     else
                         linearLayoutExtraData.setVisibility(View.GONE);
+
                 }
             });
 
