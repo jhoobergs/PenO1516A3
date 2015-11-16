@@ -1,9 +1,10 @@
 package be.cwa3.nightgame;
 
 import android.content.Intent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,7 +12,17 @@ import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.Toast;
 
-import com.google.android.gms.games.Game;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import be.cwa3.nightgame.Data.CreateLobbyRequestData;
 import be.cwa3.nightgame.Data.CreateLobbyReturnData;
@@ -29,18 +40,36 @@ import retrofit.Call;
 /**
  * Created by Gebruiker on 19/10/2015.
  */
-public class CreateLobbyActivity extends LocationDataActivity {
+public class CreateLobbyActivity extends LocationDataActivity implements OnMapReadyCallback {
     NumberPicker numberPickerMinValue, numberPickerMaxValue;
     EditText editTextGroupName;
+    private boolean mRequestingLocationUpdates = true;
+    private GoogleApiClient mGoogleApiClient;
+    LocationRequest mLocationRequest;
+    MapFragment mapFragment;
+
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_createlobby);
         editTextGroupName = (EditText) findViewById(R.id.editTextGroupName);
-        numberPickerMaxValue = (NumberPicker) findViewById(R.id.numberPickerManValue);
+        numberPickerMaxValue = (NumberPicker) findViewById(R.id.numberPickerMaxValue);
         numberPickerMinValue = (NumberPicker) findViewById(R.id.numberPickerMinValue);
         setMinAndMaxOfNumberPicker(numberPickerMaxValue, 4, 10);
         setMinAndMaxOfNumberPicker(numberPickerMinValue, 4, 10);
+
+        mapFragment = (MapFragment) getFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+        createLocationRequest();
+        buildGoogleApiClient();
+        if (mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
+            startLocationUpdates();
+        }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap map) {
     }
 
     public void setMinAndMaxOfNumberPicker(NumberPicker np, int min, int max) {
@@ -56,8 +85,7 @@ public class CreateLobbyActivity extends LocationDataActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
 
-
-            case R.id.create:
+            case R.id.define_map:
                 if (numberPickerMinValue.getValue() > numberPickerMaxValue.getValue()
                         || editTextGroupName.getText().toString().equals(""))
                 {
@@ -98,6 +126,21 @@ public class CreateLobbyActivity extends LocationDataActivity {
                 Toast.makeText(getApplicationContext(), ErrorUtil.getErrorText(getApplicationContext(), error.Errors), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
+
+    protected void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(5000);
+        mLocationRequest.setFastestInterval(4000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
 }
