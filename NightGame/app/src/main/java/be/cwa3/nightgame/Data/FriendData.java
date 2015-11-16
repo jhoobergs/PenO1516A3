@@ -6,4 +6,6 @@ package be.cwa3.nightgame.Data;
 public class FriendData {
     public String Name;
     public String ImageURL;
+    public Boolean Accepted;
+    public Boolean IsSender;
 }

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -30,6 +31,8 @@ public class FriendsActivity extends AppCompatActivity {
 
     Button buttonAdd;
     ListView listView;
+    Button button_accept;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +44,11 @@ public class FriendsActivity extends AppCompatActivity {
 
         listView = (ListView)findViewById(R.id.listView);
 
+
     }
+
+
+
 
     private void makeCall(){
         Call<ReturnData<FriendListData>> call = new ApiUtil().getApiInterface(this).loadFriends();
@@ -77,6 +84,7 @@ public class FriendsActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
             }
         }
+
 
 
 }
