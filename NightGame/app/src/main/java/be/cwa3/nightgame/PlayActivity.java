@@ -8,9 +8,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -89,15 +88,15 @@ public class PlayActivity extends AppCompatActivity {
             LobbyListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    LinearLayout linearLayoutExtraData = (LinearLayout) view.findViewById(R.id.Lobbies_data);
+                    RelativeLayout relativeLayoutExtraData = (RelativeLayout) view.findViewById(R.id.Lobbies_data);
 
                     lobbiesListData.List.get(position).isOpen ^= true; // This change true to false and false to true
 
                     LobbiesData item = lobbiesListData.List.get(position);
                     if (item.isOpen)
-                        linearLayoutExtraData.setVisibility(View.VISIBLE);
+                        relativeLayoutExtraData.setVisibility(View.VISIBLE);
                     else
-                        linearLayoutExtraData.setVisibility(View.GONE);
+                        relativeLayoutExtraData.setVisibility(View.GONE);
 
                 }
             });

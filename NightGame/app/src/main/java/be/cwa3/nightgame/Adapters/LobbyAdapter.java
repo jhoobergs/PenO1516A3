@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.List;
@@ -48,7 +49,7 @@ public class LobbyAdapter extends ArrayAdapter<LobbiesData> {
             holder.lobbies = (TextView) row.findViewById(R.id.lobbies);
             holder.playersRatio = (TextView) row.findViewById(R.id.playersratio);
             holder.join_button = (Button) row.findViewById(R.id.join_button);
-            holder.lobbies_data = (LinearLayout) row.findViewById(R.id.Lobbies_data);
+            holder.lobbies_data = (RelativeLayout) row.findViewById(R.id.Lobbies_data);
 
 
 
@@ -84,7 +85,7 @@ public class LobbyAdapter extends ArrayAdapter<LobbiesData> {
     static class Holder {
         TextView lobbies,playersRatio;
         Button join_button;
-        LinearLayout lobbies_data;
+        RelativeLayout lobbies_data;
     }
 }
 

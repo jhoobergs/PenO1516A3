@@ -28,13 +28,13 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <RelativeLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingLeft="20dp"
         android:id="@+id/Lobbies_data"
-        android:visibility="gone">
+        android:visibility="visible">
         <TextView
             android:textSize="20sp"
             android:layout_width="wrap_content"
@@ -47,18 +47,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="location"
-            android:id="@+id/location" />
+            android:id="@+id/location"
+            android:layout_below="@+id/timer"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="join"
             android:id="@+id/join_button"
-            android:layout_marginLeft="150dp"
+            android:layout_marginLeft="200dp"
             android:layout_gravity="right"
             android:layout_alignParentRight ="true"
-            android:focusable="false"/>
+            android:focusable="false"
+            android:background="@color/green"/>
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </LinearLayout>
