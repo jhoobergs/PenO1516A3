@@ -5,6 +5,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,7 +25,6 @@ import be.cwa3.nightgame.Data.ErrorData;
 import be.cwa3.nightgame.Data.LobbiesData;
 import be.cwa3.nightgame.Data.LobbiesListData;
 import be.cwa3.nightgame.Data.LobbySearchRequestData;
-import be.cwa3.nightgame.Data.LobbySearchReturnData;
 import be.cwa3.nightgame.Data.ReturnData;
 import be.cwa3.nightgame.Utils.ApiUtil;
 import be.cwa3.nightgame.Utils.ErrorUtil;
@@ -41,10 +41,7 @@ public class PlayActivity extends LocationDataActivity {
 
     private EditText enterLobbyName;
     ListView listView;
-    LobbySearchReturnData lobbySearchReturnData;
 
-
-    ListView LobbyListView;
     LobbiesListData lobbiesListData;
 
     public void onCreate(Bundle savedInstanceState) {
@@ -72,7 +69,7 @@ public class PlayActivity extends LocationDataActivity {
                     makeSearchCall(data);
                 } if (enterLobbyName.getText().toString().isEmpty()) {
                     List<LobbiesData> empty = new ArrayList<LobbiesData>();
-                    lobbySearchReturnData.List = empty;
+                    lobbiesListData.List = empty;
                     listView.setAdapter(new LobbyAdapter(PlayActivity.this, empty));
                 }
             }
@@ -86,12 +83,12 @@ public class PlayActivity extends LocationDataActivity {
     }
 
     private void makeSearchCall(LobbySearchRequestData data) {
-        Call<ReturnData<LobbySearchReturnData>> call = new ApiUtil().getApiInterface(this).searchLobbies(data);
-        RequestUtil<LobbySearchReturnData> requestUtil = new RequestUtil<>(this, call);
-        requestUtil.makeRequest(new RequestInterface<LobbySearchReturnData>() {
+        Call<ReturnData<LobbiesListData>> call = new ApiUtil().getApiInterface(this).searchLobbies(data);
+        RequestUtil<LobbiesListData> requestUtil = new RequestUtil<>(this, call);
+        requestUtil.makeRequest(new RequestInterface<LobbiesListData>() {
             @Override
-            public void onSucces(LobbySearchReturnData body) {
-                lobbySearchReturnData = body;
+            public void onSucces(LobbiesListData body) {
+                lobbiesListData = body;
                 listView.setAdapter(new LobbyAdapter(PlayActivity.this, body.List));
             }
 
@@ -111,9 +108,10 @@ public class PlayActivity extends LocationDataActivity {
             @Override
             public void onSucces(LobbiesListData body) {
                 lobbiesListData = body;
-                Location myLocation = new Location("");
-                myLocation = getLocation();
-                final Location finalMyLocation = myLocation;
+                //final Location myLocation = getLocation();
+                final Location myLocation = new Location("");
+                myLocation.setLatitude(54);
+                myLocation.setLongitude(5);
                 Collections.sort(lobbiesListData.List, new Comparator<LobbiesData>() {
 
                     @Override
@@ -126,13 +124,14 @@ public class PlayActivity extends LocationDataActivity {
                         Location locationRhs = new Location("");
                         locationRhs.setLatitude(rhs.CenterLocation.Latitude);
                         locationRhs.setLongitude(rhs.CenterLocation.Longitude);
-
-                        if(locationRhs.distanceTo(finalMyLocation)> locationLhs.distanceTo(finalMyLocation)){
+                        if(locationRhs.distanceTo(myLocation)> locationLhs.distanceTo(myLocation)){
                             return 1;
                         }
-                        else{
+                        else if(locationRhs.distanceTo(myLocation) <= locationLhs.distanceTo(myLocation)){
                             return -1;
                         }
+                        else
+                            return 0;
                     }
                 });
 
@@ -168,8 +167,8 @@ public class PlayActivity extends LocationDataActivity {
     public void setListView() {
         if (lobbiesListData != null) {
 
-            LobbyListView.setAdapter(new LobbyAdapter(PlayActivity.this, lobbiesListData.List));
-            LobbyListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            listView.setAdapter(new LobbyAdapter(PlayActivity.this, lobbiesListData.List));
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     RelativeLayout relativeLayoutExtraData = (RelativeLayout) view.findViewById(R.id.Lobbies_data);
