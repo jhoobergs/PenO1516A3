@@ -90,8 +90,10 @@ public class LocationDataActivity extends AppCompatActivity implements GoogleApi
     }
 
     protected void startLocationUpdates() {
-        LocationServices.FusedLocationApi.requestLocationUpdates(
-                mGoogleApiClient, mLocationRequest, this);
+        if(mGoogleApiClient != null) {
+            LocationServices.FusedLocationApi.requestLocationUpdates(
+                    mGoogleApiClient, mLocationRequest, this);
+        }
     }
 
     @Override
@@ -111,7 +113,7 @@ public class LocationDataActivity extends AppCompatActivity implements GoogleApi
     @Override
     protected void onStart() {
         super.onStart();
-        if(mGoogleApiClient!=null) {
+        if(mGoogleApiClient != null) {
             mGoogleApiClient.connect();
         }
     }

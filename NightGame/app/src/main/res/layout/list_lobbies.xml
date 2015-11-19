@@ -4,19 +4,21 @@
     android:orientation="vertical"
     android:padding="10dp"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:weightSum="1">
+    android:layout_height="match_parent">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="1">
+        android:orientation="horizontal">
+
+
     <TextView
         android:textSize="30sp"
         android:layout_width="120dp"
         android:layout_height="wrap_content"
         tools:text="testtest"
         android:id="@+id/lobbies"/>
+
 
         <TextView
             android:layout_height="wrap_content"
@@ -29,12 +31,12 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <RelativeLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingLeft="20dp"
-        android:id="@+id/lobbies_data"
+        android:id="@+id/Lobbies_data"
         android:visibility="gone">
         <TextView
             android:textSize="20sp"
@@ -48,16 +50,22 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="location"
-            android:id="@+id/location" />
+            android:id="@+id/location"
+            android:layout_below="@+id/timer"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="join"
-                android:id="@+id/join_button"
-                android:layout_marginLeft="150dp"
-                android:layout_gravity="right" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="join"
+            android:id="@+id/join_button"
+            android:layout_marginLeft="200dp"
+            android:layout_gravity="right"
+            android:layout_alignParentRight ="true"
+            android:focusable="false"
+            android:background="@color/green"/>
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </LinearLayout>

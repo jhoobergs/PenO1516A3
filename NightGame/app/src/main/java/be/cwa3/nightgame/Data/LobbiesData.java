@@ -12,5 +12,5 @@ public class LobbiesData {
     public int MaxPlayers;
     public List<String> Players;
     public transient boolean isOpen = false; //Transient means that this data isn't server related.
-
+    public CenterLocation CenterLocation;
 }
