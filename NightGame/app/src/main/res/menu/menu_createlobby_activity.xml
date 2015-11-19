@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:title="@string/create"
-        android:id="@+id/create"
+    <item
+        android:title="@string/define_map"
+        android:id="@+id/define_map"
         app:showAsAction="always"
-        />
-
+        android:visible="true" />
+    <item
+        android:title="@string/start_lobby"
+        android:id="@+id/start_lobby"
+        app:showAsAction="always"
+        android:visible="false" />
 </menu>

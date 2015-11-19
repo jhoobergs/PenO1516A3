@@ -40,15 +40,21 @@ public class LocationDataActivity extends AppCompatActivity implements GoogleApi
     private GoogleApiClient mGoogleApiClient;
     LocationRequest mLocationRequest;
 
+    LocationChanged locationChanged;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         createLocationRequest();
         buildGoogleApiClient();
-        if (mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
             startLocationUpdates();
         }
+    }
+
+    public void setLocationChanged(LocationChanged listener){
+        locationChanged = listener;
     }
 
     public Location getLocation(){
@@ -92,6 +98,9 @@ public class LocationDataActivity extends AppCompatActivity implements GoogleApi
     public void onLocationChanged(Location location) {
         mCurrentLocation = location;
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+        if(locationChanged!= null){
+            locationChanged.locationChanged();
+        }
     }
 
     @Override
@@ -102,7 +111,9 @@ public class LocationDataActivity extends AppCompatActivity implements GoogleApi
     @Override
     protected void onStart() {
         super.onStart();
-        mGoogleApiClient.connect();
+        if(mGoogleApiClient!=null) {
+            mGoogleApiClient.connect();
+        }
     }
 
     @Override
@@ -114,13 +125,15 @@ public class LocationDataActivity extends AppCompatActivity implements GoogleApi
     @Override
     public void onResume() {
         super.onResume();
-        if (mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
             startLocationUpdates();
         }
     }
 
     protected void stopLocationUpdates() {
-        LocationServices.FusedLocationApi.removeLocationUpdates(
-                mGoogleApiClient, this);
+        if(mGoogleApiClient != null) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(
+                    mGoogleApiClient, this);
+        }
     }
 }
