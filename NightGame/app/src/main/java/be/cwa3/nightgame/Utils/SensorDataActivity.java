@@ -15,6 +15,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.gson.Gson;
 
 import java.text.DateFormat;
@@ -25,13 +28,15 @@ import be.cwa3.nightgame.R;
 /**
  * Created by jesse on 15/10/2015.
  */
-public class SensorDataActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, SensorEventListener {
+public class SensorDataActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, SensorEventListener, OnMapReadyCallback {
     private boolean mRequestingLocationUpdates = true;
     private Location mCurrentLocation;
     private String mLastUpdateTime;
     private GoogleApiClient mGoogleApiClient;
     private SensorManager sensorManager;
     LocationRequest mLocationRequest;
+    MapFragment mapFragment;
+    private boolean othersShouldBeInvisibile = false;
 
 
     @Override
@@ -57,7 +62,7 @@ public class SensorDataActivity extends AppCompatActivity implements GoogleApiCl
 
     }
 
-    public Location getLocation(){
+    public Location getLocation() {
         return mCurrentLocation;
     }
 
@@ -143,8 +148,7 @@ public class SensorDataActivity extends AppCompatActivity implements GoogleApiCl
             Log.d("sensortest", String.valueOf(x));
             Log.d("sensortest", String.valueOf(y));
             Log.d("sensortest", String.valueOf(z));
-        }
-        else if(type==Sensor.TYPE_PROXIMITY){
+        } else if (type == Sensor.TYPE_PROXIMITY) {
 
             float prox = event.values[0];
 
@@ -158,40 +162,8 @@ public class SensorDataActivity extends AppCompatActivity implements GoogleApiCl
             //
             //}
         }
-        else if(type==Sensor.TYPE_LIGHT){
+        else if (type == Sensor.TYPE_LIGHT) {
 
-            float light = event.values[0];
-
-            Log.d("sensortest", String.valueOf(light));
-
-
-        }
-        else if(type==Sensor.TYPE_LIGHT){
-
-            /*float sv = event.values[0];
-            Log.d("sensor", String.valueOf(sv));
-            boolean before = othersShouldBeInvisibile;
-            if (sv < 90)
-                othersShouldBeInvisibile = true;
-            else
-                othersShouldBeInvisibile = false;
-
-            if(before != othersShouldBeInvisibile)
-                mapFragment.getMapAsync(this);*/
-        }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-    }
-
-
-     /*@Override
-    public void onSensorChanged(SensorEvent event) {
-
-        int type = event.sensor.getType();
-        if(type==Sensor.TYPE_LIGHT) {
             float sv = event.values[0];
             Log.d("sensor", String.valueOf(sv));
             boolean before = othersShouldBeInvisibile;
@@ -200,10 +172,19 @@ public class SensorDataActivity extends AppCompatActivity implements GoogleApiCl
             else
                 othersShouldBeInvisibile = false;
 
-            if(before != othersShouldBeInvisibile)
+            if (before != othersShouldBeInvisibile)
                 mapFragment.getMapAsync(this);
         }
+    }
 
-    }*/
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+
+    }
 
 }
