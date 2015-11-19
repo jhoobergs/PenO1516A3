@@ -5,10 +5,13 @@
     android:padding="10dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
+
+
     <TextView
         android:textSize="30sp"
         android:layout_width="120dp"
@@ -34,7 +37,7 @@
         android:orientation="vertical"
         android:paddingLeft="20dp"
         android:id="@+id/Lobbies_data"
-        android:visibility="visible">
+        android:visibility="gone">
         <TextView
             android:textSize="20sp"
             android:layout_width="wrap_content"
