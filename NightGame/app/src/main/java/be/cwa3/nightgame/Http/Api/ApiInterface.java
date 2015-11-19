@@ -12,6 +12,8 @@ import be.cwa3.nightgame.Data.FriendSearchReturnData;
 
 import be.cwa3.nightgame.Data.LobbiesData;
 import be.cwa3.nightgame.Data.LobbiesListData;
+import be.cwa3.nightgame.Data.LobbySearchRequestData;
+import be.cwa3.nightgame.Data.LobbySearchReturnData;
 import be.cwa3.nightgame.Data.LoginRequestData;
 import be.cwa3.nightgame.Data.LoginReturnData;
 import be.cwa3.nightgame.Data.ReturnData;
@@ -28,6 +30,9 @@ public interface ApiInterface {
 
     @POST("/friends/search")
     Call<ReturnData<FriendSearchReturnData>> searchFriends(@Body FriendSearchRequestData data);
+
+    @POST("/lobbies/search")
+    Call<ReturnData<LobbySearchReturnData>> searchLobbies (@Body LobbySearchRequestData data);
 
     @POST("/friends/add")
     Call<ReturnData<FriendAddReturnData>> addFriend(@Body FriendAddRequestData data);

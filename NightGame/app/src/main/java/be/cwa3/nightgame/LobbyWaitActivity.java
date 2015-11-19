@@ -14,7 +14,7 @@ import at.grabner.circleprogress.TextMode;
 /**
  * Created by kevin on 12/11/2015.
  */
-public class LobbyWaitActivity extends AppCompatActivity {
+public class LobbyWaitActivity extends AppCompatActivity implements CircleProgressView.OnProgressChangedListener {
 
     CircleProgressView mCircleView;
     Switch mSwitchSpin;
@@ -27,7 +27,7 @@ public class LobbyWaitActivity extends AppCompatActivity {
         setContentView(R.layout.activity_lobywait);
 
         mCircleView = (CircleProgressView) findViewById(R.id.circleView);
-        //mCircleView.setOnProgressChangedListener(this);
+        mCircleView.setOnProgressChangedListener(this);
 
         //value setting
         mCircleView.setMaxValue(100);
@@ -121,6 +121,11 @@ public class LobbyWaitActivity extends AppCompatActivity {
 
         );
 
+
+    }
+
+    @Override
+    public void onProgressChanged(float value) {
 
     }
 }

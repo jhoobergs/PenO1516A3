@@ -3,13 +3,20 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent" android:layout_gravity="center" android:gravity="center">
 
-<ListView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:id="@+id/listViewLobbies"
-    android:layout_gravity="center">
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="30sp"
+        android:hint="Lobby name"
+        android:ems="10"
+        android:id="@+id/editTextLobby" />
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/listViewLobbies"
+        android:layout_gravity="center">
 
-</ListView>
+    </ListView>
 
 
 </LinearLayout>

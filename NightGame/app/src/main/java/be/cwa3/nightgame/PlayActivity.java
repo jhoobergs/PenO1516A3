@@ -1,25 +1,34 @@
 package be.cwa3.nightgame;
 
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import be.cwa3.nightgame.Adapters.LobbyAdapter;
 import be.cwa3.nightgame.Data.ErrorData;
 import be.cwa3.nightgame.Data.LobbiesData;
 import be.cwa3.nightgame.Data.LobbiesListData;
+import be.cwa3.nightgame.Data.LobbySearchRequestData;
+import be.cwa3.nightgame.Data.LobbySearchReturnData;
 import be.cwa3.nightgame.Data.ReturnData;
 import be.cwa3.nightgame.Utils.ApiUtil;
 import be.cwa3.nightgame.Utils.ErrorUtil;
+import be.cwa3.nightgame.Utils.LocationDataActivity;
 import be.cwa3.nightgame.Utils.RequestInterface;
 import be.cwa3.nightgame.Utils.RequestUtil;
 import retrofit.Call;
@@ -28,7 +37,12 @@ import retrofit.Call;
  * Created by Koen on 19/10/2015.
  * Updated by Kevin on 12/11/2015
  */
-public class PlayActivity extends AppCompatActivity {
+public class PlayActivity extends LocationDataActivity {
+
+    private EditText enterLobbyName;
+    ListView listView;
+    LobbySearchReturnData lobbySearchReturnData;
+
 
     ListView LobbyListView;
     LobbiesListData lobbiesListData;
@@ -39,20 +53,89 @@ public class PlayActivity extends AppCompatActivity {
 
         makeCall();
 
+        enterLobbyName = (EditText) findViewById(R.id.editTextLobby);
 
-        LobbyListView = (ListView) findViewById(R.id.listViewLobbies);
+        listView = (ListView) findViewById(R.id.listViewLobbies);
 
         setListView();
 
+        enterLobbyName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (enterLobbyName.getText().toString().length() >= 3) {
+                    LobbySearchRequestData data = new LobbySearchRequestData(enterLobbyName.getText().toString());
+                    makeSearchCall(data);
+                } if (enterLobbyName.getText().toString().isEmpty()) {
+                    List<LobbiesData> empty = new ArrayList<LobbiesData>();
+                    lobbySearchReturnData.List = empty;
+                    listView.setAdapter(new LobbyAdapter(PlayActivity.this, empty));
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
     }
+
+    private void makeSearchCall(LobbySearchRequestData data) {
+        Call<ReturnData<LobbySearchReturnData>> call = new ApiUtil().getApiInterface(this).searchLobbies(data);
+        RequestUtil<LobbySearchReturnData> requestUtil = new RequestUtil<>(this, call);
+        requestUtil.makeRequest(new RequestInterface<LobbySearchReturnData>() {
+            @Override
+            public void onSucces(LobbySearchReturnData body) {
+                lobbySearchReturnData = body;
+                listView.setAdapter(new LobbyAdapter(PlayActivity.this, body.List));
+            }
+
+            @Override
+            public void onError(ErrorData error) {
+                Toast.makeText(getApplicationContext(), ErrorUtil.getErrorText(getApplicationContext(), error.Errors), Toast.LENGTH_SHORT).show();
+
+            }
+        });
+    }
+
 
     private void makeCall(){
         Call<ReturnData<LobbiesListData>> call = new ApiUtil().getApiInterface(this).loadLobbyList();
         RequestUtil<LobbiesListData> requestUtil = new RequestUtil<>(this, call);
-        requestUtil.makeRequest(new RequestInterface<LobbiesListData>(){
+        requestUtil.makeRequest(new RequestInterface<LobbiesListData>() {
             @Override
             public void onSucces(LobbiesListData body) {
                 lobbiesListData = body;
+                Location myLocation = new Location("");
+                myLocation = getLocation();
+                final Location finalMyLocation = myLocation;
+                Collections.sort(lobbiesListData.List, new Comparator<LobbiesData>() {
+
+                    @Override
+                    public int compare(LobbiesData lhs, LobbiesData rhs) {
+
+                        Location locationLhs = new Location("");
+                        locationLhs.setLatitude(lhs.CenterLocation.Latitude);
+                        locationLhs.setLongitude(lhs.CenterLocation.Longitude);
+
+                        Location locationRhs = new Location("");
+                        locationRhs.setLatitude(rhs.CenterLocation.Latitude);
+                        locationRhs.setLongitude(rhs.CenterLocation.Longitude);
+
+                        if(locationRhs.distanceTo(finalMyLocation)> locationLhs.distanceTo(finalMyLocation)){
+                            return 1;
+                        }
+                        else{
+                            return -1;
+                        }
+                    }
+                });
+
                 setListView();
             }
 
@@ -84,14 +167,13 @@ public class PlayActivity extends AppCompatActivity {
 
     public void setListView() {
         if (lobbiesListData != null) {
+
             LobbyListView.setAdapter(new LobbyAdapter(PlayActivity.this, lobbiesListData.List));
             LobbyListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     RelativeLayout relativeLayoutExtraData = (RelativeLayout) view.findViewById(R.id.Lobbies_data);
-
                     lobbiesListData.List.get(position).isOpen ^= true; // This change true to false and false to true
-
                     LobbiesData item = lobbiesListData.List.get(position);
                     if (item.isOpen)
                         relativeLayoutExtraData.setVisibility(View.VISIBLE);
@@ -103,4 +185,5 @@ public class PlayActivity extends AppCompatActivity {
 
         }
     }
+
 }
