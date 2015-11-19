@@ -18,12 +18,14 @@ app.get('/friends/list', function(req, res){
                             if(friendData != null){
                             if(friendData.Items[0].ImageURL == null)
                                 friendData.Items[0].ImageURL = 'http://www.benveldkamp.nl/images/PERS/Smurfen-bril.jpg';
+                                console.log(data.Items[0].Friends[friendData.Items[0].Username]);
+                                console.log(friendData.Items[0].Username);
                             result.push(
                                 {
                                   "Name" : friendData.Items[0].Username,
                                   "ImageURL": friendData.Items[0].ImageURL,
-                                  "Accepted" : data.Items[0].Friends[i].Accepted,
-                                  "IsSender": data.Items[0].Friends[i].IsSender
+                                  "Accepted" : data.Items[0].Friends[friendData.Items[0].Username].Accepted,
+                                  "IsSender": data.Items[0].Friends[friendData.Items[0].Username].IsSender
                                 });
                             }
                             number++;
