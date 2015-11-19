@@ -16,8 +16,8 @@ public class AccelerometerActivity extends AppCompatActivity implements SensorEv
     TextView xCoor; // declare X axis object
     TextView yCoor; // declare Y axis object
     TextView zCoor; // declare Z axis object
-    @Override
 
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_accelerometer);

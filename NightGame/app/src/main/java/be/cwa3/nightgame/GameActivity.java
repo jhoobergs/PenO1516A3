@@ -28,39 +28,29 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import be.cwa3.nightgame.Utils.SensorDataActivity;
+
 /**
  * Created by jesse on 15/10/2015.
  */
-public class GameActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, OnMapReadyCallback, SensorEventListener {
-    private boolean mRequestingLocationUpdates = true;
-    private Location mCurrentLocation;
-    private String mLastUpdateTime;
-    private GoogleApiClient mGoogleApiClient;
-    LocationRequest mLocationRequest;
+public class GameActivity extends SensorDataActivity implements OnMapReadyCallback {
+
     MapFragment mapFragment;
-    private boolean mapHasBeenReady = false;
     private boolean othersShouldBeInvisibile = false;
-    private SensorManager sensorManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT),
-                sensorManager.SENSOR_DELAY_NORMAL);
         mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        createLocationRequest();
-        buildGoogleApiClient();
-        if (mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
-            startLocationUpdates();
-        }
+
     }
 
     @Override
     public void onMapReady(GoogleMap map) {
+        /*
         //LatLng sydney = new LatLng(-33.867, 151.206);
         List<LatLng> locations = new ArrayList<>();
         List<String> titles = new ArrayList<>();
@@ -108,88 +98,23 @@ public class GameActivity extends AppCompatActivity implements GoogleApiClient.C
             else
                 bitmapDescriptor = BitmapDescriptorFactory.fromResource(R.drawable.attacker);
             if(!(number%2 == 1 && othersShouldBeInvisibile))
-            map.addMarker(new MarkerOptions()
-                    .title(titles.get(number))
-                    .snippet(content.get(number))
-                    .icon(bitmapDescriptor)
-                    .position(loc));
+                map.addMarker(new MarkerOptions()
+                        .title(titles.get(number))
+                        .snippet(content.get(number))
+                        .icon(bitmapDescriptor)
+                        .position(loc));
             number+=1;
-        }
+        }*/
 
     }
 
-    protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-    }
 
-    protected void createLocationRequest() {
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(5000);
-        mLocationRequest.setFastestInterval(4000);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-    }
 
-    @Override
-    public void onConnected(Bundle connectionHint) {
 
-        if (mRequestingLocationUpdates) {
-            startLocationUpdates();
-        }
-    }
 
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    protected void startLocationUpdates() {
-        LocationServices.FusedLocationApi.requestLocationUpdates(
-                mGoogleApiClient, mLocationRequest, this);
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        mCurrentLocation = location;
-        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
-        mapFragment.getMapAsync(this);
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mGoogleApiClient.connect();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        stopLocationUpdates();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
-            startLocationUpdates();
-        }
-    }
-
-    protected void stopLocationUpdates() {
-        LocationServices.FusedLocationApi.removeLocationUpdates(
-                mGoogleApiClient, this);
-    }
-
-    @Override
+    /*@Override
     public void onSensorChanged(SensorEvent event) {
+
         int type = event.sensor.getType();
         if(type==Sensor.TYPE_LIGHT) {
             float sv = event.values[0];
@@ -203,10 +128,6 @@ public class GameActivity extends AppCompatActivity implements GoogleApiClient.C
             if(before != othersShouldBeInvisibile)
                 mapFragment.getMapAsync(this);
         }
-    }
 
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-    }
+    }*/
 }
