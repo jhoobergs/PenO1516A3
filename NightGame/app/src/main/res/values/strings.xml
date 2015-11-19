@@ -36,7 +36,8 @@
     <string name="start_lobby">Start Lobby</string>
     <string name="choose_centre_press_next">Choose the centre of the map and press Next</string>
 
-
+    <string name="send">request sent</string>
+    <string name="remove">Remove</string>
 
     <string name="error1">Username and password don\'t match.</string>
     <string name="error2">This username is already in use.</string>

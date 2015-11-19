@@ -7,6 +7,8 @@ import be.cwa3.nightgame.Data.FriendAddRequestData;
 import be.cwa3.nightgame.Data.FriendAddReturnData;
 import be.cwa3.nightgame.Data.FriendData;
 import be.cwa3.nightgame.Data.FriendListData;
+import be.cwa3.nightgame.Data.FriendRemoveRequestData;
+import be.cwa3.nightgame.Data.FriendRemoveReturnData;
 import be.cwa3.nightgame.Data.FriendSearchRequestData;
 import be.cwa3.nightgame.Data.FriendSearchReturnData;
 
@@ -32,6 +34,9 @@ public interface ApiInterface {
     @POST("/friends/add")
     Call<ReturnData<FriendAddReturnData>> addFriend(@Body FriendAddRequestData data);
 
+    @POST("/friends/remove")
+    Call<ReturnData<FriendRemoveReturnData>> removeFriend(@Body FriendRemoveRequestData data);
+
     @GET("/scoreboard/list")
     Call<ReturnData<ScoreboardListData>> loadScoreboard();
 
@@ -46,6 +51,8 @@ public interface ApiInterface {
 
     @GET("/game/list")
     Call<ReturnData<LobbiesListData>> loadLobbyList();
+
+
 
 
 

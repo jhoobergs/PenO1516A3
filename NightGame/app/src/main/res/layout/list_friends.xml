@@ -3,26 +3,65 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:gravity="center_vertical"
+    android:padding="10dp">
     <ImageView
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="15dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
         tools:src="@drawable/logo"
+        android:layout_marginRight="40dp"
         android:layout_width="40dp"
         android:layout_height="40dp"
+        android:layout_gravity="left"
         android:id="@+id/ImageViewProfileImage"/>
 
     <TextView
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="15dp"
-        android:layout_marginLeft="20dp"
         android:textSize="30sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="testest"
-        android:id="@+id/TextViewName"/>
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
+        tools:text="testeseeeeeeeeeeeeeeeeeeeeeeeee"
+        android:id="@+id/TextViewName"
+        />
 
+
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="right">
+    <TextView
+        android:textSize="15sp"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:text="@string/send"
+        tools:text="send"
+        android:id="@+id/send"/>
+
+    <Button
+        android:id="@+id/button_accept"
+        android:textSize="10sp"
+        android:text="@string/accept"
+        style="@style/ButtonStyle"
+        android:layout_height="40dp"
+        android:layout_width="60dp"
+        android:textStyle="bold">
+
+    </Button>
+        <Button
+            android:id="@+id/buttonRemove"
+            android:layout_gravity="right"
+            android:textSize="10sp"
+            android:layout_marginLeft="100dp"
+            android:layout_marginTop="15dp"
+            android:text="@string/remove"
+            style="@style/ButtonStyle"
+            android:layout_marginRight="20dp"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:textStyle="bold"
+            android:visibility="gone"/>
+    </LinearLayout>
 
 </LinearLayout>
