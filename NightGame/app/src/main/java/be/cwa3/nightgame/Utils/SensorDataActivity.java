@@ -15,6 +15,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.gson.Gson;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -45,9 +46,13 @@ public class SensorDataActivity extends AppCompatActivity implements GoogleApiCl
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         // add listener. The listener will be  (this) class
-        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), sensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                sensorManager.SENSOR_DELAY_NORMAL);
 
         sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY),
+                sensorManager.SENSOR_DELAY_NORMAL);
+
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT),
                 sensorManager.SENSOR_DELAY_NORMAL);
 
     }
@@ -153,10 +158,52 @@ public class SensorDataActivity extends AppCompatActivity implements GoogleApiCl
             //
             //}
         }
+        else if(type==Sensor.TYPE_LIGHT){
+
+            float light = event.values[0];
+
+            Log.d("sensortest", String.valueOf(light));
+
+
+        }
+        else if(type==Sensor.TYPE_LIGHT){
+
+            /*float sv = event.values[0];
+            Log.d("sensor", String.valueOf(sv));
+            boolean before = othersShouldBeInvisibile;
+            if (sv < 90)
+                othersShouldBeInvisibile = true;
+            else
+                othersShouldBeInvisibile = false;
+
+            if(before != othersShouldBeInvisibile)
+                mapFragment.getMapAsync(this);*/
+        }
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
+
+
+     /*@Override
+    public void onSensorChanged(SensorEvent event) {
+
+        int type = event.sensor.getType();
+        if(type==Sensor.TYPE_LIGHT) {
+            float sv = event.values[0];
+            Log.d("sensor", String.valueOf(sv));
+            boolean before = othersShouldBeInvisibile;
+            if (sv < 90)
+                othersShouldBeInvisibile = true;
+            else
+                othersShouldBeInvisibile = false;
+
+            if(before != othersShouldBeInvisibile)
+                mapFragment.getMapAsync(this);
+        }
+
+    }*/
+
 }
