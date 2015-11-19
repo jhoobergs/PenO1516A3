@@ -3,10 +3,13 @@ exports = module.exports = function(app, AWS, dd){
 app.post('/game/create', function(req, res){
     var dynamodbDoc = new AWS.DynamoDB.DocumentClient();
     if(req.body != null){
-        if(req.body.Name == null ||req.body.MinPlayers == null || req.body.MaxPlayers == null ||req.body.MinPlayers >                       req.body.MaxPlayers){
+        console.log(req.body);
+        if(req.body.Name == null ||req.body.MinPlayers == null || req.body.MaxPlayers == null ||req.body.MinPlayers >                       req.body.MaxPlayers || req.body.CenterLocationLatitude == null || req.body.CenterLocationLongitude == null){
             returnData(res, 0, null, '{Not all params present}');
         }
         else{
+            console.log(getDistanceFromLatLonKmVincenty(req.body.CenterLocationLatitude, req.body.CenterLocationLongitude,
+                                                        req.body.CenterLocationLatitude+10, req.body.CenterLocationLongitude+10));
             user = getUserByToken(res, req.headers, function(user){
                 if(user != undefined){
                    var id = getTimeBaseUniqueId();
@@ -98,7 +101,7 @@ user = getUserByToken(res, req.headers, function(user){
                     item.MinPlayers = gamedata.MinPlayers;
                     item.MaxPlayers = gamedata.MaxPlayers;
                     item.Players = Object.keys(gamedata.Players);
-
+                    item.CenterLocation = gamedata.CircleCenter;
                     result.push(item);
                     
                 }  
@@ -114,14 +117,20 @@ putnewGameItem = function(data, username, id) {
     
     var tableName = 'Games';
     var players = {"M" : {}};
-    players.M[username] = {"M":{"DateAdded" : {"S" : new Date().toISOString()} }}
+    players.M[username] = {"M":{"DateAdded" : {"S" : new Date().toISOString()} }};
     var item = {
 	    'GameId' : { 'S': id },
         'Name' : { 'S' : data.Name},
         'CreatedOn' : {'S' : new Date().toISOString()},
 	    'MinPlayers' : { 'N' : data.MinPlayers.toString()},
         'MaxPlayers' : { 'N' : data.MaxPlayers.toString()},
-        'Players' : players
+        'Players' : players,
+        'CircleCenter' : {
+                            "M" : {
+                                    Latitude:  {"N" : data.CenterLocationLatitude.toString()},
+                                    Longitude: {"N" : data.CenterLocationLongitude.toString()}        
+                                   }
+        }
     };	
     dd.putItem({
         'TableName': tableName,
