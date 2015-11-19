@@ -40,6 +40,8 @@ public class LocationDataActivity extends AppCompatActivity implements GoogleApi
     private GoogleApiClient mGoogleApiClient;
     LocationRequest mLocationRequest;
 
+    LocationChanged locationChanged;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +51,10 @@ public class LocationDataActivity extends AppCompatActivity implements GoogleApi
         if (mGoogleApiClient != null && mGoogleApiClient.isConnected() && !mRequestingLocationUpdates) {
             startLocationUpdates();
         }
+    }
+
+    public void setLocationChanged(LocationChanged listener){
+        locationChanged = listener;
     }
 
     public Location getLocation(){
@@ -92,6 +98,9 @@ public class LocationDataActivity extends AppCompatActivity implements GoogleApi
     public void onLocationChanged(Location location) {
         mCurrentLocation = location;
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+        if(locationChanged!= null){
+            locationChanged.locationChanged();
+        }
     }
 
     @Override
