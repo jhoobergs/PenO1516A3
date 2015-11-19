@@ -10,8 +10,12 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.util.Collections;
+import java.util.Comparator;
+
 import be.cwa3.nightgame.Adapters.FriendsAdapter;
 import be.cwa3.nightgame.Data.ErrorData;
+import be.cwa3.nightgame.Data.FriendData;
 import be.cwa3.nightgame.Data.FriendListData;
 import be.cwa3.nightgame.Data.LoginReturnData;
 import be.cwa3.nightgame.Data.ReturnData;
@@ -56,6 +60,12 @@ public class FriendsActivity extends AppCompatActivity {
         requestUtil.makeRequest(new RequestInterface<FriendListData>() {
             @Override
             public void onSucces(FriendListData body) {
+                Collections.sort(body.List, new Comparator<FriendData>() {
+                    @Override
+                    public int compare(FriendData lhs, FriendData rhs) {
+                        return Sorting(rhs.Accepted, lhs.Accepted, rhs.IsSender, lhs.IsSender, rhs.Name, lhs.Name);
+                    }
+                });
                 listView.setAdapter(new FriendsAdapter(FriendsActivity.this, body.List));
             }
 
@@ -65,6 +75,29 @@ public class FriendsActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private int Sorting(Boolean accepted, Boolean accepted1, Boolean isSender, Boolean isSender1, String name, String name1) {
+        if (!accepted && !accepted1) {
+            if (isSender && isSender1) {
+                return name.compareTo(name1);
+            }
+            else if (!isSender && !isSender1) {
+                return name.compareTo(name1);
+            }
+            else if (isSender && !isSender1) {
+                return 1;
+            }
+            else {
+                return -1;
+            }
+        }
+        if(!accepted && accepted1) {
+            return 1;
+        }
+        else {
+            return name.compareTo(name1);
+            }
     }
 
     @Override
@@ -84,6 +117,8 @@ public class FriendsActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
             }
         }
+
+
 
 
 

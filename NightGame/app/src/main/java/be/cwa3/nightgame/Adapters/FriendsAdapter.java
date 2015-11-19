@@ -48,9 +48,9 @@ public class FriendsAdapter extends ArrayAdapter<FriendData>{
     }
 
     @Override
-    public View getView (int position, View convertView, ViewGroup parent){
+    public View getView (final int position, View convertView, ViewGroup parent){
         View row = convertView;
-        Holder holder;
+        final Holder holder;
 
         if(row == null) {
             LayoutInflater inflater = ((Activity) context).getLayoutInflater();
@@ -89,7 +89,7 @@ public class FriendsAdapter extends ArrayAdapter<FriendData>{
 
         holder.button_accept.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                makeAddCall(new FriendAddRequestData(menuItem.Name));
+                makeAddCall(new FriendAddRequestData(menuItem.Name), menuItem, position, holder);
             }
         });
 
@@ -102,14 +102,16 @@ public class FriendsAdapter extends ArrayAdapter<FriendData>{
         Button button_accept;
         TextView textViewSend;
     }
-    private void makeAddCall(FriendAddRequestData data) {
-        Call<ReturnData<FriendAddReturnData>> call = new ApiUtil().getApiInterface(context).addFriend(data);
+    private void makeAddCall(FriendAddRequestData friendAddRequestData, final FriendData menuItem, final int position, final Holder holder) {
+        Call<ReturnData<FriendAddReturnData>> call = new ApiUtil().getApiInterface(context).addFriend(friendAddRequestData);
         RequestUtil<FriendAddReturnData> requestUtil = new RequestUtil<>(context, call);
         requestUtil.makeRequest(new RequestInterface<FriendAddReturnData>() {
             @Override
             public void onSucces(FriendAddReturnData body) {
-                Toast.makeText(context, "Friend added!", Toast.LENGTH_LONG).show();
-
+                Toast.makeText(context, "Friend accepted!", Toast.LENGTH_LONG).show();
+                menuItem.Accepted = true;
+                data.set(position, menuItem);
+                holder.button_accept.setVisibility(View.GONE);
             }
 
             @Override
