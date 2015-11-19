@@ -204,5 +204,3 @@ public class ScoreboardActivity extends AppCompatActivity {
     }
 
 }
-
-
