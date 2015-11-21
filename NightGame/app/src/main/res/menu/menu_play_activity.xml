@@ -5,4 +5,9 @@
         android:icon="@drawable/add"
         app:showAsAction="always"
         android:id="@+id/add"/>
+    <item
+        android:id="@+id/action_refresh"
+        app:showAsAction="always"
+        android:title="Refresh"
+        android:icon="@drawable/refresh"></item>
 </menu>
