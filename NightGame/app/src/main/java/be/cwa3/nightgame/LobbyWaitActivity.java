@@ -5,11 +5,20 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import at.grabner.circleprogress.AnimationState;
 import at.grabner.circleprogress.AnimationStateChangedListener;
 import at.grabner.circleprogress.CircleProgressView;
 import at.grabner.circleprogress.TextMode;
+import be.cwa3.nightgame.Data.ErrorData;
+import be.cwa3.nightgame.Data.LobbiesListData;
+import be.cwa3.nightgame.Data.ReturnData;
+import be.cwa3.nightgame.Utils.ApiUtil;
+import be.cwa3.nightgame.Utils.ErrorUtil;
+import be.cwa3.nightgame.Utils.RequestInterface;
+import be.cwa3.nightgame.Utils.RequestUtil;
+import retrofit.Call;
 
 /**
  * Created by kevin on 12/11/2015.
@@ -20,6 +29,8 @@ public class LobbyWaitActivity extends AppCompatActivity implements CircleProgre
     Switch mSwitchSpin;
     Boolean mShowUnit = true;
 
+    LobbiesListData lobbiesListData;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -28,6 +39,8 @@ public class LobbyWaitActivity extends AppCompatActivity implements CircleProgre
 
         mCircleView = (CircleProgressView) findViewById(R.id.circleView);
         mCircleView.setOnProgressChangedListener(this);
+
+        makeCall();
 
         //value setting
         mCircleView.setMaxValue(100);
@@ -126,6 +139,26 @@ public class LobbyWaitActivity extends AppCompatActivity implements CircleProgre
 
     @Override
     public void onProgressChanged(float value) {
+
+    }
+
+    private void makeCall(){
+        Call<ReturnData<LobbiesListData>> call = new ApiUtil().getApiInterface(this).loadLobbyList();
+        RequestUtil<LobbiesListData> requestUtil = new RequestUtil<>(this, call);
+        requestUtil.makeRequest(new RequestInterface<LobbiesListData>() {
+            @Override
+            public void onSucces(LobbiesListData body) {
+                lobbiesListData = body;
+                lobbiesListdata.
+
+            }
+
+            @Override
+            public void onError(ErrorData error) {
+                Toast.makeText(getApplicationContext(), ErrorUtil.getErrorText(getApplicationContext(), error.Errors), Toast.LENGTH_SHORT).show();
+
+            }
+        });
 
     }
 }

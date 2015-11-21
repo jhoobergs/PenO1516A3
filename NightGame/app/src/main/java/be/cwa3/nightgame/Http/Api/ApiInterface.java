@@ -9,6 +9,7 @@ import be.cwa3.nightgame.Data.FriendListData;
 import be.cwa3.nightgame.Data.FriendSearchRequestData;
 import be.cwa3.nightgame.Data.FriendSearchReturnData;
 
+import be.cwa3.nightgame.Data.JoinLobbyReturnData;
 import be.cwa3.nightgame.Data.LobbiesListData;
 import be.cwa3.nightgame.Data.LobbySearchRequestData;
 import be.cwa3.nightgame.Data.LoginRequestData;
@@ -48,6 +49,9 @@ public interface ApiInterface {
 
     @GET("/game/list")
     Call<ReturnData<LobbiesListData>> loadLobbyList();
+
+    @POST ("game/getData")
+    Call<ReturnData<JoinLobbyReturnData>> joinLobby(@Body JoinLobbyReturnData data);
 
 
 

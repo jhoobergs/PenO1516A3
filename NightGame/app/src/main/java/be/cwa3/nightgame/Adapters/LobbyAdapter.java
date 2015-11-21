@@ -14,8 +14,10 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import be.cwa3.nightgame.Data.JoinLobbyReturnData;
 import be.cwa3.nightgame.Data.LobbiesData;
 import be.cwa3.nightgame.Data.LobbiesListData;
+import be.cwa3.nightgame.Data.LobbyJoinRequestData;
 import be.cwa3.nightgame.LobbyWaitActivity;
 import be.cwa3.nightgame.R;
 
@@ -69,6 +71,7 @@ public class LobbyAdapter extends ArrayAdapter<LobbiesData> {
             public void onClick(View v) {
                 holder.join_button.setEnabled(false);
                 Intent intent = new Intent(context, LobbyWaitActivity.class);
+                LobbyJoinRequestData game_id = new LobbyJoinRequestData(menuItem.GameId.toString()));
                 context.startActivity(intent);
             }
         });
@@ -87,6 +90,8 @@ public class LobbyAdapter extends ArrayAdapter<LobbiesData> {
         Button join_button;
         RelativeLayout lobbies_data;
     }
+
+    private void makeJoinLobbyCall(JoinLobbyReturnData)
 }
 
 
