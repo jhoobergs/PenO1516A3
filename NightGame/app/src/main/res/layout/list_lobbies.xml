@@ -37,13 +37,15 @@
         android:orientation="vertical"
         android:paddingLeft="20dp"
         android:id="@+id/Lobbies_data"
-        android:visibility="gone">
+        android:visibility="visible">
         <TextView
             android:textSize="20sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="timer"
-            android:id="@+id/timer"/>
+            android:id="@+id/timer"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
 
         <TextView
             android:textSize="20sp"
@@ -60,11 +62,21 @@
             android:layout_height="wrap_content"
             android:text="join"
             android:id="@+id/join_button"
-            android:layout_marginLeft="200dp"
+            android:layout_marginLeft="250dp"
             android:layout_gravity="right"
-            android:layout_alignParentRight ="true"
             android:focusable="false"
-            android:background="@color/green"/>
+            android:background="@color/green"
+            android:layout_alignParentTop="true" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="players"
+            android:id="@+id/see_players"
+            android:focusable="false"
+            android:layout_below="@+id/join_button"
+            android:layout_alignLeft="@+id/join_button"
+            android:layout_alignStart="@+id/join_button"
+            android:visibility="gone"/>
 
     </RelativeLayout>
 
