@@ -28,7 +28,7 @@ import be.cwa3.nightgame.R;
 /**
  * Created by jesse on 15/10/2015.
  */
-public class SensorDataActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, SensorEventListener, OnMapReadyCallback {
+public class SensorDataActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener, SensorEventListener {
     private boolean mRequestingLocationUpdates = true;
     private Location mCurrentLocation;
     private String mLastUpdateTime;
@@ -37,6 +37,8 @@ public class SensorDataActivity extends AppCompatActivity implements GoogleApiCl
     LocationRequest mLocationRequest;
     MapFragment mapFragment;
     private boolean othersShouldBeInvisibile = false;
+
+    SensorDataInterface sensorDataInterface;
 
 
     @Override
@@ -60,6 +62,10 @@ public class SensorDataActivity extends AppCompatActivity implements GoogleApiCl
         sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT),
                 sensorManager.SENSOR_DELAY_NORMAL);
 
+    }
+
+    public void setSensorDataInterface(SensorDataInterface listener){
+        sensorDataInterface = listener;
     }
 
     public Location getLocation() {
@@ -103,6 +109,8 @@ public class SensorDataActivity extends AppCompatActivity implements GoogleApiCl
     public void onLocationChanged(Location location) {
         mCurrentLocation = location;
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+        if(sensorDataInterface != null)
+            sensorDataInterface.locationChanged(location);
     }
 
     @Override
@@ -144,16 +152,13 @@ public class SensorDataActivity extends AppCompatActivity implements GoogleApiCl
             float x = event.values[0];
             float y = event.values[1];
             float z = event.values[2];
-
-            Log.d("sensortest", String.valueOf(x));
-            Log.d("sensortest", String.valueOf(y));
-            Log.d("sensortest", String.valueOf(z));
+            if(sensorDataInterface != null)
+                sensorDataInterface.accelerometerChanged(x, y, z);
         } else if (type == Sensor.TYPE_PROXIMITY) {
 
-            float prox = event.values[0];
-
-            Log.d("sensortest", String.valueOf(prox));
-
+            float proximity = event.values[0];
+            if(sensorDataInterface != null)
+                sensorDataInterface.proximityChanged(proximity);
             // Use the construction below for compatibility on every device.
             //if (event.values[0] == 0 ){
             //
@@ -165,15 +170,16 @@ public class SensorDataActivity extends AppCompatActivity implements GoogleApiCl
         else if (type == Sensor.TYPE_LIGHT) {
 
             float sv = event.values[0];
-            Log.d("sensor", String.valueOf(sv));
-            boolean before = othersShouldBeInvisibile;
+            if(sensorDataInterface != null)
+                sensorDataInterface.lightChanged(sv);
+            /*boolean before = othersShouldBeInvisibile;
             if (sv < 90)
                 othersShouldBeInvisibile = true;
             else
-                othersShouldBeInvisibile = false;
+                othersShouldBeInvisibile = false;*/
 
-            if (before != othersShouldBeInvisibile)
-                mapFragment.getMapAsync(this);
+           /* if (before != othersShouldBeInvisibile)
+                mapFragment.getMapAsync(this);*/
         }
     }
 
@@ -182,9 +188,5 @@ public class SensorDataActivity extends AppCompatActivity implements GoogleApiCl
 
     }
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-
-    }
 
 }

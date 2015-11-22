@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.games.Game;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationListener;
@@ -29,6 +30,7 @@ import java.util.Date;
 import java.util.List;
 
 import be.cwa3.nightgame.Utils.SensorDataActivity;
+import be.cwa3.nightgame.Utils.SensorDataInterface;
 
 /**
  * Created by jesse on 15/10/2015.
@@ -37,44 +39,65 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
 
     MapFragment mapFragment;
     private boolean othersShouldBeInvisibile = false;
+    private boolean mapHasBeenReady = false;
+
+    private Location location;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+
+        //TODO: CHECK IF THERE IS A GAMEID
+
+        location = getLocation();
         mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        setSensorDataInterface(new SensorDataInterface() {
+            @Override
+            public void accelerometerChanged(float x, float y, float z) {
+                super.accelerometerChanged(x, y, z);
+            }
+
+            @Override
+            public void lightChanged(float sv) {
+                boolean before = othersShouldBeInvisibile;
+                if (sv < 90)
+                    othersShouldBeInvisibile = true;
+                else
+                    othersShouldBeInvisibile = false;
+
+                if(before != othersShouldBeInvisibile)
+                    mapFragment.getMapAsync(GameActivity.this);
+            }
+
+            @Override
+            public void locationChanged(Location newLocation) {
+                location = newLocation;
+                mapFragment.getMapAsync(GameActivity.this);
+            }
+
+            @Override
+            public void proximityChanged(float proximity) {
+                super.proximityChanged(proximity);
+            }
+        });
+
+
 
     }
 
     @Override
     public void onMapReady(GoogleMap map) {
-        /*
-        //LatLng sydney = new LatLng(-33.867, 151.206);
         List<LatLng> locations = new ArrayList<>();
         List<String> titles = new ArrayList<>();
         List<String> content = new ArrayList<>();
-        if(mCurrentLocation != null) {
-            locations.add(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()));
+        if(location != null) {
+            locations.add(new LatLng(location.getLatitude(), location.getLongitude()));
             titles.add("Jesse");
             content.add("Verdediger");
-            locations.add(new LatLng(mCurrentLocation.getLatitude()+0.01, mCurrentLocation.getLongitude()));
-            titles.add("Koen");
-            content.add("Aanvaller");
-            locations.add(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()+0.01));
-            titles.add("Jean");
-            content.add("Verdediger");
-            locations.add(new LatLng(mCurrentLocation.getLatitude()+0.01, mCurrentLocation.getLongitude()+0.01));
-            titles.add("Moran");
-            content.add("Aanvaller");
-            locations.add(new LatLng(mCurrentLocation.getLatitude()+0.02, mCurrentLocation.getLongitude()));
-            titles.add("Kevin");
-            content.add("Verdediger");
-            locations.add(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()+0.02));
-            titles.add("Elisabeth");
-            content.add("Aanvaller");
-            Log.d("url", String.valueOf(mCurrentLocation.getLatitude()));
         }
 
         if(locations.size() > 0) {
@@ -104,30 +127,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
                         .icon(bitmapDescriptor)
                         .position(loc));
             number+=1;
-        }*/
-
-    }
-
-
-
-
-
-    /*@Override
-    public void onSensorChanged(SensorEvent event) {
-
-        int type = event.sensor.getType();
-        if(type==Sensor.TYPE_LIGHT) {
-            float sv = event.values[0];
-            Log.d("sensor", String.valueOf(sv));
-            boolean before = othersShouldBeInvisibile;
-            if (sv < 90)
-                othersShouldBeInvisibile = true;
-            else
-                othersShouldBeInvisibile = false;
-
-            if(before != othersShouldBeInvisibile)
-                mapFragment.getMapAsync(this);
         }
 
-    }*/
+    }
 }

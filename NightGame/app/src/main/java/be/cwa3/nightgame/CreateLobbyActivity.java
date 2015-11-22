@@ -43,10 +43,10 @@ import be.cwa3.nightgame.Data.ErrorData;
 import be.cwa3.nightgame.Data.ReturnData;
 import be.cwa3.nightgame.Utils.ApiUtil;
 import be.cwa3.nightgame.Utils.ErrorUtil;
-import be.cwa3.nightgame.Utils.LocationChanged;
-import be.cwa3.nightgame.Utils.LocationDataActivity;
 import be.cwa3.nightgame.Utils.RequestInterface;
 import be.cwa3.nightgame.Utils.RequestUtil;
+import be.cwa3.nightgame.Utils.SensorDataActivity;
+import be.cwa3.nightgame.Utils.SensorDataInterface;
 import be.cwa3.nightgame.Utils.SettingsUtil;
 import be.cwa3.nightgame.Utils.SharedPreferencesKeys;
 import be.cwa3.nightgame.custom.CustomScrollView;
@@ -55,7 +55,7 @@ import retrofit.Call;
 /**
  * Created by Gebruiker on 19/10/2015.
  */
-public class CreateLobbyActivity extends LocationDataActivity implements OnMapReadyCallback {
+public class CreateLobbyActivity extends SensorDataActivity implements OnMapReadyCallback {
     NumberPicker numberPickerMinValue, numberPickerMaxValue;
     EditText editTextGroupName;
     TextView chooseCentre;
@@ -86,10 +86,10 @@ public class CreateLobbyActivity extends LocationDataActivity implements OnMapRe
         setMinAndMaxOfNumberPicker(numberPickerMaxValue, 4, 10);
         setMinAndMaxOfNumberPicker(numberPickerMinValue, 4, 10);
 
-        setLocationChanged(new LocationChanged() {
+        setSensorDataInterface(new SensorDataInterface() {
             @Override
-            public void locationChanged() {
-                location = getLocation();
+            public void locationChanged(Location newLocation) {
+                location = newLocation;
                 mapFragment.getMapAsync(CreateLobbyActivity.this);
             }
         });

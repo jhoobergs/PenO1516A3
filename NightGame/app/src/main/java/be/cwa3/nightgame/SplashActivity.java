@@ -27,6 +27,7 @@ public class SplashActivity extends AppCompatActivity {
             public void run() {
                 // This method will be executed once the timer is over
                 // Start your app main activity
+                //TODO: CHECK IF THERE IS A GAMEID, if there is one, go to gameActivity
                 Intent i = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(i);
 

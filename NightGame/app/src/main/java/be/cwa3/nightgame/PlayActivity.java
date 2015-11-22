@@ -28,16 +28,17 @@ import be.cwa3.nightgame.Data.LobbySearchRequestData;
 import be.cwa3.nightgame.Data.ReturnData;
 import be.cwa3.nightgame.Utils.ApiUtil;
 import be.cwa3.nightgame.Utils.ErrorUtil;
-import be.cwa3.nightgame.Utils.LocationDataActivity;
 import be.cwa3.nightgame.Utils.RequestInterface;
 import be.cwa3.nightgame.Utils.RequestUtil;
+import be.cwa3.nightgame.Utils.SensorDataActivity;
+import be.cwa3.nightgame.Utils.SensorDataInterface;
 import retrofit.Call;
 
 /**
  * Created by Koen on 19/10/2015.
  * Updated by Kevin on 12/11/2015
  */
-public class PlayActivity extends LocationDataActivity {
+public class PlayActivity extends SensorDataActivity {
 
     private EditText enterLobbyName;
     ListView listView;
@@ -108,10 +109,10 @@ public class PlayActivity extends LocationDataActivity {
             @Override
             public void onSucces(LobbiesListData body) {
                 lobbiesListData = body;
-                //final Location myLocation = getLocation();
-                final Location myLocation = new Location("");
+                final Location myLocation = getLocation();
+                /*final Location myLocation = new Location("");
                 myLocation.setLatitude(54);
-                myLocation.setLongitude(5);
+                myLocation.setLongitude(5);*/
                 Collections.sort(lobbiesListData.List, new Comparator<LobbiesData>() {
 
                     @Override

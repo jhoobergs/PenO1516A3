@@ -8,6 +8,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import be.cwa3.nightgame.BuildConfig;
 import be.cwa3.nightgame.Http.Api.ApiInterface;
@@ -28,10 +29,13 @@ public class ApiUtil {
         httpClient.interceptors().add(new Interceptor() {
             @Override
             public Response intercept(Interceptor.Chain chain) throws IOException {
-                Request original = chain.request();
+                Locale locale = Locale.getDefault();
+                String language = String.format("%s", locale.getLanguage());
 
+                Request original = chain.request();
                 Request request = original.newBuilder()
                         .header("Token", new SettingsUtil(context).getString(SharedPreferencesKeys.TokenString))
+                        .header("Language", language)
                         .method(original.method(), original.body())
                         .build();
                 return chain.proceed(request);
