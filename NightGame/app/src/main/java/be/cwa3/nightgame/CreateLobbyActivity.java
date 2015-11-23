@@ -61,7 +61,10 @@ public class CreateLobbyActivity extends SensorDataActivity implements OnMapRead
     TextView chooseCentre;
     LinearLayout layoutCreate, mapLayout;
     Button buttonNext;
+    MenuItem defineMap, startLobby;
     private boolean mRequestingLocationUpdates = true;
+    private boolean buttonStart;
+    private double gem, radius;
     private GoogleApiClient mGoogleApiClient;
     LocationRequest mLocationRequest;
     MapFragment mapFragment;
@@ -81,10 +84,13 @@ public class CreateLobbyActivity extends SensorDataActivity implements OnMapRead
         chooseCentre = (TextView) findViewById(R.id.choose_centre_press_next);
         editTextGroupName = (EditText) findViewById(R.id.editTextGroupName);
         buttonNext = (Button) findViewById(R.id.button_next);
+
         numberPickerMaxValue = (NumberPicker) findViewById(R.id.numberPickerMaxValue);
         numberPickerMinValue = (NumberPicker) findViewById(R.id.numberPickerMinValue);
         setMinAndMaxOfNumberPicker(numberPickerMaxValue, 4, 10);
         setMinAndMaxOfNumberPicker(numberPickerMinValue, 4, 10);
+
+        buttonStart = false;
 
         setSensorDataInterface(new SensorDataInterface() {
             @Override
@@ -115,7 +121,7 @@ public class CreateLobbyActivity extends SensorDataActivity implements OnMapRead
 
                 CircleOptions circleOptions = new CircleOptions()
                         .center(latLng)
-                        .radius(1000); // In meters
+                        .radius(radius); // In meters
                 map.addCircle(circleOptions);
                 buttonNext.setVisibility(View.VISIBLE);
             }
@@ -131,10 +137,16 @@ public class CreateLobbyActivity extends SensorDataActivity implements OnMapRead
             public void onMarkerDragEnd(Marker marker) {
                 LatLng latLng = marker.getPosition();
                 clicked = true;
+                map.clear();
+
+                MarkerOptions markerOptions = new MarkerOptions()
+                        .position(latLng)
+                        .draggable(true);
+                map.addMarker(markerOptions);
 
                 CircleOptions circleOptions = new CircleOptions()
                         .center(latLng)
-                        .radius(1000); // In meters
+                        .radius(radius); // In meters
                 map.addCircle(circleOptions);
             }
         });
@@ -158,11 +170,22 @@ public class CreateLobbyActivity extends SensorDataActivity implements OnMapRead
         np.setMaxValue(max);
         np.setMinValue(min);
     }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        defineMap = menu.findItem(R.id.define_map);
+        startLobby = menu.findItem(R.id.start_lobby);
+        if(buttonStart){
+            startLobby.setVisible(true);
+            defineMap.setVisible(false);
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_createlobby_activity, menu);
         return super.onCreateOptionsMenu(menu);
-
     }
     //invalidateOptionsMenu();
     @Override
@@ -179,9 +202,10 @@ public class CreateLobbyActivity extends SensorDataActivity implements OnMapRead
                     layoutCreate.setVisibility(View.GONE);
                     chooseCentre.setVisibility(View.VISIBLE);
                     mapLayout.setVisibility(View.VISIBLE);
-
-
-
+                    buttonStart = true;
+                    invalidateOptionsMenu();
+                    gem = (numberPickerMaxValue.getValue()+numberPickerMinValue.getValue())/2;
+                    radius = -0.538*gem*gem + 47.29*gem + 220;
                 }
                 return true;
             case R.id.start_lobby:

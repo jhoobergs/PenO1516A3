@@ -93,13 +93,6 @@
             android:name="com.google.android.gms.maps.MapFragment"
             android:layout_width="match_parent"
             android:layout_height="400dp" />
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="@string/next"
-                android:visibility="gone"
-                android:id="@+id/button_next"/>
         </LinearLayout>
 </LinearLayout>
 </LinearLayout>
