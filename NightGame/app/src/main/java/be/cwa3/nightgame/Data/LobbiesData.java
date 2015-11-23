@@ -1,5 +1,7 @@
 package be.cwa3.nightgame.Data;
 
+import org.joda.time.DateTime;
+
 import java.util.List;
 
 /**
@@ -13,5 +15,5 @@ public class LobbiesData {
     public List<String> Players;
     public transient boolean isOpen = false; //Transient means that this data isn't server related.
     public CenterLocation CenterLocation;
-    public String TimerDate;
+    public DateTime TimerDate;
 }

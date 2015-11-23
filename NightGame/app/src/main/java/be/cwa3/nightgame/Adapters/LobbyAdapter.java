@@ -3,6 +3,7 @@ package be.cwa3.nightgame.Adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.joda.time.DateTime;
 
 import java.util.List;
 
@@ -36,14 +39,16 @@ public class LobbyAdapter extends ArrayAdapter<LobbiesData> {
 
     private List<LobbiesData> data;
     private Context context;
+    private Location myLocation;
 
 
     private static final int layoutResourceId = R.layout.list_lobbies;
 
-    public LobbyAdapter(Context context, List<LobbiesData> data){
-        super(context, layoutResourceId,data);
+    public LobbyAdapter(Context context, List<LobbiesData> data, Location myLocation){
+        super(context, layoutResourceId, data);
         this.context = context;
         this.data = data;
+        this.myLocation = myLocation;
     }
 
     @Override
@@ -73,11 +78,22 @@ public class LobbyAdapter extends ArrayAdapter<LobbiesData> {
         final LobbiesData menuItem = data.get(position);
 
         holder.lobbies.setText(menuItem.Name);
-        holder.playersRatio.setText(String.format("%s / %s", menuItem.Players.size(),menuItem.MaxPlayers));
+        holder.playersRatio.setText(String.format("%s / %s", menuItem.Players.size(), menuItem.MaxPlayers));
+
+        Location location = new Location("");
+        location.setLatitude(menuItem.CenterLocation.Latitude);
+        location.setLongitude(menuItem.CenterLocation.Longitude);
+
+        String dist = String.valueOf(myLocation.distanceTo(location));
+        holder.location.setText(dist);
+
+        long Tminus;
+        Tminus = menuItem.TimerDate.getMillis()- DateTime.now().getMillis();
+        holder.timer.setText(String.valueOf(Tminus*1000));
 
 
         holder.location.setText((CharSequence) menuItem.CenterLocation);
-        holder.timer.setText();
+        holder.timer.setText(menuItem.TimerDate.toString());
 
 
         holder.join_button.setOnClickListener(new View.OnClickListener() {
@@ -90,7 +106,7 @@ public class LobbyAdapter extends ArrayAdapter<LobbiesData> {
             }
         });
 
-       if(menuItem.isOpen)
+        if (menuItem.isOpen)
             holder.lobbies_data.setVisibility(View.VISIBLE);
         else
             holder.lobbies_data.setVisibility(View.GONE);
@@ -100,7 +116,7 @@ public class LobbyAdapter extends ArrayAdapter<LobbiesData> {
     }
 
     static class Holder {
-        TextView lobbies,playersRatio,location,timer;
+        TextView lobbies,playersRatio,timer, location;
         Button join_button;
         RelativeLayout lobbies_data;
     }
@@ -111,18 +127,14 @@ public class LobbyAdapter extends ArrayAdapter<LobbiesData> {
         requestUtil.makeRequest(new RequestInterface<JoinLobbyReturnData>() {
             @Override
             public void onSucces(JoinLobbyReturnData body) {
-                if(menuItem.MinPlayers>menuItem.Players.size()){
-                    @ToDo //start the game!!
-                }else{
                 Intent intent = new Intent(context, LobbyWaitActivity.class);
                 context.startActivity(intent);
-                }
+
             }
 
             @Override
             public void onError(ErrorData error) {
                 Toast.makeText(context, ErrorUtil.getErrorText(context, error.Errors), Toast.LENGTH_SHORT).show();
-
             }
         });
 

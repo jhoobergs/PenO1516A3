@@ -1,8 +1,10 @@
 package be.cwa3.nightgame.Utils;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.squareup.okhttp.ResponseBody;
 
 import be.cwa3.nightgame.Data.ErrorData;
@@ -23,6 +25,7 @@ public abstract class RequestInterface<T> {
     //The onFailure function is called when the request failed. (When you don't have internet for example)
     public void onFailure(Context context,Throwable t){
         if(NetworkUtil.isNetworkAvailable(context)){
+            Log.d("test", new Gson().toJson(t.getCause()));
             Toast.makeText(context, "Internal Server Error", Toast.LENGTH_LONG).show();
         }
         else {

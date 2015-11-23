@@ -134,8 +134,8 @@
     <orderEntry type="library" exported="" name="support-v4-23.0.1" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-23.0.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-cast-8.1.0" level="project" />
-    <orderEntry type="library" exported="" name="support-annotations-23.1.0" level="project" />
     <orderEntry type="library" exported="" name="converter-gson-2.0.0-beta2" level="project" />
+    <orderEntry type="library" exported="" name="support-annotations-23.1.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-appinvite-8.1.0" level="project" />
     <orderEntry type="library" exported="" name="retrofit-2.0.0-beta2" level="project" />
     <orderEntry type="library" exported="" name="play-services-ads-8.1.0" level="project" />
@@ -144,6 +144,7 @@
     <orderEntry type="library" exported="" name="play-services-safetynet-8.1.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-games-8.1.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-wallet-8.1.0" level="project" />
+    <orderEntry type="library" exported="" name="joda-time-2.4" level="project" />
     <orderEntry type="library" exported="" name="play-services-basement-8.1.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-maps-8.1.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-nearby-8.1.0" level="project" />
