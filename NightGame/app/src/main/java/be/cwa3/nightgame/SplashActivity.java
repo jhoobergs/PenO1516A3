@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
+import be.cwa3.nightgame.Utils.SettingsUtil;
+import be.cwa3.nightgame.Utils.SharedPreferencesKeys;
+
 /**
  * Created by jesse on 15/10/2015.
  */
@@ -27,10 +30,14 @@ public class SplashActivity extends AppCompatActivity {
             public void run() {
                 // This method will be executed once the timer is over
                 // Start your app main activity
-                //TODO: CHECK IF THERE IS A GAMEID, if there is one, go to gameActivity
-                Intent i = new Intent(getApplicationContext(), LoginActivity.class);
-                startActivity(i);
-
+                if(!new SettingsUtil(getApplicationContext()).getString(SharedPreferencesKeys.GameIDString).equals("")) {
+                    Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+                    startActivity(i);
+                }
+                else {
+                    Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+                    startActivity(i);
+                }
                 // close this activity
                 finish();
             }
