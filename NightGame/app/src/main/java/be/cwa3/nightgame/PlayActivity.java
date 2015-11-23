@@ -2,6 +2,7 @@ package be.cwa3.nightgame;
 
 import android.content.Intent;
 import android.location.Location;
+import android.media.audiofx.BassBoost;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -32,6 +33,7 @@ import be.cwa3.nightgame.Utils.RequestInterface;
 import be.cwa3.nightgame.Utils.RequestUtil;
 import be.cwa3.nightgame.Utils.SensorDataActivity;
 import be.cwa3.nightgame.Utils.SensorDataInterface;
+import be.cwa3.nightgame.Utils.SettingsUtil;
 import retrofit.Call;
 
 /**
@@ -50,6 +52,7 @@ public class PlayActivity extends SensorDataActivity {
         setContentView(R.layout.activity_play);
 
         makeCall();
+
 
         enterLobbyName = (EditText) findViewById(R.id.editTextLobby);
 
@@ -71,7 +74,7 @@ public class PlayActivity extends SensorDataActivity {
                 } if (enterLobbyName.getText().toString().isEmpty()) {
                     List<LobbiesData> empty = new ArrayList<LobbiesData>();
                     lobbiesListData.List = empty;
-                    listView.setAdapter(new LobbyAdapter(PlayActivity.this, empty));
+                    listView.setAdapter(new LobbyAdapter(PlayActivity.this, empty,getLocation()));
                 }
             }
 
@@ -90,7 +93,7 @@ public class PlayActivity extends SensorDataActivity {
             @Override
             public void onSucces(LobbiesListData body) {
                 lobbiesListData = body;
-                listView.setAdapter(new LobbyAdapter(PlayActivity.this, body.List));
+                listView.setAdapter(new LobbyAdapter(PlayActivity.this, body.List,getLocation()));
             }
 
             @Override
@@ -125,14 +128,17 @@ public class PlayActivity extends SensorDataActivity {
                         Location locationRhs = new Location("");
                         locationRhs.setLatitude(rhs.CenterLocation.Latitude);
                         locationRhs.setLongitude(rhs.CenterLocation.Longitude);
-                        if(locationRhs.distanceTo(myLocation)> locationLhs.distanceTo(myLocation)){
-                            return 1;
+                        if (myLocation != null) {
+                            if (locationRhs.distanceTo(myLocation) > locationLhs.distanceTo(myLocation)) {
+                                return 1;
+                            } else if (locationRhs.distanceTo(myLocation) <= locationLhs.distanceTo(myLocation)) {
+                                return -1;
+                            } else
+                                return 0;
                         }
-                        else if(locationRhs.distanceTo(myLocation) <= locationLhs.distanceTo(myLocation)){
-                            return -1;
-                        }
-                        else
+                        else{
                             return 0;
+                        }
                     }
                 });
 
@@ -168,7 +174,7 @@ public class PlayActivity extends SensorDataActivity {
     public void setListView() {
         if (lobbiesListData != null) {
 
-            listView.setAdapter(new LobbyAdapter(PlayActivity.this, lobbiesListData.List));
+            listView.setAdapter(new LobbyAdapter(PlayActivity.this, lobbiesListData.List, getLocation()));
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

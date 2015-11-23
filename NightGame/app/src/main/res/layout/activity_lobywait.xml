@@ -23,14 +23,12 @@
         CircleProgressView:cpv_unit="%"
         CircleProgressView:cpv_unitColor="#009688"/>
 
-    <Switch
-        android:id="@+id/switch1"
+    <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginRight="10dp"
-        android:text="Spin"/>
-
+        android:id="@+id/lobby_players_list"
+        android:layout_gravity="center_horizontal">
+    </ListView>
 
 
 </LinearLayout>

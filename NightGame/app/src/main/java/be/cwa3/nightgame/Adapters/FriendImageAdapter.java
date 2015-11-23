@@ -19,14 +19,14 @@ import be.cwa3.nightgame.R;
 /**
  * Created by Gebruiker on 12/11/2015.
  */
-public class FriendSearchAdapter extends ArrayAdapter<FriendSearchReturnItemData> {
+public class FriendImageAdapter extends ArrayAdapter<FriendSearchReturnItemData> {
 
 private List<FriendSearchReturnItemData> data;
 private Context context;
 
 private static final int layoutResourceId = R.layout.list_friend_search;
 
-public FriendSearchAdapter(Context context, List<FriendSearchReturnItemData> data){
+public FriendImageAdapter(Context context, List<FriendSearchReturnItemData> data){
         super(context, layoutResourceId,data);
         this.context = context;
         this.data = data;

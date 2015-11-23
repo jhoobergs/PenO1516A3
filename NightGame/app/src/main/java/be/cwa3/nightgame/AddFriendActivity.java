@@ -14,7 +14,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-import be.cwa3.nightgame.Adapters.FriendSearchAdapter;
+import be.cwa3.nightgame.Adapters.FriendImageAdapter;
 import be.cwa3.nightgame.Data.ErrorData;
 import be.cwa3.nightgame.Data.FriendAddRequestData;
 import be.cwa3.nightgame.Data.FriendAddReturnData;
@@ -59,7 +59,7 @@ public class AddFriendActivity extends AppCompatActivity {
                 if (enterFriendName.getText().toString().isEmpty()) {
                     List<FriendSearchReturnItemData> empty = new ArrayList<FriendSearchReturnItemData>();
                     friendSearchReturnData.List = empty;
-                    listView.setAdapter(new FriendSearchAdapter(AddFriendActivity.this, empty));
+                    listView.setAdapter(new FriendImageAdapter(AddFriendActivity.this, empty));
                 }
             }
 
@@ -86,7 +86,7 @@ public class AddFriendActivity extends AppCompatActivity {
             @Override
             public void onSucces(FriendSearchReturnData body) {
                 friendSearchReturnData = body;
-                listView.setAdapter(new FriendSearchAdapter(AddFriendActivity.this, body.List));
+                listView.setAdapter(new FriendImageAdapter(AddFriendActivity.this, body.List));
             }
 
             @Override

@@ -144,6 +144,7 @@
     <orderEntry type="library" exported="" name="play-services-safetynet-8.1.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-games-8.1.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-wallet-8.1.0" level="project" />
+    <orderEntry type="library" exported="" name="joda-time-2.4" level="project" />
     <orderEntry type="library" exported="" name="play-services-basement-8.1.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-maps-8.1.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-nearby-8.1.0" level="project" />
