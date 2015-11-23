@@ -1,28 +1,19 @@
 package be.cwa3.nightgame;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.CompoundButton;
+import android.util.Log;
+import android.view.View;
 import android.widget.ListView;
-import android.widget.Switch;
 import android.widget.Toast;
 
 import org.joda.time.DateTime;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import at.grabner.circleprogress.AnimationState;
-import at.grabner.circleprogress.AnimationStateChangedListener;
 import at.grabner.circleprogress.CircleProgressView;
-import at.grabner.circleprogress.TextMode;
 
 import be.cwa3.nightgame.Adapters.FriendImageAdapter;
 import be.cwa3.nightgame.Data.ErrorData;
-import be.cwa3.nightgame.Data.FriendSearchReturnData;
-import be.cwa3.nightgame.Data.FriendSearchReturnItemData;
 import be.cwa3.nightgame.Data.JoinLobbyRequestData;
 import be.cwa3.nightgame.Data.LobbiesData;
 import be.cwa3.nightgame.Data.ReturnData;
@@ -50,37 +41,16 @@ public class LobbyWaitActivity extends AppCompatActivity implements CircleProgre
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_lobywait);
-
+        setContentView(R.layout.activity_lobbywait);
+        listView = (ListView) findViewById(R.id.lobby_players_list);
+        mCircleView = (CircleProgressView) findViewById(R.id.circleView);
+        mCircleView.setSeekModeEnabled(false);
 
         String gameId = new SettingsUtil(this).getString(SharedPreferencesKeys.GameIDString);
         makeCall(new JoinLobbyRequestData(gameId));
 
-        listView = (ListView) findViewById(R.id.lobby_players_list);
-        final Long TminusFinal = (gameData.TimerDate.getMillis() - DateTime.now().getMillis())*1000;
 
-        if(gameData.MinPlayers>=gameData.Players.size()){
-            Intent intent = new Intent(getApplicationContext(), GameActivity.class);
-            startActivity(intent);
-        }else {
-            if (gameData.TimerDate.equals(null)) {
-                mCircleView.setAutoTextSize(true);
-                mCircleView.spin();
-                mCircleView.setText(String.format("%n Waiting %s / %s", gameData.Players.size(), gameData.MinPlayers));
-                List<FriendSearchReturnItemData> empty = new ArrayList(gameData.Players);
-                listView.setAdapter(new FriendImageAdapter(LobbyWaitActivity.this, empty));
-                //automatic refresh?
-            } else {
-                mCircleView.setAutoTextSize(true);
-                mCircleView.stopSpinning();
-                mCircleView.setMaxValue(100);
-                Long TminusCurr = (gameData.TimerDate.getMillis() - DateTime.now().getMillis()) * 1000;
-                mCircleView.setValue(TminusCurr / TminusFinal);
 
-                List<FriendSearchReturnItemData> empty = new ArrayList(gameData.Players);
-                listView.setAdapter(new FriendImageAdapter(LobbyWaitActivity.this, empty));
-            }
-        }
 
     }
 
@@ -95,7 +65,28 @@ public class LobbyWaitActivity extends AppCompatActivity implements CircleProgre
         requestUtil.makeRequest(new RequestInterface<LobbiesData>() {
             @Override
             public void onSucces(LobbiesData body) {
+
                 gameData = body;
+                if (gameData.TimerDate== null) {
+                    mCircleView.setAutoTextSize(true);
+                    mCircleView.spin();
+                    mCircleView.setText(String.format("Waiting %d / %d", gameData.Players.size(), gameData.MinPlayers));
+                    listView.setAdapter(new FriendImageAdapter(LobbyWaitActivity.this, gameData.Players));
+                    //automatic refresh?
+                }
+                else if(gameData.TimerDate.isBefore(DateTime.now().getMillis())){
+                    Intent intent = new Intent(getApplicationContext(), GameActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                }
+                else {
+                    mCircleView.setAutoTextSize(true);
+                    mCircleView.stopSpinning();
+                    mCircleView.setMaxValue(100);
+                    Long Tminus = (gameData.TimerDate.getMillis() - DateTime.now().getMillis())/1000;
+                    mCircleView.setValue((300 - Tminus) / 3);
+                    listView.setAdapter(new FriendImageAdapter(LobbyWaitActivity.this, gameData.Players));
+                }
             }
 
             @Override

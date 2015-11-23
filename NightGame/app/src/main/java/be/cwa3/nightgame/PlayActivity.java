@@ -44,6 +44,7 @@ public class PlayActivity extends SensorDataActivity {
 
     private EditText enterLobbyName;
     ListView listView;
+    private boolean hasLocation = false;
 
     LobbiesListData lobbiesListData;
 
@@ -53,6 +54,15 @@ public class PlayActivity extends SensorDataActivity {
 
         makeCall();
 
+        setSensorDataInterface(new SensorDataInterface() {
+            @Override
+            public void locationChanged(Location newLocation) {
+                if(lobbiesListData != null && !hasLocation) {
+                    hasLocation = true;
+                    listView.setAdapter(new LobbyAdapter(PlayActivity.this, lobbiesListData.List, getLocation()));
+                }
+            }
+        });
 
         enterLobbyName = (EditText) findViewById(R.id.editTextLobby);
 
@@ -112,36 +122,6 @@ public class PlayActivity extends SensorDataActivity {
             @Override
             public void onSucces(LobbiesListData body) {
                 lobbiesListData = body;
-                final Location myLocation = getLocation();
-                /*final Location myLocation = new Location("");
-                myLocation.setLatitude(54);
-                myLocation.setLongitude(5);*/
-                Collections.sort(lobbiesListData.List, new Comparator<LobbiesData>() {
-
-                    @Override
-                    public int compare(LobbiesData lhs, LobbiesData rhs) {
-
-                        Location locationLhs = new Location("");
-                        locationLhs.setLatitude(lhs.CenterLocation.Latitude);
-                        locationLhs.setLongitude(lhs.CenterLocation.Longitude);
-
-                        Location locationRhs = new Location("");
-                        locationRhs.setLatitude(rhs.CenterLocation.Latitude);
-                        locationRhs.setLongitude(rhs.CenterLocation.Longitude);
-                        if (myLocation != null) {
-                            if (locationRhs.distanceTo(myLocation) > locationLhs.distanceTo(myLocation)) {
-                                return 1;
-                            } else if (locationRhs.distanceTo(myLocation) <= locationLhs.distanceTo(myLocation)) {
-                                return -1;
-                            } else
-                                return 0;
-                        }
-                        else{
-                            return 0;
-                        }
-                    }
-                });
-
                 setListView();
             }
 
@@ -173,7 +153,34 @@ public class PlayActivity extends SensorDataActivity {
 
     public void setListView() {
         if (lobbiesListData != null) {
+            final Location myLocation = getLocation();
+            if(myLocation != null && !hasLocation)
+                hasLocation = true;
+            Collections.sort(lobbiesListData.List, new Comparator<LobbiesData>() {
 
+                @Override
+                public int compare(LobbiesData lhs, LobbiesData rhs) {
+
+                    Location locationLhs = new Location("");
+                    locationLhs.setLatitude(lhs.CenterLocation.Latitude);
+                    locationLhs.setLongitude(lhs.CenterLocation.Longitude);
+
+                    Location locationRhs = new Location("");
+                    locationRhs.setLatitude(rhs.CenterLocation.Latitude);
+                    locationRhs.setLongitude(rhs.CenterLocation.Longitude);
+                    if (hasLocation) {
+                        if (locationRhs.distanceTo(myLocation) < locationLhs.distanceTo(myLocation)) {
+                            return 1;
+                        } else if (locationRhs.distanceTo(myLocation) >= locationLhs.distanceTo(myLocation)) {
+                            return -1;
+                        } else
+                            return 0;
+                    }
+                    else{
+                        return 0;
+                    }
+                }
+            });
             listView.setAdapter(new LobbyAdapter(PlayActivity.this, lobbiesListData.List, getLocation()));
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
                 @Override

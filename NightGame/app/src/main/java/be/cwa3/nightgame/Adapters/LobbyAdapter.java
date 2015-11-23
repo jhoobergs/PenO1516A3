@@ -25,11 +25,14 @@ import be.cwa3.nightgame.Data.LobbiesData;
 import be.cwa3.nightgame.Data.LobbiesListData;
 import be.cwa3.nightgame.Data.ReturnData;
 import be.cwa3.nightgame.LobbyWaitActivity;
+import be.cwa3.nightgame.PlayActivity;
 import be.cwa3.nightgame.R;
 import be.cwa3.nightgame.Utils.ApiUtil;
 import be.cwa3.nightgame.Utils.ErrorUtil;
 import be.cwa3.nightgame.Utils.RequestInterface;
 import be.cwa3.nightgame.Utils.RequestUtil;
+import be.cwa3.nightgame.Utils.SettingsUtil;
+import be.cwa3.nightgame.Utils.SharedPreferencesKeys;
 import retrofit.Call;
 
 /**
@@ -83,17 +86,27 @@ public class LobbyAdapter extends ArrayAdapter<LobbiesData> {
         Location location = new Location("");
         location.setLatitude(menuItem.CenterLocation.Latitude);
         location.setLongitude(menuItem.CenterLocation.Longitude);
+        if(myLocation != null) {
+            float dist = myLocation.distanceTo(location);
+            if(dist < 1000)
+                holder.location.setText(String.format("%d m",Math.round(dist)));
+            else{
+                holder.location.setText(String.format("%s km", String.valueOf(Math.round(dist/100)/10.0)));
+            }
+        }
+        if(menuItem.TimerDate != null) {
+            long Tminus;
+            Tminus = menuItem.TimerDate.getMillis() - DateTime.now().getMillis();
+            holder.timer.setText(String.valueOf(Tminus * 1000));
+            holder.timer.setVisibility(View.VISIBLE);
+        }
+        else{
+            holder.timer.setVisibility(View.GONE);
+        }
 
-        String dist = String.valueOf(myLocation.distanceTo(location));
-        holder.location.setText(dist);
 
-        long Tminus;
-        Tminus = menuItem.TimerDate.getMillis()- DateTime.now().getMillis();
-        holder.timer.setText(String.valueOf(Tminus*1000));
-
-
-        holder.location.setText((CharSequence) menuItem.CenterLocation);
-        holder.timer.setText(menuItem.TimerDate.toString());
+       // holder.location.setText((CharSequence) menuItem.CenterLocation);
+        //holder.timer.setText(menuItem.TimerDate.toString());
 
 
         holder.join_button.setOnClickListener(new View.OnClickListener() {
@@ -127,6 +140,7 @@ public class LobbyAdapter extends ArrayAdapter<LobbiesData> {
         requestUtil.makeRequest(new RequestInterface<JoinLobbyReturnData>() {
             @Override
             public void onSucces(JoinLobbyReturnData body) {
+                new SettingsUtil(context).setString(SharedPreferencesKeys.GameIDString, menuItem.GameId);
                 Intent intent = new Intent(context, LobbyWaitActivity.class);
                 context.startActivity(intent);
 

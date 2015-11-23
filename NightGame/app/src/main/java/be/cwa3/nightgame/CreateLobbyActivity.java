@@ -70,6 +70,7 @@ public class CreateLobbyActivity extends SensorDataActivity implements OnMapRead
     MapFragment mapFragment;
 
     private Location location;
+    private Location centerLocation;
     private LatLng locationlatlng;
     private boolean mapHasBeenReady = false;
 
@@ -83,7 +84,6 @@ public class CreateLobbyActivity extends SensorDataActivity implements OnMapRead
         mapLayout = (LinearLayout) findViewById(R.id.map_layout);
         chooseCentre = (TextView) findViewById(R.id.choose_centre_press_next);
         editTextGroupName = (EditText) findViewById(R.id.editTextGroupName);
-        buttonNext = (Button) findViewById(R.id.button_next);
 
         numberPickerMaxValue = (NumberPicker) findViewById(R.id.numberPickerMaxValue);
         numberPickerMinValue = (NumberPicker) findViewById(R.id.numberPickerMinValue);
@@ -118,12 +118,15 @@ public class CreateLobbyActivity extends SensorDataActivity implements OnMapRead
                         .position(latLng)
                         .draggable(true);
                 map.addMarker(markerOptions);
+                centerLocation = new Location("");
+                centerLocation.setLatitude(latLng.latitude);
+                centerLocation.setLongitude(latLng.longitude);
 
                 CircleOptions circleOptions = new CircleOptions()
                         .center(latLng)
                         .radius(radius); // In meters
                 map.addCircle(circleOptions);
-                buttonNext.setVisibility(View.VISIBLE);
+                //buttonNext.setVisibility(View.VISIBLE);
             }
         });
         map.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
@@ -148,13 +151,17 @@ public class CreateLobbyActivity extends SensorDataActivity implements OnMapRead
                         .center(latLng)
                         .radius(radius); // In meters
                 map.addCircle(circleOptions);
+                centerLocation = new Location("");
+                centerLocation.setLatitude(latLng.latitude);
+                centerLocation.setLongitude(latLng.longitude);
             }
         });
 
 
-        if(location != null && clicked == false) {
+        if(location != null && !clicked) {
+            centerLocation = location;
             locationlatlng = new LatLng(location.getLatitude(), location.getLongitude());
-
+            map.clear();
             map.setMyLocationEnabled(true);
             if (!mapHasBeenReady) {
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(locationlatlng, 13));
@@ -162,7 +169,15 @@ public class CreateLobbyActivity extends SensorDataActivity implements OnMapRead
             } else {
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(map.getCameraPosition().target, map.getCameraPosition().zoom));
             }
-            map.clear();
+            MarkerOptions markerOptions = new MarkerOptions()
+                    .position(locationlatlng)
+                    .draggable(true);
+            map.addMarker(markerOptions);
+
+            CircleOptions circleOptions = new CircleOptions()
+                    .center(locationlatlng)
+                    .radius(radius); // In meters
+            map.addCircle(circleOptions);
         }
     }
 
@@ -213,7 +228,7 @@ public class CreateLobbyActivity extends SensorDataActivity implements OnMapRead
                     data.Name = editTextGroupName.getText().toString();
                     data.MinPlayers = numberPickerMinValue.getValue();
                     data.MaxPlayers = numberPickerMaxValue.getValue();
-                    Location userLocation = getLocation();
+                    Location userLocation = centerLocation;
                     data.CenterLocationLatitude = userLocation.getLatitude();
                     data.CenterLocationLongitude = userLocation.getLongitude();
                     makeCreateLobbyCall(data);//
@@ -229,10 +244,9 @@ public class CreateLobbyActivity extends SensorDataActivity implements OnMapRead
 
             @Override
             public void onSucces(CreateLobbyReturnData body) {
-                Log.d("test", body.GameId);
-                Intent intent = new Intent(getApplicationContext(), GameActivity.class);
-                startActivity(intent);
                 new SettingsUtil(getApplicationContext()).setString(SharedPreferencesKeys.GameIDString, body.GameId);
+                Intent intent = new Intent(getApplicationContext(), LobbyWaitActivity.class);
+                startActivity(intent);
             }
 
             @Override

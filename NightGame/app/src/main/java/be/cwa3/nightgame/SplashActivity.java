@@ -31,11 +31,12 @@ public class SplashActivity extends AppCompatActivity {
                 // This method will be executed once the timer is over
                 // Start your app main activity
                 if(!new SettingsUtil(getApplicationContext()).getString(SharedPreferencesKeys.GameIDString).equals("")) {
-                    Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+                    Intent i = new Intent(getApplicationContext(), LobbyWaitActivity.class);
                     startActivity(i);
                 }
                 else {
                     Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                     startActivity(i);
                 }
                 // close this activity

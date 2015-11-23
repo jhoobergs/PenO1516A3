@@ -2,10 +2,14 @@ package be.cwa3.nightgame.Utils;
 
 import android.content.Context;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
+
+import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -41,12 +45,16 @@ public class ApiUtil {
                 return chain.proceed(request);
             }
         });
+        Gson gsonParser = new GsonBuilder()
+                .registerTypeAdapter(DateTime.class, new DateTimeGsonConverter())
+                .create();
+
         //Create an instance of retrofit
         Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(BuildConfig.API_URL) //Check Build.gradle (Module: app -> android -> buildTypes)
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(httpClient)
-            .build();
+                .addConverterFactory(GsonConverterFactory.create(gsonParser))
+                .client(httpClient)
+                .build();
      return retrofit.create(ApiInterface.class);
     }
 }
