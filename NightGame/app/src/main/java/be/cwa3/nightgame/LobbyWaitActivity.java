@@ -44,8 +44,9 @@ public class LobbyWaitActivity extends AppCompatActivity implements CircleProgre
         if(gameData.MinPlayers>gameData.Players.size()){
             //start Game!!!
         }else if(gameData.TimerDate.equals(null)){
+            mCircleView.setAutoTextSize(true);
             mCircleView.spin();
-            mCircleView.setText(String.format("%s / %s", gameData.Players.size(),gameData.MaxPlayers));
+            mCircleView.setText(String.format("%n Waiting %s / %s", gameData.Players.size(),gameData.MinPlayers));
             //automatic refresh?
         }else{
             mCircleView.stopSpinning();
@@ -54,7 +55,7 @@ public class LobbyWaitActivity extends AppCompatActivity implements CircleProgre
             //DateFormat?? how to change automatic?
         }
 
-        mCircleView = (CircleProgressView) findViewById(R.id.circleView);
+        /*mCircleView = (CircleProgressView) findViewById(R.id.circleView);
         mCircleView.setOnProgressChangedListener(this);
 
         //value setting
@@ -98,13 +99,6 @@ public class LobbyWaitActivity extends AppCompatActivity implements CircleProgre
         mCircleView.setTextMode(TextMode.VALUE); // Shows the current value
         mCircleView.setTextMode(TextMode.PERCENT); // Shows current percent of the current value from the max value
 
-        //spinning
-        mCircleView.spin(); // start spinning
-        mCircleView.stopSpinning(); // stops spinning. Spinner gets shorter until it disappears.
-        mCircleView.setValueAnimated(24); // stops spinning. Spinner spins until on top. Then fills to set value.
-        mCircleView.setShowTextWhileSpinning(true); // Show/hide text in spinning mode
-        //animation callbacks
-
         //this example shows how to show a loading text if it is in spinning mode, and the current percent value otherwise.
         mCircleView.setText("waiting on players");
         mCircleView.setTextMode(TextMode.PERCENT);
@@ -133,22 +127,7 @@ public class LobbyWaitActivity extends AppCompatActivity implements CircleProgre
         );
 
 
-        //Setup Switch
-        mSwitchSpin = (Switch) findViewById(R.id.switch1);
-        mSwitchSpin.setOnCheckedChangeListener(
-                new CompoundButton.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if (isChecked) {
-                            mCircleView.spin();
-                        } else {
-                            mCircleView.stopSpinning();
-                        }
-                    }
-                }
-
-        );
-
+    */
 
     }
 

@@ -74,7 +74,9 @@ public class LobbyAdapter extends ArrayAdapter<LobbiesData> {
 
         holder.lobbies.setText(menuItem.Name);
         holder.playersRatio.setText(String.format("%s / %s", menuItem.Players.size(),menuItem.MaxPlayers));
-        holder.location.setText();
+
+
+        holder.location.setText((CharSequence) menuItem.CenterLocation);
         holder.timer.setText();
 
 
