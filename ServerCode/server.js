@@ -15,7 +15,7 @@ app.use(function(req, res, next) {
   next();
 });
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(bodyParser.json()); //Body's in json format will be accepted.
 
 app.get('/uitleg', function(req, res) {
     if(req.query != null && req.query.token == "HEHJHjEZJzhejh2938|kjzodj"){
@@ -24,7 +24,7 @@ app.get('/uitleg', function(req, res) {
 });
 var dynamodbDoc = new AWS.DynamoDB.DocumentClient();
 getUserByToken = function(res, header, callback){
-    
+    //This function will return the username of the user that sent the request.
     if(header.token == null){
         var error = {'Errors' : [3]};
         returnData(res, 2, null, error);
@@ -46,7 +46,7 @@ getUserByToken = function(res, header, callback){
                 console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
             } else {
                 if(data.Items.length == 1){
-                    callback(data.Items[0].Username);                    
+                    callback(data.Items[0].Username);  //execute the callback funtion (3e parameter of the function)         
                 }
                 else{
                     var error = {'Errors' : [3]};
@@ -59,6 +59,7 @@ getUserByToken = function(res, header, callback){
 };
 
 getUser = function(username, callback){
+    //Get all data of a user by its username
     var params = {
             TableName : "Users",
             KeyConditionExpression: "#username = :name",
@@ -81,6 +82,7 @@ getUser = function(username, callback){
 }
 
 getGame = function(gameId, callback){
+    //Get all data of a game by its gameId
     var params = {
             TableName : "Games",
             KeyConditionExpression: "#gameId = :gameId",
@@ -103,23 +105,12 @@ getGame = function(gameId, callback){
 }
 
 getTimeBaseUniqueId = function(){
+    //use the node-uuid package to generate a random (timebased) unique id
     return uuid.v1();
 }
 
-getDistanceFromLatLonInKm = function(lat1,lon1,lat2,lon2) {
-  var R = 6371; // Radius of the earth in km
-  var dLat = deg2rad(lat2-lat1);  // deg2rad below
-  var dLon = deg2rad(lon2-lon1); 
-  var a = 
-    Math.sin(dLat/2) * Math.sin(dLat/2) +
-    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
-    Math.sin(dLon/2) * Math.sin(dLon/2); 
-  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-  var d = R * c; // Distance in km
-  return d;
-}
-
 getDistanceFromLatLonKmVincenty = function(lat1, lon1, lat2, lon2){
+    //Javascript implementation of Vincenty's algorithm to calculate distance between 2 latitude-longitude pairs
   var p1 = {};
   var p2 = {};
   p1.lat = deg2rad(lat1);
@@ -189,3 +180,4 @@ app.listen(PORT, function(){
     //Callback triggered when server is successfully listening. Hurray!
     console.log("Server listening on: http://localhost:%s", PORT);
 });
+

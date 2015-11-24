@@ -1,0 +1,29 @@
+Te krijgen:
+- Laatste Locaties {per gebruiker: -Naam, team, Locatie)
+- Aantal Levens
+- Vlag in bezit ? (Sinds)
+- Aantal volbrachte opdrachten
+- Opdrachten
+- Team
+
+Te sturen:
+- Locatie
+- Accelerometer
+- CompletedMissions
+- Died
+
+Opdrachten:
+- Type 1: Rij naar ...
+
+- Type 2: Verzamel
+
+- Type 3: Hoogteverschil fietsen
+
+- Type 4: Verzamel Licht
+
+- Type 5: Haal deze snelheid
+
+{ Type, Description, OnPhoneCheckable}
+
+
+Remove (tegengestelde van join)

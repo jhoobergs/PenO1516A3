@@ -402,6 +402,7 @@ private void makeNewAccountCall(CreateNewAccountRequestData data){
 <p>Mogelijke errors: 3, 4, 5</p>
 <h4>GET: /game/list</h4>
 <p>Response:</p>
+<p>TimerDate kan null zijn</p>
 <pre class="prettyprint lang-js">
 {
   "statusCode": 1,
@@ -418,7 +419,8 @@ private void makeNewAccountCall(CreateNewAccountRequestData data){
         "CenterLocation": {
           "Latitude": 51.0673677,
           "Longitude": 5.1247541
-        }
+        },
+        "TimerDate": "2015-11-20T20:48:29.523Z"
       },
       {
         "GameId": "f94bbaf0-8ba6-11e5-8c9d-b1d919c69429",
@@ -431,12 +433,66 @@ private void makeNewAccountCall(CreateNewAccountRequestData data){
         "CenterLocation": {
           "Latitude": 51.0673677,
           "Longitude": 5.1247541
-        }
+        },
+        "TimerDate": null
       }
       ]
   }
 }
 </pre>
+<h4>POST: /game/getData</h4>
+<p>Op te sturen data:</p>
+<pre class="prettyprint lang-js">
+{
+    "GameId": "c7c68180-8fc6-11e5-9168-c9e0b2736a07"
+}
+</pre>
+<p>Response:</p>
+<p>TimerDate kan null zijn</p>
+<pre class="prettyprint lang-js">
+{
+  "statusCode": 1,
+  "body": {
+    "GameId": "c7c68180-8fc6-11e5-9168-c9e0b2736a07",
+    "Name": "gk",
+    "MinPlayers": 2,
+    "MaxPlayers": 6,
+    "Players": [
+      "gke",
+      "test"
+    ],
+    "CenterLocation": {
+      "Latitude": 50.0673677,
+      "Longitude": 10.1247541
+    },
+    "TimerDate": "2015-11-20T20:48:29.523Z"
+  },
+  "error": null
+}
+
+<p>Mogelijke errors: 3</p>
+<h4>POST: /game/sendData</h4>
+<p>Op te sturen data:</p>
+<pre class="prettyprint lang-js">
+{
+    "GameId": "c7c68180-8fc6-11e5-9168-c9e0b2736a07",
+    "Location": {
+        "Latitude": 50.0673677,
+        "Longitude": 10.1247541,
+        "Altitude" : 10
+    },
+    "Accelerometer" : {
+            "X" : 1.1150,
+            "Y" : 9.7252,
+            "Z" : 2.93980
+    },
+    "CompletedMissions" = [id1, id2, ...],
+    "Died" = false
+}
+</pre>
+<p>Response:</p>
+<pre class="prettyprint lang-js">
+Nog niet beschreven
 <p>Mogelijke errors: 3</p>
 <h3>Friends</h3>
 <h4>POST: /friends/search</h4>
@@ -479,5 +535,68 @@ private void makeNewAccountCall(CreateNewAccountRequestData data){
 }
 </pre>
 <p>Mogelijke errors: 3</p>
+
+<h3>Vincenty</h3>
+<pre clas="prettyprint lang-js">
+getDistanceFromLatLonKmVincenty = function(lat1, lon1, lat2, lon2){
+    //Javascript implementation of Vincenty's algorithm to calculate distance between 2 latitude-longitude pairs
+  var p1 = {};
+  var p2 = {};
+  p1.lat = deg2rad(lat1);
+  p1.lon = deg2rad(lon1);
+    p2.lat = deg2rad(lat2);
+    p2.lon = deg2rad(lon2);
+  var a = 6378137, b = 6356752.3142,  f = 1/298.257223563;  // WGS-84 ellipsiod
+  var L = p2.lon - p1.lon;
+  var U1 = Math.atan((1-f) * Math.tan(p1.lat));
+  var U2 = Math.atan((1-f) * Math.tan(p2.lat));
+  var sinU1 = Math.sin(U1), cosU1 = Math.cos(U1);
+  var sinU2 = Math.sin(U2), cosU2 = Math.cos(U2);
+  
+  var lambda = L, lambdaP = 2*Math.PI;
+  var iterLimit = 20;
+  while (Math.abs(lambda-lambdaP) > 1e-12 && --iterLimit>0) {
+    var sinLambda = Math.sin(lambda), cosLambda = Math.cos(lambda);
+    var sinSigma = Math.sqrt((cosU2*sinLambda) * (cosU2*sinLambda) + 
+      (cosU1*sinU2-sinU1*cosU2*cosLambda) * (cosU1*sinU2-sinU1*cosU2*cosLambda));
+    if (sinSigma==0) return 0;  // co-incident points
+    var cosSigma = sinU1*sinU2 + cosU1*cosU2*cosLambda;
+    var sigma = Math.atan2(sinSigma, cosSigma);
+    var sinAlpha = cosU1 * cosU2 * sinLambda / sinSigma;
+    var cosSqAlpha = 1 - sinAlpha*sinAlpha;
+    var cos2SigmaM = cosSigma - 2*sinU1*sinU2/cosSqAlpha;
+    if (isNaN(cos2SigmaM)) cos2SigmaM = 0;  // equatorial line: cosSqAlpha=0 (§6)
+    var C = f/16*cosSqAlpha*(4+f*(4-3*cosSqAlpha));
+    lambdaP = lambda;
+    lambda = L + (1-C) * f * sinAlpha *
+      (sigma + C*sinSigma*(cos2SigmaM+C*cosSigma*(-1+2*cos2SigmaM*cos2SigmaM)));
+  }
+  if (iterLimit==0) return NaN  // formula failed to converge
+
+  var uSq = cosSqAlpha * (a*a - b*b) / (b*b);
+  var A = 1 + uSq/16384*(4096+uSq*(-768+uSq*(320-175*uSq)));
+  var B = uSq/1024 * (256+uSq*(-128+uSq*(74-47*uSq)));
+  var deltaSigma = B*sinSigma*(cos2SigmaM+B/4*(cosSigma*(-1+2*cos2SigmaM*cos2SigmaM)-
+    B/6*cos2SigmaM*(-3+4*sinSigma*sinSigma)*(-3+4*cos2SigmaM*cos2SigmaM)));
+  var s = b*A*(sigma-deltaSigma);
+  
+  s = s.toFixed(3); // round to 1mm precision
+  return s;
+}
+
+deg2rad = function(deg) {
+  return deg * (Math.PI/180);
+}
+</pre>
+Opdrachten:
+- Type 1: Rij naar ...
+
+- Type 2: Verzamel
+
+- Type 3: Hoogteverschil fietsen
+
+- Type 4: Verzamel Licht
+
+- Type 5: Haal deze snelheid
 
 </html>

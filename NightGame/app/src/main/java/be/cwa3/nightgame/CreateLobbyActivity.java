@@ -49,7 +49,6 @@ import be.cwa3.nightgame.Utils.SensorDataActivity;
 import be.cwa3.nightgame.Utils.SensorDataInterface;
 import be.cwa3.nightgame.Utils.SettingsUtil;
 import be.cwa3.nightgame.Utils.SharedPreferencesKeys;
-import be.cwa3.nightgame.custom.CustomScrollView;
 import retrofit.Call;
 
 /**

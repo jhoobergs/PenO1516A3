@@ -48,7 +48,11 @@ app.post('/game/join',  function(req, res){
                             }
                         }
                         if(!found && Object.keys(players).length< data.Items[0].MaxPlayers){
-                            addPlayerToGame(req.body.GameId, user, function(succes){
+                            var setTimer = false;
+                            if(Object.keys(players).length == data.Items[0].MinPlayers-1){
+                                 setTimer = true;       
+                            }
+                            addPlayerToGame(req.body.GameId, user, setTimer, function(succes){
                                 if(succes){
                                     var result = {};
                                     returnData(res, 1, result, null);
@@ -68,6 +72,71 @@ app.post('/game/join',  function(req, res){
                             returnData(res, 1, result, null);
                         }
                     }
+                    else{
+                        var error = {'Errors' : [4]};
+                        returnData(res, 2, null, error);
+                    }
+                }
+                });
+                }
+            });
+        }
+    }
+});
+    
+app.post('/game/getData',  function(req, res){
+    var dynamodbDoc = new AWS.DynamoDB.DocumentClient();
+    if(req.body != null){
+        if(req.body.GameId == null){
+            returnData(res, 0, null, '{Not all params present}');
+        }
+        else{
+            user = getUserByToken(res, req.headers, function(user){
+                if(user != undefined){
+                getGame(req.body.GameId, function(data){
+                if (data == null) {
+                    console.error("No Data sended");
+                }
+                else
+                {
+                    if(data.Items.length == 1){
+                        var found = false;
+                        var players = data.Items[0].Players;
+                        for (var i in players) {
+                            if(i == user){
+                                console.log("gelijk");
+                                found = true;
+                                break;
+                            }
+                        }
+                    if(found){
+                    var gamedata = data.Items[0];
+                    var item = {};
+                    item.GameId = gamedata.GameId;
+                    item.Name = gamedata.Name;
+                    item.MinPlayers = gamedata.MinPlayers;
+                    item.MaxPlayers = gamedata.MaxPlayers;
+                    item.Players = [];
+                    var players = Object.keys(gamedata.Players);
+                    for(var player in players){
+                    var playerData = {
+                    "Name" : players[player],
+                    "ImageURL": "http://www.benveldkamp.nl/images/PERS/Smurfen-bril.jpg"
+                    }
+                    item.Players.push(playerData); 
+                    }
+                    item.CenterLocation = gamedata.CircleCenter;
+                    if(gamedata.Timer != null)
+                        item.TimerDate = gamedata.Timer.substring(0, gamedata.Timer.length-5) + "+01:00";
+                    console.log(item);
+                    returnData(res, 1, item, null);  
+                        
+                    }  
+                    else{
+                        var error = {};
+                        returnData(res, 0, null, error);
+                    }
+                }
                     else{
                         var error = {'Errors' : [4]};
                         returnData(res, 2, null, error);
@@ -100,8 +169,18 @@ user = getUserByToken(res, req.headers, function(user){
                     item.Name = gamedata.Name;
                     item.MinPlayers = gamedata.MinPlayers;
                     item.MaxPlayers = gamedata.MaxPlayers;
-                    item.Players = Object.keys(gamedata.Players);
+                    item.Players = [];
+                    var players = Object.keys(gamedata.Players);
+                    for(var player in players){
+                    var playerData = {
+                    "Name" : players[player],
+                    "ImageURL": "http://www.benveldkamp.nl/images/PERS/Smurfen-bril.jpg"
+                    }
+                    item.Players.push(playerData); 
+                    }
                     item.CenterLocation = gamedata.CircleCenter;
+                    if(gamedata.Timer != null)
+                        item.TimerDate = gamedata.Timer.substring(0, gamedata.Timer.length-5) + "+01:00";
                     result.push(item);
                     
                 }  
@@ -116,7 +195,7 @@ user = getUserByToken(res, req.headers, function(user){
 app.post('/game/sendData',  function(req, res){
     var dynamodbDoc = new AWS.DynamoDB.DocumentClient();
     if(req.body != null){
-        if(req.body.GameId == null || req.body.Accelerometer == null || req.body.Location == null){
+        if(req.body.GameId == null || req.body.Accelerometer == null || req.body.Location == null || req.body.CompletedMissions == null ||req.body.Died == null){
             returnData(res, 0, null, '{Not all params present}');
         }
         else{
@@ -168,10 +247,20 @@ app.post('/game/sendData',  function(req, res){
                           
 
 putnewGameItem = function(data, username, id) {           
-    
+    //Team = -1 -> Not set, 0 -> Defender, 1 -> Attacker
     var tableName = 'Games';
     var players = {"M" : {}};
-    players.M[username] = {"M":{"DateAdded" : {"S" : new Date().toISOString()} }};
+    players.M[username] = {
+        "M":{
+            "DateAdded" : {"S" : new Date().toISOString()},
+                    "Locations" : {"L" : []},
+                    "AccelerometerData" : {"L" : []},
+                    "Missions" : {"L" : []},
+                    "Team" : {"N" : "-1" },
+                    "HasFlag" : {"BOOL": false},
+                    "Lives": {"N" : "3"}
+            }
+    };
     var item = {
 	    'GameId' : { 'S': id },
         'Name' : { 'S' : data.Name},
@@ -184,7 +273,8 @@ putnewGameItem = function(data, username, id) {
                                     Latitude:  {"N" : data.CenterLocationLatitude.toString()},
                                     Longitude: {"N" : data.CenterLocationLongitude.toString()}        
                                    }
-        }
+        },
+        'IsStarted' : { 'BOOL' : false}        
     };	
     dd.putItem({
         'TableName': tableName,
@@ -194,7 +284,33 @@ putnewGameItem = function(data, username, id) {
     });
 };
     
-addPlayerToGame = function(gameId, user, callback){
+addPlayerToGame = function(gameId, user, setTimer, callback){
+    var startDate;
+    var updateExpression = "SET #attrName.#attrName2 = :user";
+    var expressionAttributesVal = {
+            ":user": {
+                "M":{
+                    "DateAdded" : {"S" : new Date().toISOString()},
+                    "Locations" : {"L" : []},
+                    "AccelerometerData" : {"L" : []},
+                    "Missions" : {"L" : []},
+                    "Team" : {"N" : "-1" },
+                    "HasFlag" : {"BOOL": false},
+                    "Lives": {"N" : "3"}
+                }
+            }
+        };
+    var ExpressionAttributeN = {
+        "#attrName" : "Players",
+        "#attrName2" : user
+        }
+    if(setTimer){
+        startDate = new Date();
+        startDate = new Date(startDate.setMinutes(startDate.getMinutes() + 5)).toISOString();
+        updateExpression = "SET #attrName.#attrName2 = :user, #attrTimer = :timer";
+        expressionAttributesVal[":timer"] = {"S": startDate};
+        ExpressionAttributeN["#attrTimer"] = "Timer";
+    }
     dd.updateItem({
         TableName: "Games",
         Key: {
@@ -204,20 +320,9 @@ addPlayerToGame = function(gameId, user, callback){
         },
         //UpdateExpression: "ADD #attrName = :user",
         //UpdateExpression : "SET #attrName = list_append(#attrName, :user)",
-        UpdateExpression: "SET #attrName.#attrName2 = :user",
-        ExpressionAttributeNames : {
-        "#attrName" : "Players",
-        "#attrName2" : user
-        },
-        ExpressionAttributeValues: {
-            ":user": {
-                "M":{
-                    "DateAdded" : {"S" : new Date().toISOString()},
-                    "Locations" : {"L" : []},
-                    "AccelerometerData" : {"L" : []}
-                }
-            }
-        }
+        UpdateExpression: updateExpression,
+        ExpressionAttributeNames : ExpressionAttributeN,
+        ExpressionAttributeValues: expressionAttributesVal
     }, function(err, data) {
         if(err){
             console.log(err);
