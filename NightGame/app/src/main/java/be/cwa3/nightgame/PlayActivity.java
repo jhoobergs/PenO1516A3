@@ -59,7 +59,7 @@ public class PlayActivity extends SensorDataActivity {
             public void locationChanged(Location newLocation) {
                 if(lobbiesListData != null && !hasLocation) {
                     hasLocation = true;
-                    listView.setAdapter(new LobbyAdapter(PlayActivity.this, lobbiesListData.List, getLocation()));
+                    setListView();
                 }
             }
         });
@@ -84,7 +84,7 @@ public class PlayActivity extends SensorDataActivity {
                 } if (enterLobbyName.getText().toString().isEmpty()) {
                     List<LobbiesData> empty = new ArrayList<LobbiesData>();
                     lobbiesListData.List = empty;
-                    listView.setAdapter(new LobbyAdapter(PlayActivity.this, empty,getLocation()));
+                    setListView();
                 }
             }
 
@@ -103,7 +103,7 @@ public class PlayActivity extends SensorDataActivity {
             @Override
             public void onSucces(LobbiesListData body) {
                 lobbiesListData = body;
-                listView.setAdapter(new LobbyAdapter(PlayActivity.this, body.List,getLocation()));
+                setListView();
             }
 
             @Override

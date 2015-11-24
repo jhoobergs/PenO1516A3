@@ -142,6 +142,7 @@ public class LobbyAdapter extends ArrayAdapter<LobbiesData> {
             public void onSucces(JoinLobbyReturnData body) {
                 new SettingsUtil(context).setString(SharedPreferencesKeys.GameIDString, menuItem.GameId);
                 Intent intent = new Intent(context, LobbyWaitActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 context.startActivity(intent);
 
             }

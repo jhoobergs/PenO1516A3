@@ -58,6 +58,7 @@ public class AddFriendActivity extends AppCompatActivity {
                 }
                 if (enterFriendName.getText().toString().isEmpty()) {
                     List<FriendSearchReturnItemData> empty = new ArrayList<FriendSearchReturnItemData>();
+                    friendSearchReturnData = new FriendSearchReturnData();
                     friendSearchReturnData.List = empty;
                     listView.setAdapter(new FriendImageAdapter(AddFriendActivity.this, empty));
                 }
