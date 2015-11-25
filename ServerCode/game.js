@@ -53,8 +53,8 @@ app.post('/game/join',  function(req, res){
                             }
                             var isStarted = false;
                             
-                            if(data.Items[0].Timer != null)
-                                console.log(new Date(data.Items[0].Timer));
+                            if(data.Items[0].Timer != null && new Date(data.Items[0].Timer) < new Date())
+                                isStarted = true;
                             if(Object.keys(players).length == data.Items[0].MaxPlayers-1){
                                  isStarted = true;    
                                  
@@ -65,29 +65,16 @@ app.post('/game/join',  function(req, res){
                             addPlayerToGame(req.body.GameId, user, setTimer,isDefender, isStarted, function(succes){
                                 if(succes){
                                     if(isStarted){
-                                var amountDone = 0;
-                                players[user] = {};
-                                var amountToDo = Object.keys(players).length;
-                                for (var i in players) {
-                            
-                                var missions = [];
-                                 missions.push(type1Mission(data.Items[0].CircleCenter.Latitude, data.Items[0].CircleCenter.Longitude, data.Items[0].CircleRadius));
-                                 missions.push(type2Mission());
-                                 missions.push(type3Mission());
-                                setMissionsForUser(req.body.GameId, i, missions, function(succes){
-                                    amountDone++;
-                                        if(succes){
-                                           if(amountDone == amountToDo){
-                                            var result = {};
+                                        players[user] = {};
+                                        AddFirstMissions(req.body.GameId, data.Items[0], players, function(succes){
+                                            if(succes){
                                             returnData(res, 1, result, null);
-                                        }
-                                        }
-                                        else{
+                                            }
+                                            else{
                                             returnData(res, 0, null, '{UpdateItemError}');
+                                            }
+                                            });
                                         }
-                                    });
-                                    }
-                                    }
                                     else{
                                     var result = {};
                                     returnData(res, 1, result, null);
@@ -119,6 +106,34 @@ app.post('/game/join',  function(req, res){
         }
     }
 });
+
+AddFirstMissions = function(GameId, gameData, players, callback){
+var amountDone = 0;
+var amountToDo = Object.keys(players).length;
+for (var i in players) {
+
+var missions = [];
+ missions.push(type1Mission(gameData.CircleCenter.Latitude, gameData.CircleCenter.Longitude, gameData.CircleRadius));
+ missions.push(type2Mission());
+ missions.push(type3Mission(1));
+ missions.push(type4Mission(1));
+ missions.push(type5Mission(1));
+setMissionsForUser(GameId, i, missions, function(succes){
+    amountDone++;
+        if(succes){
+           if(amountDone == amountToDo){
+            var result = {};
+            callback(true);
+            
+        }
+        }
+        else{
+            callback(false);
+            returnData(res, 0, null, '{UpdateItemError}');
+        }
+    });
+    }
+}
     
 app.post('/game/getData',  function(req, res){
     var dynamodbDoc = new AWS.DynamoDB.DocumentClient();
@@ -145,28 +160,25 @@ app.post('/game/getData',  function(req, res){
                                 break;
                             }
                         }
-                    if(found){
+                    if(found){                        
                     var gamedata = data.Items[0];
-                    var item = {};
-                    item.GameId = gamedata.GameId;
-                    item.Name = gamedata.Name;
-                    item.MinPlayers = gamedata.MinPlayers;
-                    item.MaxPlayers = gamedata.MaxPlayers;
-                    item.Players = [];
-                    var players = Object.keys(gamedata.Players);
-                    for(var player in players){
-                    var playerData = {
-                    "Name" : players[player],
-                    "ImageURL": "http://www.benveldkamp.nl/images/PERS/Smurfen-bril.jpg"
+                    if(gamedata.Timer != null && !gamedata.IsStarted && new Date(data.Items[0].Timer) < new Date()){
+                        AddFirstMissions(req.body.GameId, gamedata, gamedata.Players, function(succes){
+                            if(succes){
+                                getGame(req.body.GameId, function(newData){
+                                fillAndReturnGetData(res, newData.Items[0]);
+                                });
+                            }
+                            else{
+                                var error = {};
+                                returnData(res, 0, null, error);
+                            }
+                        });
                     }
-                    item.Players.push(playerData); 
+                    else{
+                        fillAndReturnGetData(res, gamedata);
                     }
-                    item.CenterLocation = gamedata.CircleCenter;
-                    if(gamedata.Timer != null)
-                        item.TimerDate = gamedata.Timer.substring(0, gamedata.Timer.length-5) + "+00:00";
-                    item.IsStarted = gamedata.IsStarted;
-                    //console.log(item);
-                    returnData(res, 1, item, null);  
+                    
                         
                     }  
                     else{
@@ -185,6 +197,29 @@ app.post('/game/getData',  function(req, res){
         }
     }
 });
+    
+function fillAndReturnGetData(res, gamedata){
+    var item = {};
+    item.GameId = gamedata.GameId;
+    item.Name = gamedata.Name;
+    item.MinPlayers = gamedata.MinPlayers;
+    item.MaxPlayers = gamedata.MaxPlayers;
+    item.Players = [];
+    var players = Object.keys(gamedata.Players);
+    for(var player in players){
+    var playerData = {
+    "Name" : players[player],
+    "ImageURL": "http://www.benveldkamp.nl/images/PERS/Smurfen-bril.jpg"
+    }
+    item.Players.push(playerData); 
+    }
+    item.CenterLocation = gamedata.CircleCenter;
+    if(gamedata.Timer != null)
+        item.TimerDate = gamedata.Timer.substring(0, gamedata.Timer.length-5) + "+00:00";
+    item.IsStarted = gamedata.IsStarted;
+    //console.log(item);
+    returnData(res, 1, item, null);  
+}
     
 app.get('/game/list', function(req, res){
 var dynamodbDoc = new AWS.DynamoDB.DocumentClient();
@@ -400,14 +435,16 @@ addPlayerToGame = function(gameId, user, setTimer, isDefender, isStarted, callba
 }
 
 setMissionsForUser = function(gameId, user, missions, callback){
-    var updateExpression = "SET #attrName.#attrName2.#attrMissions = list_append(#attrName.#attrName2.#attrMissions, :missions)";
+    var updateExpression = "SET #attrName.#attrName2.#attrMissions = list_append(#attrName.#attrName2.#attrMissions, :missions), #attrIsStarted = :isStarted";
     var expressionAttributesVal = {
-            ":missions": {'L' : missions}
+            ":missions": {'L' : missions},
+            ":isStarted": {'BOOL' : true}
         };
     var ExpressionAttributeN = {
         "#attrName" : "Players",
         "#attrName2" : user,
-        "#attrMissions" : "Missions"
+        "#attrMissions" : "Missions",
+        "#attrIsStarted" : "IsStarted"
         }      
     dd.updateItem({
         TableName: "Games",
@@ -503,36 +540,69 @@ function driveTo(latitude,longitude,straal){
 function type1Mission(Latitude, Longitude, CircleRadius){
     var type1data = driveTo(Latitude, Longitude, CircleRadius);
     return {"M" :{
-            "isFinished": {'BOOL':  false},
+            "IsActive" : {'BOOL':  true},
+            "IsFinished": {'BOOL':  false},
             "Type": {'N' : '1'},
             "Description": {'S' : "Drive to (" + type1data.Latitude.toString() + ", " + type1data.Longitude.toString() + ")"},
+            "Location":{"M" : {
+                "Latitude" : {'N' : type1data.Latitude.toString()},
+                "Longitude" : {'N' : type1data.Longitude.toString()}
+            }},
             "OnPhoneCheckable": {'BOOL' : true}
            }
-        }
+        };
 }
     
 function type2Mission(){
     return {"M" :{
-            "isFinished": {'BOOL':  false},
+            "IsActive" : {'BOOL':  true},
+            "IsFinished": {'BOOL':  false},
             "Type": {'N' : '2'},
             "Description": {'S' : "Gather with your team."},
             "OnPhoneCheckable": {'BOOL' : false}
            }
-        }
+        };
 }
 
-function type3Mission(){
+function type3Mission(difficulty){
+    var difference = rijHoogteverschil(difficulty);
     return {"M" :{
-            "isFinished": {'BOOL':  false},
+            "IsActive" : {'BOOL':  true},
+            "IsFinished": {'BOOL':  false},
             "Type": {'N' : '3'},
-            "Description": {'S' : "Drive a height difference of " + rijHoogteverschil() + "m."},
+            "Description": {'S' : "Drive a height difference of " + difference + "m."},
+            "HeightDifference" : { 'N' : difference.toString() },
             "OnPhoneCheckable": {'BOOL' : false}
            }
-        }
+        };
 }
 
-function rijHoogteverschil(){
-	return (Math.random()*5+5.0).toFixed(2);
+function type4Mission(difficulty){
+    return {"M" :{
+            "IsActive" : {'BOOL':  true},
+            "IsFinished": {'BOOL':  false},
+            "Type": {'N' : '4'},
+            "Description": {'S' : "Search for light."},
+            "AmountOfLight" : {'N' : (difficulty*1000).toString() },
+            "OnPhoneCheckable": {'BOOL' : true}
+           }
+        };
+} 
+    
+function type5Mission(difficulty){
+    return {"M" :{
+            "IsActive" : {'BOOL':  true},
+            "IsFinished": {'BOOL':  false},
+            "Type": {'N' : '5'},
+            "Description": {'S' : "Get this speed"},
+            "SpeedValue" : {'N' : (15+3*difficulty).toString() },
+            "OnPhoneCheckable": {'BOOL' : true}
+           }
+        };
+}
+    
+function rijHoogteverschil(difficulty){
+	return ((Math.random()*5+5.0)*difficulty).toFixed(2);
 }
     
 }
