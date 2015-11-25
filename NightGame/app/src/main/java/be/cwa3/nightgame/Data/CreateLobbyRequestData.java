@@ -11,4 +11,5 @@ public class CreateLobbyRequestData {
     public int MaxPlayers;
     public double CenterLocationLatitude;
     public double CenterLocationLongitude;
+    public double CircleRadius;
 }

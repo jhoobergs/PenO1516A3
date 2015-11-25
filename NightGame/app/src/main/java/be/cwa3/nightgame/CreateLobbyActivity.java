@@ -230,6 +230,7 @@ public class CreateLobbyActivity extends SensorDataActivity implements OnMapRead
                     Location userLocation = centerLocation;
                     data.CenterLocationLatitude = userLocation.getLatitude();
                     data.CenterLocationLongitude = userLocation.getLongitude();
+                    data.CircleRadius = radius;
                     makeCreateLobbyCall(data);//
                 return true;
             default:

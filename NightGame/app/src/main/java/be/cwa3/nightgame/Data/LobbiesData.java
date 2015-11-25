@@ -13,7 +13,10 @@ public class LobbiesData {
     public int MinPlayers;
     public int MaxPlayers;
     public List<FriendSearchReturnItemData> Players;
-    public transient boolean isOpen = false; //Transient means that this data isn't server related.
     public CenterLocation CenterLocation;
     public DateTime TimerDate;
+    public Boolean IsStarted = false;
+
+
+    public transient boolean isOpen = false; //Transient means that this data isn't server related.
 }

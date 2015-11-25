@@ -10,6 +10,8 @@ import android.widget.Toast;
 
 import org.joda.time.DateTime;
 
+import java.lang.reflect.GenericArrayType;
+
 import at.grabner.circleprogress.CircleProgressView;
 
 import be.cwa3.nightgame.Adapters.FriendImageAdapter;
@@ -67,7 +69,10 @@ public class LobbyWaitActivity extends AppCompatActivity implements CircleProgre
             public void onSucces(LobbiesData body) {
 
                 gameData = body;
-                if (gameData.TimerDate== null) {
+                if(gameData.IsStarted){
+                    startGameActivity();
+                }
+                else if (gameData.TimerDate== null) {
                     mCircleView.setAutoTextSize(true);
                     mCircleView.spin();
                     mCircleView.setText(String.format("Waiting %d / %d", gameData.Players.size(), gameData.MinPlayers));
@@ -75,9 +80,7 @@ public class LobbyWaitActivity extends AppCompatActivity implements CircleProgre
                     //automatic refresh?
                 }
                 else if(gameData.TimerDate.isBefore(DateTime.now().getMillis())){
-                    Intent intent = new Intent(getApplicationContext(), GameActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
+                    startGameActivity();
                 }
                 else {
                     mCircleView.setAutoTextSize(true);
@@ -91,9 +94,22 @@ public class LobbyWaitActivity extends AppCompatActivity implements CircleProgre
 
             @Override
             public void onError(ErrorData error) {
+                if(error.Errors.contains(4) || error.Errors.contains(6)) {
+                    new SettingsUtil(getApplicationContext()).setString(SharedPreferencesKeys.GameIDString, "");
+                    Intent intent = new Intent(getApplicationContext(), PlayActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+
                 Toast.makeText(getApplicationContext(), ErrorUtil.getErrorText(getApplicationContext(), error.Errors), Toast.LENGTH_SHORT).show();
             }
         });
 
+    }
+
+    private void startGameActivity() {
+        Intent intent = new Intent(getApplicationContext(), GameActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 }

@@ -4,7 +4,7 @@ Te krijgen:
 - Vlag in bezit ? (Sinds)
 - Aantal volbrachte opdrachten
 - Opdrachten
-- Team
+- IsDefender
 
 Te sturen:
 - Locatie
@@ -27,3 +27,10 @@ Opdrachten:
 
 
 Remove (tegengestelde van join)
+
+
+-> isStarted op true zetten als tijd verlopen is of als maxPlayers bereikt is
+-> Missies creeëren op dat moment
+
+-> Gestuurde data opvangen
+

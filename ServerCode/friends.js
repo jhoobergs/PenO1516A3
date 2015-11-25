@@ -18,8 +18,8 @@ app.get('/friends/list', function(req, res){
                             if(friendData != null){
                             if(friendData.Items[0].ImageURL == null)
                                 friendData.Items[0].ImageURL = 'http://www.benveldkamp.nl/images/PERS/Smurfen-bril.jpg';
-                                console.log(data.Items[0].Friends[friendData.Items[0].Username]);
-                                console.log(friendData.Items[0].Username);
+                                //console.log(data.Items[0].Friends[friendData.Items[0].Username]);
+                                //console.log(friendData.Items[0].Username);
                             result.push(
                                 {
                                   "Name" : friendData.Items[0].Username,
@@ -60,7 +60,7 @@ app.post('/friends/search', function(req, res){
                 ComparisonOperator: 'CONTAINS', 
       AttributeValueList: 
         {
-            S:req.body.SearchValue
+            S:formatUsername(req.body.SearchValue)
         }
         
         }
@@ -121,7 +121,7 @@ app.post('/friends/add',  function(req, res){
                         }
 
                         if((!found || (found && !accepted && !isSender)) && !(user == req.body.Username)){
-                            console.log("adding");
+                            //console.log("adding");
                             if(found){
                                 accepted = true;
                             }
@@ -168,7 +168,7 @@ app.post('/friends/remove',  function(req, res){
         else{
             getUserByToken(res, req.headers, function(user){
                 if(user != undefined){
-                    console.log(user);
+                    //console.log(user);
                     getUser(user, function(data){
                         if(data != null){
                         var friends = data.Items[0].Friends;
@@ -180,7 +180,7 @@ app.post('/friends/remove',  function(req, res){
                             }
                         }                            
                         if(found){
-                            console.log("removing");
+                            //console.log("removing");
                             removeFriendFromUser(req.body.Username, user, function(succes){
                                 if(succes){
                                     removeFriendFromUser(user, req.body.Username, function(succes){
@@ -268,7 +268,7 @@ removeFriendFromUser = function(friend, user, callback){
         }
         else
         {
-            console.log("ok");
+            //console.log("ok");
             callback(true);
         }
     });

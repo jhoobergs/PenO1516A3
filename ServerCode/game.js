@@ -3,13 +3,12 @@ exports = module.exports = function(app, AWS, dd){
 app.post('/game/create', function(req, res){
     var dynamodbDoc = new AWS.DynamoDB.DocumentClient();
     if(req.body != null){
-        console.log(req.body);
-        if(req.body.Name == null ||req.body.MinPlayers == null || req.body.MaxPlayers == null ||req.body.MinPlayers >                       req.body.MaxPlayers || req.body.CenterLocationLatitude == null || req.body.CenterLocationLongitude == null){
+        //console.log(req.body);
+        if(req.body.Name == null ||req.body.MinPlayers == null || req.body.MaxPlayers == null ||req.body.MinPlayers >                       req.body.MaxPlayers || req.body.CenterLocationLatitude == null || req.body.CenterLocationLongitude == null ||
+          req.body.CircleRadius == null){
             returnData(res, 0, null, '{Not all params present}');
         }
         else{
-            console.log(getDistanceFromLatLonKmVincenty(req.body.CenterLocationLatitude, req.body.CenterLocationLongitude,
-                                                        req.body.CenterLocationLatitude+10, req.body.CenterLocationLongitude+10));
             user = getUserByToken(res, req.headers, function(user){
                 if(user != undefined){
                    var id = getTimeBaseUniqueId();
@@ -42,7 +41,7 @@ app.post('/game/join',  function(req, res){
                         var players = data.Items[0].Players;
                         for (var i in players) {
                             if(i == user){
-                                console.log("gelijk");
+                                //console.log("gelijk");
                                 found = true;
                                 break;
                             }
@@ -52,10 +51,47 @@ app.post('/game/join',  function(req, res){
                             if(Object.keys(players).length == data.Items[0].MinPlayers-1){
                                  setTimer = true;       
                             }
-                            addPlayerToGame(req.body.GameId, user, setTimer, function(succes){
+                            var isStarted = false;
+                            
+                            if(data.Items[0].Timer != null)
+                                console.log(new Date(data.Items[0].Timer));
+                            if(Object.keys(players).length == data.Items[0].MaxPlayers-1){
+                                 isStarted = true;    
+                                 
+                            }
+                            var isDefender = true;
+                            if(data.Items[0].AmountAttackers < data.Items[0].AmountDefenders)
+                                isDefender = false;
+                            addPlayerToGame(req.body.GameId, user, setTimer,isDefender, isStarted, function(succes){
                                 if(succes){
+                                    if(isStarted){
+                                var amountDone = 0;
+                                players[user] = {};
+                                var amountToDo = Object.keys(players).length;
+                                for (var i in players) {
+                            
+                                var missions = [];
+                                 missions.push(type1Mission(data.Items[0].CircleCenter.Latitude, data.Items[0].CircleCenter.Longitude, data.Items[0].CircleRadius));
+                                 missions.push(type2Mission());
+                                 missions.push(type3Mission());
+                                setMissionsForUser(req.body.GameId, i, missions, function(succes){
+                                    amountDone++;
+                                        if(succes){
+                                           if(amountDone == amountToDo){
+                                            var result = {};
+                                            returnData(res, 1, result, null);
+                                        }
+                                        }
+                                        else{
+                                            returnData(res, 0, null, '{UpdateItemError}');
+                                        }
+                                    });
+                                    }
+                                    }
+                                    else{
                                     var result = {};
                                     returnData(res, 1, result, null);
+                                    }
                                 }
                                 else{
                                     returnData(res, 0, null, '{UpdateItemError}');
@@ -104,7 +140,7 @@ app.post('/game/getData',  function(req, res){
                         var players = data.Items[0].Players;
                         for (var i in players) {
                             if(i == user){
-                                console.log("gelijk");
+                                //console.log("gelijk");
                                 found = true;
                                 break;
                             }
@@ -127,8 +163,9 @@ app.post('/game/getData',  function(req, res){
                     }
                     item.CenterLocation = gamedata.CircleCenter;
                     if(gamedata.Timer != null)
-                        item.TimerDate = gamedata.Timer.substring(0, gamedata.Timer.length-5) + "+01:00";
-                    console.log(item);
+                        item.TimerDate = gamedata.Timer.substring(0, gamedata.Timer.length-5) + "+00:00";
+                    item.IsStarted = gamedata.IsStarted;
+                    //console.log(item);
                     returnData(res, 1, item, null);  
                         
                     }  
@@ -180,7 +217,8 @@ user = getUserByToken(res, req.headers, function(user){
                     }
                     item.CenterLocation = gamedata.CircleCenter;
                     if(gamedata.Timer != null)
-                        item.TimerDate = gamedata.Timer.substring(0, gamedata.Timer.length-5) + "+01:00";
+                        item.TimerDate = gamedata.Timer.substring(0, gamedata.Timer.length-5) + "+00:00";
+                    item.IsStarted = gamedata.IsStarted;
                     result.push(item);
                     
                 }  
@@ -250,21 +288,21 @@ putnewGameItem = function(data, username, id) {
     //Team = -1 -> Not set, 0 -> Defender, 1 -> Attacker
     var tableName = 'Games';
     var players = {"M" : {}};
-    players.M[username] = {
-        "M":{
-            "DateAdded" : {"S" : new Date().toISOString()},
-                    "Locations" : {"L" : []},
-                    "AccelerometerData" : {"L" : []},
-                    "Missions" : {"L" : []},
-                    "Team" : {"N" : "-1" },
-                    "HasFlag" : {"BOOL": false},
-                    "Lives": {"N" : "3"}
-            }
-    };
+    var rand = Math.random();
+    console.log(rand);
+    var isDefender = rand > 0.5;
+    var amountDefenders = 0;
+    var amountAttackers =0;
+    if(isDefender)
+        amountDefenders +=1;
+    else
+        amountAttackers +=1
+    players.M[username] = getUserExpressionAttributes(isDefender, []);
     var item = {
 	    'GameId' : { 'S': id },
         'Name' : { 'S' : data.Name},
         'CreatedOn' : {'S' : new Date().toISOString()},
+        'CreatedBy' : {'S' : username},
 	    'MinPlayers' : { 'N' : data.MinPlayers.toString()},
         'MaxPlayers' : { 'N' : data.MaxPlayers.toString()},
         'Players' : players,
@@ -274,7 +312,10 @@ putnewGameItem = function(data, username, id) {
                                     Longitude: {"N" : data.CenterLocationLongitude.toString()}        
                                    }
         },
-        'IsStarted' : { 'BOOL' : false}        
+        'CircleRadius' : { 'N' : data.CircleRadius.toString()},
+        'IsStarted' : { 'BOOL' : false},
+        'AmountDefenders' : {'N' : amountDefenders.toString() },
+        'AmountAttackers' : {'N' : amountAttackers.toString() }
     };	
     dd.putItem({
         'TableName': tableName,
@@ -283,33 +324,56 @@ putnewGameItem = function(data, username, id) {
         err && console.log(err);
     });
 };
-    
-addPlayerToGame = function(gameId, user, setTimer, callback){
-    var startDate;
-    var updateExpression = "SET #attrName.#attrName2 = :user";
-    var expressionAttributesVal = {
-            ":user": {
-                "M":{
-                    "DateAdded" : {"S" : new Date().toISOString()},
+ 
+getUserExpressionAttributes = function(isDefender){
+return {
+        "M":{
+            "DateAdded" : {"S" : new Date().toISOString()},
                     "Locations" : {"L" : []},
                     "AccelerometerData" : {"L" : []},
                     "Missions" : {"L" : []},
-                    "Team" : {"N" : "-1" },
                     "HasFlag" : {"BOOL": false},
-                    "Lives": {"N" : "3"}
-                }
+                    "Lives": {"N" : "3"},
+                    "IsDefender" : {"BOOL": isDefender}
             }
+    };
+} 
+    
+addPlayerToGame = function(gameId, user, setTimer, isDefender, isStarted, callback){
+    var startDate;
+    var updateExpression = "SET #attrName.#attrName2 = :user, #attrStarted = :isStarted";
+    var expressionAttributesVal = {
+            ":user": getUserExpressionAttributes(isDefender),
+            ":isStarted": {'BOOL' :isStarted}
         };
     var ExpressionAttributeN = {
         "#attrName" : "Players",
-        "#attrName2" : user
+        "#attrName2" : user,
+        "#attrStarted" : "IsStarted"
         }
+    if(isDefender){
+        ExpressionAttributeN["#attrAmountDefenders"] = "AmountDefenders";
+        updateExpression += ", #attrAmountDefenders = #attrAmountDefenders + :one";
+        expressionAttributesVal[":one"] = {'N' : '1'};
+        
+    }
+    else{
+        ExpressionAttributeN["#attrAmountAttackers"] = "AmountAttackers";
+        updateExpression += ", #attrAmountAttackers = #attrAmountAttackers + :one";
+        expressionAttributesVal[":one"] = {'N' : '1'};
+    }    
+    /*if(missions.length > 0){
+        ExpressionAttributeN["#attrMissions"] = "Missions";
+        updateExpression += ", #attrName.#attrName2.#attrMissions = list_append(#attrName.#attrName2.#attrMissions, :missions)";
+        expressionAttributesVal[":missions"] = {'L' : missions};
+    }*/
     if(setTimer){
         startDate = new Date();
         startDate = new Date(startDate.setMinutes(startDate.getMinutes() + 5)).toISOString();
-        updateExpression = "SET #attrName.#attrName2 = :user, #attrTimer = :timer";
-        expressionAttributesVal[":timer"] = {"S": startDate};
         ExpressionAttributeN["#attrTimer"] = "Timer";
+        updateExpression += ", #attrTimer = :timer";
+        expressionAttributesVal[":timer"] = {"S": startDate};
+        
     }
     dd.updateItem({
         TableName: "Games",
@@ -320,6 +384,38 @@ addPlayerToGame = function(gameId, user, setTimer, callback){
         },
         //UpdateExpression: "ADD #attrName = :user",
         //UpdateExpression : "SET #attrName = list_append(#attrName, :user)",
+        UpdateExpression: updateExpression,
+        ExpressionAttributeNames : ExpressionAttributeN,
+        ExpressionAttributeValues: expressionAttributesVal
+    }, function(err, data) {
+        if(err){
+            console.log(err);
+            callback(false)
+        }
+        else
+        {
+            callback(true);
+        }
+    });
+}
+
+setMissionsForUser = function(gameId, user, missions, callback){
+    var updateExpression = "SET #attrName.#attrName2.#attrMissions = list_append(#attrName.#attrName2.#attrMissions, :missions)";
+    var expressionAttributesVal = {
+            ":missions": {'L' : missions}
+        };
+    var ExpressionAttributeN = {
+        "#attrName" : "Players",
+        "#attrName2" : user,
+        "#attrMissions" : "Missions"
+        }      
+    dd.updateItem({
+        TableName: "Games",
+        Key: {
+            "GameId": {
+                "S": gameId
+            }
+        },
         UpdateExpression: updateExpression,
         ExpressionAttributeNames : ExpressionAttributeN,
         ExpressionAttributeValues: expressionAttributesVal
@@ -380,7 +476,64 @@ addDataToGame = function(gameId, user, data, callback){
         }
     });
 }
+
+function driveTo(latitude,longitude,straal){
+	start = [latitude,longitude]
+	var randomX = Math.random()/10000;
+	var randomY = Math.random()/10000;
+	var list = [];
+    latitude = latitude + randomX;
+	longitude = longitude +randomY;
+	while (getDistanceFromLatLonVincenty(start[0],start[1],latitude,longitude)<straal) {
+  	
+	list[list.length] = {Latitude:latitude,Longitude:longitude};
+	//console.log(list.toString());
+    latitude = latitude + randomX;
+	longitude = longitude +randomY;
+	
+
+	}
+	var locatie = list[Math.floor(Math.random() * list.length)];
+	console.log(getDistanceFromLatLonVincenty(start[0],start[1],latitude,longitude).toString());
+	console.log(locatie);
+    return locatie;
+	
+}
     
+function type1Mission(Latitude, Longitude, CircleRadius){
+    var type1data = driveTo(Latitude, Longitude, CircleRadius);
+    return {"M" :{
+            "isFinished": {'BOOL':  false},
+            "Type": {'N' : '1'},
+            "Description": {'S' : "Drive to (" + type1data.Latitude.toString() + ", " + type1data.Longitude.toString() + ")"},
+            "OnPhoneCheckable": {'BOOL' : true}
+           }
+        }
+}
+    
+function type2Mission(){
+    return {"M" :{
+            "isFinished": {'BOOL':  false},
+            "Type": {'N' : '2'},
+            "Description": {'S' : "Gather with your team."},
+            "OnPhoneCheckable": {'BOOL' : false}
+           }
+        }
+}
+
+function type3Mission(){
+    return {"M" :{
+            "isFinished": {'BOOL':  false},
+            "Type": {'N' : '3'},
+            "Description": {'S' : "Drive a height difference of " + rijHoogteverschil() + "m."},
+            "OnPhoneCheckable": {'BOOL' : false}
+           }
+        }
+}
+
+function rijHoogteverschil(){
+	return (Math.random()*5+5.0).toFixed(2);
+}
     
 }
         

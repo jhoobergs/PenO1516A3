@@ -45,5 +45,8 @@
     <string name="error1">Username and password don\'t match.</string>
     <string name="error2">This username is already in use.</string>
     <string name="error3">Session expired! Please log-in again.</string>
+    <string name="error4">This lobby doesn\'t exist!</string>
+    <string name="error5">This lobby has reached the maximum amount of players.</string>
+    <string name="error6">You are not playing in this gamesession.</string>
 
 </resources>

@@ -1,5 +1,4 @@
 exports = module.exports = function(app, AWS, bcrypt,dd){
-
 app.post('/user/login', function(req, res) {
     var dynamodbDoc = new AWS.DynamoDB.DocumentClient();
 
@@ -63,7 +62,7 @@ if(req.body != null){
                     putnewUserItem(req.body);
                     createToken(req.body.Username, function(token) {
                         var result = {
-                            'Username' : req.body.Username,
+                            'Username' : formatUsername(req.body.Username),
                             'Token' : token
                         };
                         returnData(res, 1,result, null);
@@ -87,7 +86,7 @@ putnewUserItem = function(data) {
     var hash = bcrypt.hashSync(data.Password, salt);
     var tableName = 'Users';
     var item = {
-	    'Username' : { 'S': data.Username },
+	    'Username' : { 'S': formatUsername(data.Username) },
 	    'Password' : { 'S' : hash},
         'Email' : { 'S' : data.Email},
         'Friends' : { 'M' : {}}
@@ -104,7 +103,7 @@ putnewTokenItem = function(Username, Token) {
     var tableName = 'Tokens';
     var item = {
 	    'Token' : { 'S': Token },
-	    'Username' : { 'S' : Username}
+	    'Username' : { 'S' : formatUsername(Username)}
     };	
     dd.putItem({
         'TableName': tableName,

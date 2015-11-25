@@ -67,7 +67,7 @@ getUser = function(username, callback){
                 "#username": "Username"
             },
             ExpressionAttributeValues: {
-                ":name":username
+                ":name":formatUsername(username)
             }
         }; 
 
@@ -109,7 +109,7 @@ getTimeBaseUniqueId = function(){
     return uuid.v1();
 }
 
-getDistanceFromLatLonKmVincenty = function(lat1, lon1, lat2, lon2){
+getDistanceFromLatLonVincenty = function(lat1, lon1, lat2, lon2){
     //Javascript implementation of Vincenty's algorithm to calculate distance between 2 latitude-longitude pairs
   var p1 = {};
   var p2 = {};
@@ -157,6 +157,10 @@ getDistanceFromLatLonKmVincenty = function(lat1, lon1, lat2, lon2){
 
 deg2rad = function(deg) {
   return deg * (Math.PI/180);
+}
+
+formatUsername = function(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 }
 
 //Username to lowercase when saving. First letter to Uppercase when returning.
