@@ -139,8 +139,10 @@ public class SensorDataActivity extends AppCompatActivity implements GoogleApiCl
     }
 
     protected void stopLocationUpdates() {
-        LocationServices.FusedLocationApi.removeLocationUpdates(
-                mGoogleApiClient, this);
+        if(mGoogleApiClient != null) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(
+                    mGoogleApiClient, this);
+        }
     }
 
     @Override

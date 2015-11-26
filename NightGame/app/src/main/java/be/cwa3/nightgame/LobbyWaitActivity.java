@@ -76,6 +76,7 @@ public class LobbyWaitActivity extends AppCompatActivity implements CircleProgre
                     mCircleView.setAutoTextSize(true);
                     mCircleView.spin();
                     mCircleView.setText(String.format("Waiting %d / %d", gameData.Players.size(), gameData.MinPlayers));
+                    mCircleView.setShowTextWhileSpinning(true);
                     listView.setAdapter(new FriendImageAdapter(LobbyWaitActivity.this, gameData.Players));
                     //automatic refresh?
                 }

@@ -4,6 +4,7 @@ package be.cwa3.nightgame;
  * Created by jesse on 26/10/2015.
  */
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -13,6 +14,7 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -20,6 +22,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
+
+import com.google.gson.Gson;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+
 import ca.uol.aig.fftpack.RealDoubleFFT;
 
 public class SoundActivity extends AppCompatActivity implements OnClickListener {
@@ -94,6 +103,9 @@ public class SoundActivity extends AppCompatActivity implements OnClickListener 
                         // 16
                     }                                       // bit
                     transformer.ft(toTransform);
+                    Log.d("key",new Gson().toJson(toTransform));
+
+
                     publishProgress(toTransform);
 
 
@@ -109,8 +121,26 @@ public class SoundActivity extends AppCompatActivity implements OnClickListener 
             return null;
         }
 
+        public boolean isExternalStorageWritable() {
+            String state = Environment.getExternalStorageState();
+            if (Environment.MEDIA_MOUNTED.equals(state)) {
+                return true;
+            }
+            return false;
+        }
+        public boolean isExternalStorageReadable() {
+            String state = Environment.getExternalStorageState();
+            if (Environment.MEDIA_MOUNTED.equals(state) ||
+                    Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+                return true;
+            }
+            return false;
+        }
+
         @Override
         protected void onProgressUpdate(double[]... toTransform) {
+
+
 
             canvas.drawColor(Color.BLACK);
 
@@ -123,6 +153,19 @@ public class SoundActivity extends AppCompatActivity implements OnClickListener 
             }
 
             imageView.invalidate();
+
+
+            String string = new Gson().toJson(toTransform);
+            FileWriter outputStream;
+
+            try {
+                outputStream = new FileWriter(Environment.getExternalStorageDirectory().toString() +"/geluid.txt",true);
+                outputStream.append(string);
+                outputStream.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
 
             // TODO Auto-generated method stub
             // super.onProgressUpdate(values);
