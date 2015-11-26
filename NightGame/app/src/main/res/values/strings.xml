@@ -31,6 +31,7 @@
     <string name="enter_minimum">Min</string>
     <string name="min">Min</string>
     <string name="log_out">Log Out</string>
+    <string name="no_friends">No friends added up till now.</string>
 
     <string name="define_map">Define Map</string>
     <string name="next">Next</string>
