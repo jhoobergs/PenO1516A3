@@ -16,4 +16,9 @@
         android:title="Acc"
         android:showAsAction="always"
         app:showAsAction="always"/>
+    <item
+        android:id="@+id/rules"
+        android:title="Rules"
+        android:showAsAction="always"
+        app:showAsAction="always"/>
 </menu>

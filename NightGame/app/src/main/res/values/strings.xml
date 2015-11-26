@@ -49,4 +49,19 @@
     <string name="error5">This lobby has reached the maximum amount of players.</string>
     <string name="error6">You are not playing in this gamesession.</string>
 
+    <string name="intro">Bike kNight is a nightgame based on the famous \'Capture the Flag\' game. </string>
+    <string name="defenders">Defenders</string>
+    <string name="attackers">Attackers</string>
+    <string name="text_defenders">Your main purpose is to defend the hidden base.
+        The location of this hidden base wil be chosen by the team leader.
+        You can defend your base by using the "defend" button when you are near an attacker.
+        This wil send the attacker out to the perimeter of the map, which will buy your team some time and the attacker will also lose a life.
+        In order to win the game, the defending team will have to accomplish a certain number of challenges.</string>
+    <string name="text_attackers">Your main purpose is to find the hidden base of the defending team.
+        When you enter the hidden base, you will grab hold of a digital flag.
+        In order to win the game, you will have to bring this flag to the perimeter of the map.
+        In order to make this a bit more challenging,
+        the defending team will be aware of your location whilst holding the flag.
+        If a defender kills you while holding the flag, the flag will respawn at the hidden location. Each attacker will start with three lives. The attacking team will also be able to accomplish challenges.
+        They will be rewarder with special perks if they manage to complete these tasks. </string>
 </resources>
