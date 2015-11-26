@@ -1,5 +1,6 @@
 package be.cwa3.nightgame.Http.Api;
 
+import be.cwa3.nightgame.Data.ChallengeRequestData;
 import be.cwa3.nightgame.Data.CreateLobbyRequestData;
 import be.cwa3.nightgame.Data.CreateLobbyReturnData;
 import be.cwa3.nightgame.Data.CreateNewAccountRequestData;
@@ -62,6 +63,10 @@ public interface ApiInterface {
 
     @POST ("game/getData")
     Call<ReturnData<LobbiesData>> getLobbyData(@Body JoinLobbyRequestData data);
+
+    @POST ("game/getData")
+    Call<ReturnData<LobbiesData>> getChallengeData(@Body ChallengeRequestData data);
+
 
 
 
