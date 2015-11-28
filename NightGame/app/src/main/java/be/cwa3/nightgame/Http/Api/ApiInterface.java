@@ -12,6 +12,7 @@ import be.cwa3.nightgame.Data.FriendRemoveReturnData;
 import be.cwa3.nightgame.Data.FriendSearchRequestData;
 import be.cwa3.nightgame.Data.FriendSearchReturnData;
 
+import be.cwa3.nightgame.Data.GameGetDataRequestData;
 import be.cwa3.nightgame.Data.GameSendDataRequestData;
 import be.cwa3.nightgame.Data.JoinLobbyRequestData;
 import be.cwa3.nightgame.Data.JoinLobbyReturnData;
@@ -66,7 +67,7 @@ public interface ApiInterface {
     Call<ReturnData<JoinLobbyReturnData>> joinLobby(@Body JoinLobbyRequestData data);
 
     @POST ("game/getData")
-    Call<ReturnData<LobbiesData>> getLobbyData(@Body JoinLobbyRequestData data);
+    Call<ReturnData<LobbiesData>> getLobbyData(@Body GameGetDataRequestData data);
 
 
 
