@@ -52,7 +52,6 @@ import retrofit.Call;
 public class GameActivity extends SensorDataActivity implements OnMapReadyCallback {
 
     MapFragment mapFragment;
-    LinearLayout game;
     ListView listview;
     private boolean othersShouldBeInvisibile = false;
     private boolean mapHasBeenReady = false;
@@ -81,7 +80,6 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         listview = (ListView) findViewById(R.id.missions);
-        game = (LinearLayout) findViewById(R.id.game);
         setSensorDataInterface(new SensorDataInterface() {
             @Override
             public void accelerometerChanged(float x, float y, float z) {
@@ -171,14 +169,14 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
         switch (item.getItemId()) {
 
             case R.id.challenges:
-                if (game.getVisibility() == View.VISIBLE) {
+                if (mapFragment.getView().getVisibility() == View.VISIBLE) {
 
                     String gameId = new SettingsUtil(this).getString(SharedPreferencesKeys.GameIDString);
                     makeCall(new GameGetDataRequestData(gameId));
-                    game.setVisibility(View.GONE);
+                    mapFragment.getView().setVisibility(View.GONE);
                     listview.setVisibility(View.VISIBLE);
                 } else {
-                    game.setVisibility(View.VISIBLE);
+                    mapFragment.getView().setVisibility(View.VISIBLE);
                     listview.setVisibility(View.GONE);
                 }
                 return true;
@@ -237,7 +235,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
             @Override
             public void onSucces(LobbiesData body) {
                 Log.d("test", new Gson().toJson(body.Missions));
-                listview.setAdapter(new MissionsAdapter(getApplicationContext(),body.Missions));
+                listview.setAdapter(new MissionsAdapter(GameActivity.this,body.Missions));
                 gameData = body;
 
             }

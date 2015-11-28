@@ -28,6 +28,7 @@ public class MissionsAdapter extends ArrayAdapter<MissionData> {
         super(context, layoutResourceId,data);
         this.context = context;
         this.data = data;
+        Log.d("test", String.valueOf(data.size()));
     }
 
     @Override

@@ -10,5 +10,5 @@ public class MissionData {
     public Boolean IsFinished;
     public Boolean OnPhoneCheckable;
     public LocationData Location;
-    public int id;
+    public int Id;
 }
