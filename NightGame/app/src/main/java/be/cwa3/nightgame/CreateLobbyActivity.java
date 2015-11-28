@@ -24,8 +24,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import be.cwa3.nightgame.Data.GameRequestData;
-import be.cwa3.nightgame.Data.GameReturnData;
+import be.cwa3.nightgame.Data.CreateLobbyRequestData;
+import be.cwa3.nightgame.Data.CreateLobbyReturnData;
 import be.cwa3.nightgame.Data.ErrorData;
 import be.cwa3.nightgame.Data.ReturnData;
 import be.cwa3.nightgame.Utils.ApiUtil;
@@ -210,7 +210,7 @@ public class CreateLobbyActivity extends SensorDataActivity implements OnMapRead
                 }
                 return true;
             case R.id.start_lobby:
-                    GameRequestData data = new GameRequestData();
+                    CreateLobbyRequestData data = new CreateLobbyRequestData();
                     data.Name = editTextGroupName.getText().toString();
                     data.MinPlayers = numberPickerMinValue.getValue();
                     data.MaxPlayers = numberPickerMaxValue.getValue();
@@ -224,13 +224,13 @@ public class CreateLobbyActivity extends SensorDataActivity implements OnMapRead
                 return super.onOptionsItemSelected(item);
         }
     }
-    private void makeCreateLobbyCall(GameRequestData data){
-        Call<ReturnData<GameReturnData>> call = new ApiUtil().getApiInterface(this).sendCreateLobbyRequest(data);
-        RequestUtil<GameReturnData> requestUtil = new RequestUtil<>(this, call);
-        requestUtil.makeRequest(new RequestInterface<GameReturnData>() {
+    private void makeCreateLobbyCall(CreateLobbyRequestData data){
+        Call<ReturnData<CreateLobbyReturnData>> call = new ApiUtil().getApiInterface(this).sendCreateLobbyRequest(data);
+        RequestUtil<CreateLobbyReturnData> requestUtil = new RequestUtil<>(this, call);
+        requestUtil.makeRequest(new RequestInterface<CreateLobbyReturnData>() {
 
             @Override
-            public void onSucces(GameReturnData body) {
+            public void onSucces(CreateLobbyReturnData body) {
                 new SettingsUtil(getApplicationContext()).setString(SharedPreferencesKeys.GameIDString, body.GameId);
                 Intent intent = new Intent(getApplicationContext(), LobbyWaitActivity.class);
                 startActivity(intent);

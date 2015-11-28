@@ -2,7 +2,6 @@ package be.cwa3.nightgame;
 
 import android.content.Context;
 import android.content.Intent;
-import android.hardware.Sensor;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,9 +21,7 @@ import java.util.List;
 
 import be.cwa3.nightgame.Data.AccelerometerData;
 import be.cwa3.nightgame.Data.Empty;
-import be.cwa3.nightgame.Data.GameReturnData;
 import be.cwa3.nightgame.Data.ErrorData;
-import be.cwa3.nightgame.Data.GameRequestData;
 import be.cwa3.nightgame.Data.GameSendDataRequestData;
 import be.cwa3.nightgame.Data.LocationData;
 import be.cwa3.nightgame.Data.ReturnData;

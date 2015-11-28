@@ -5,7 +5,7 @@ import android.location.Location;
 /**
  * Created by Elisabeth Heremans on 9/11/2015.
  */
-public class GameRequestData {
+public class CreateLobbyRequestData {
     public String Name;
     public int MinPlayers;
     public int MaxPlayers;
