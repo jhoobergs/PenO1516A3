@@ -128,7 +128,7 @@ public class CreateAccountActivity extends AppCompatActivity {
                         || enterName.getText().toString().equals("")
                         || enterPassword.getText().toString().equals("")
                         || !repeatPassword.getText().toString().equals(enterPassword.getText().toString())) {
-                    Toast.makeText(CreateAccountActivity.this, "Data not entered correct!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(CreateAccountActivity.this, "Data not entered correctly!", Toast.LENGTH_LONG).show();
                 }
                 else{
                     CreateNewAccountRequestData data = new CreateNewAccountRequestData();

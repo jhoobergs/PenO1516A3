@@ -121,7 +121,7 @@
             android:label="loby_waiting"
             android:parentActivityName=".PlayActivity">
             <meta-data
-                android:name="android.suppert.PARENT_ACTIVITY"
+                android:name="android.support.PARENT_ACTIVITY"
                 android:value=".PlayActivity"/>
         </activity>
 
