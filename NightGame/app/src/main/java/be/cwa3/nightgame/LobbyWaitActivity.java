@@ -16,6 +16,7 @@ import at.grabner.circleprogress.CircleProgressView;
 
 import be.cwa3.nightgame.Adapters.FriendImageAdapter;
 import be.cwa3.nightgame.Data.ErrorData;
+import be.cwa3.nightgame.Data.GameGetDataRequestData;
 import be.cwa3.nightgame.Data.JoinLobbyRequestData;
 import be.cwa3.nightgame.Data.LobbiesData;
 import be.cwa3.nightgame.Data.ReturnData;
@@ -49,7 +50,7 @@ public class LobbyWaitActivity extends AppCompatActivity implements CircleProgre
         mCircleView.setSeekModeEnabled(false);
 
         String gameId = new SettingsUtil(this).getString(SharedPreferencesKeys.GameIDString);
-        makeCall(new JoinLobbyRequestData(gameId));
+        makeCall(new GameGetDataRequestData(gameId));
 
 
 
@@ -61,7 +62,7 @@ public class LobbyWaitActivity extends AppCompatActivity implements CircleProgre
 
     }
 
-    private void makeCall(JoinLobbyRequestData data){
+    private void makeCall(GameGetDataRequestData data){
         Call<ReturnData<LobbiesData>> call = new ApiUtil().getApiInterface(this).getLobbyData(data);
         RequestUtil<LobbiesData> requestUtil = new RequestUtil<>(this, call);
         requestUtil.makeRequest(new RequestInterface<LobbiesData>() {
