@@ -1,7 +1,8 @@
 package be.cwa3.nightgame.Http.Api;
 
-import be.cwa3.nightgame.Data.CreateLobbyRequestData;
-import be.cwa3.nightgame.Data.CreateLobbyReturnData;
+import be.cwa3.nightgame.Data.Empty;
+import be.cwa3.nightgame.Data.GameRequestData;
+import be.cwa3.nightgame.Data.GameReturnData;
 import be.cwa3.nightgame.Data.CreateNewAccountRequestData;
 import be.cwa3.nightgame.Data.FriendAddRequestData;
 import be.cwa3.nightgame.Data.FriendAddReturnData;
@@ -11,6 +12,7 @@ import be.cwa3.nightgame.Data.FriendRemoveReturnData;
 import be.cwa3.nightgame.Data.FriendSearchRequestData;
 import be.cwa3.nightgame.Data.FriendSearchReturnData;
 
+import be.cwa3.nightgame.Data.GameSendDataRequestData;
 import be.cwa3.nightgame.Data.JoinLobbyRequestData;
 import be.cwa3.nightgame.Data.JoinLobbyReturnData;
 import be.cwa3.nightgame.Data.LobbiesData;
@@ -52,7 +54,10 @@ public interface ApiInterface {
     Call<ReturnData<LoginReturnData>> sendCreateNewAccountRequest(@Body CreateNewAccountRequestData data);
 
     @POST("/game/create")
-    Call<ReturnData<CreateLobbyReturnData>> sendCreateLobbyRequest(@Body CreateLobbyRequestData data);
+    Call<ReturnData<GameReturnData>> sendCreateLobbyRequest(@Body GameRequestData data);
+
+    @POST("/game/sendData")
+    Call<ReturnData<Empty>> sendGameDataRequest(@Body GameSendDataRequestData data);
 
     @GET("/game/list")
     Call<ReturnData<LobbiesListData>> loadLobbyList();

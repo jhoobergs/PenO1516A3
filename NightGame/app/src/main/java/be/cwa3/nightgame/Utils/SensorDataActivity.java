@@ -23,6 +23,7 @@ import com.google.gson.Gson;
 import java.text.DateFormat;
 import java.util.Date;
 
+import be.cwa3.nightgame.Data.AccelerometerData;
 import be.cwa3.nightgame.R;
 
 /**

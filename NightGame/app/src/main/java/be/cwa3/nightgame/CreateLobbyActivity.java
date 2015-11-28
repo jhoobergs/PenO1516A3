@@ -1,14 +1,8 @@
 package be.cwa3.nightgame;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.graphics.Color;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,25 +14,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import be.cwa3.nightgame.Data.CreateLobbyRequestData;
-import be.cwa3.nightgame.Data.CreateLobbyReturnData;
+import be.cwa3.nightgame.Data.GameRequestData;
+import be.cwa3.nightgame.Data.GameReturnData;
 import be.cwa3.nightgame.Data.ErrorData;
 import be.cwa3.nightgame.Data.ReturnData;
 import be.cwa3.nightgame.Utils.ApiUtil;
@@ -223,7 +210,7 @@ public class CreateLobbyActivity extends SensorDataActivity implements OnMapRead
                 }
                 return true;
             case R.id.start_lobby:
-                    CreateLobbyRequestData data = new CreateLobbyRequestData();
+                    GameRequestData data = new GameRequestData();
                     data.Name = editTextGroupName.getText().toString();
                     data.MinPlayers = numberPickerMinValue.getValue();
                     data.MaxPlayers = numberPickerMaxValue.getValue();
@@ -237,13 +224,13 @@ public class CreateLobbyActivity extends SensorDataActivity implements OnMapRead
                 return super.onOptionsItemSelected(item);
         }
     }
-    private void makeCreateLobbyCall(CreateLobbyRequestData data){
-        Call<ReturnData<CreateLobbyReturnData>> call = new ApiUtil().getApiInterface(this).sendCreateLobbyRequest(data);
-        RequestUtil<CreateLobbyReturnData> requestUtil = new RequestUtil<>(this, call);
-        requestUtil.makeRequest(new RequestInterface<CreateLobbyReturnData>() {
+    private void makeCreateLobbyCall(GameRequestData data){
+        Call<ReturnData<GameReturnData>> call = new ApiUtil().getApiInterface(this).sendCreateLobbyRequest(data);
+        RequestUtil<GameReturnData> requestUtil = new RequestUtil<>(this, call);
+        requestUtil.makeRequest(new RequestInterface<GameReturnData>() {
 
             @Override
-            public void onSucces(CreateLobbyReturnData body) {
+            public void onSucces(GameReturnData body) {
                 new SettingsUtil(getApplicationContext()).setString(SharedPreferencesKeys.GameIDString, body.GameId);
                 Intent intent = new Intent(getApplicationContext(), LobbyWaitActivity.class);
                 startActivity(intent);
