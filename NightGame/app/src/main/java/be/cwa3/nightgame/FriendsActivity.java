@@ -10,10 +10,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import be.cwa3.nightgame.Adapters.FriendsAdapter;
 import be.cwa3.nightgame.Data.ErrorData;
@@ -38,6 +40,7 @@ import retrofit.Call;
 public class FriendsActivity extends AppCompatActivity {
     FriendListData friendListData;
     ListView listView;
+    TextView noFriends;
 
 
     @Override
@@ -51,7 +54,7 @@ public class FriendsActivity extends AppCompatActivity {
         listView = (ListView)findViewById(R.id.listView);
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> parent,final View view, final int position, long id) {
+            public boolean onItemLongClick(AdapterView<?> parent, final View view, final int position, long id) {
                 Button buttonRemove = (Button) view.findViewById(R.id.buttonRemove);
                 buttonRemove.setVisibility(View.VISIBLE);
 
@@ -86,12 +89,12 @@ public class FriendsActivity extends AppCompatActivity {
     }
 
 
-
-
-
     private void makeCall(){
         Call<ReturnData<FriendListData>> call = new ApiUtil().getApiInterface(this).loadFriends();
         RequestUtil<FriendListData> requestUtil = new RequestUtil<>(this, call);
+
+        noFriends = (TextView) findViewById(R.id.no_friends);
+
         requestUtil.makeRequest(new RequestInterface<FriendListData>() {
             @Override
             public void onSucces(FriendListData body) {
@@ -103,7 +106,9 @@ public class FriendsActivity extends AppCompatActivity {
                 });
                 listView.setAdapter(new FriendsAdapter(FriendsActivity.this, body.List));
                 friendListData = body;
-
+                if(body.List.size()==0){
+                    noFriends.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
@@ -154,6 +159,7 @@ public class FriendsActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
             }
         }
+
 
 
 

@@ -130,6 +130,14 @@
             android:label="@string/app_name">
         </activity>
 
+        <activity
+            android:name=".RulesActivity"
+            android:label="@string/app_name"
+            android:parentActivityName=".HomeActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".HomeActivity" />
+        </activity>
 
     </application>
 

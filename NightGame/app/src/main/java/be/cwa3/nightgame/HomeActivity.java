@@ -94,6 +94,12 @@ public class HomeActivity extends AppCompatActivity {
                 Intent intentb = new Intent(getApplicationContext(), AccelerometerActivity.class);
                 startActivity(intentb);
                 return true;
+
+            case R.id.rules:
+                Intent intent1 = new Intent(getApplicationContext(), RulesActivity.class);
+                startActivity(intent1);
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }
