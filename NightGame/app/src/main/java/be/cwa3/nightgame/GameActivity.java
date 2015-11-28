@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -24,6 +23,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 
+import org.joda.time.DateTime;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +32,7 @@ import be.cwa3.nightgame.Data.AccelerometerData;
 import be.cwa3.nightgame.Data.Empty;
 import be.cwa3.nightgame.Data.ErrorData;
 import be.cwa3.nightgame.Data.GameGetDataRequestData;
+import be.cwa3.nightgame.Data.GamePlayerData;
 import be.cwa3.nightgame.Data.GameSendDataRequestData;
 import be.cwa3.nightgame.Data.LocationData;
 import be.cwa3.nightgame.Adapters.MissionsAdapter;
@@ -57,6 +59,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
     private boolean mapHasBeenReady = false;
     private AccelerometerData accelerometerData;
     private String gameId;
+    private String userTeam;
     LobbiesData gameData;
 
     private Location location;
@@ -75,6 +78,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
             startActivity(intent);
             finish();
         }
+        makeCall(new GameGetDataRequestData(gameId));
         location = getLocation();
         mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
@@ -106,7 +110,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
                 boolean wasNull = (location == null);
                 location = newLocation;
                 mapFragment.getMapAsync(GameActivity.this);
-                if(wasNull) {
+                if (wasNull) {
                     customHandler.postDelayed(sendData, 100);
                 }
             }
@@ -121,40 +125,33 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
 
     @Override
     public void onMapReady(GoogleMap map) {
-        List<LatLng> locations = new ArrayList<>();
-        List<String> titles = new ArrayList<>();
-        List<String> content = new ArrayList<>();
-        if (location != null) {
-            locations.add(new LatLng(location.getLatitude(), location.getLongitude()));
-            titles.add("Jesse");
-            content.add("Verdediger");
-        }
+
+        List<LocationData> locations = getPlayerLocations();
 
         if (locations.size() > 0) {
             map.setMyLocationEnabled(true);
             if (!mapHasBeenReady) {
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(locations.get(0), 13));
+                LatLng latLng = new LatLng(locations.get(0).Latitude, locations.get(0).Longitude);
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13));
                 mapHasBeenReady = true;
             } else
                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(map.getCameraPosition().target, map.getCameraPosition().zoom));
         }
         map.clear();
         map.setMyLocationEnabled(false);
-        int number = 0;
-        for (LatLng loc : locations) {
-            BitmapDescriptor bitmapDescriptor;
 
-            if (number % 2 == 0) {
-                bitmapDescriptor = BitmapDescriptorFactory.fromResource(R.drawable.defender);
-            } else
-                bitmapDescriptor = BitmapDescriptorFactory.fromResource(R.drawable.attacker);
-            if (!(number % 2 == 1 && othersShouldBeInvisibile))
+        for (LocationData loc : locations) {
+            BitmapDescriptor bitmapDescriptor;
+            LatLng latLng = new LatLng(loc.Latitude, loc.Longitude);
+            bitmapDescriptor = getPlayerMapIcon(loc.Team);
+
+            if (loc.Team.equals(userTeam) || othersShouldBeInvisibile)
                 map.addMarker(new MarkerOptions()
-                        .title(titles.get(number))
-                        .snippet(content.get(number))
-                        .icon(bitmapDescriptor)
-                        .position(loc));
-            number += 1;
+                        .title(loc.PlayerName)
+                        .snippet(String.format("%s (%s minuten geleden)", loc.Team, (DateTime.now().getMillis() - loc.CreatedOn.getMillis())/(1000*60)))
+                                .icon(bitmapDescriptor)
+                                .position(latLng));
+
         }
 
     }
@@ -170,8 +167,6 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
 
             case R.id.challenges:
                 if (mapFragment.getView().getVisibility() == View.VISIBLE) {
-
-                    String gameId = new SettingsUtil(this).getString(SharedPreferencesKeys.GameIDString);
                     makeCall(new GameGetDataRequestData(gameId));
                     mapFragment.getView().setVisibility(View.GONE);
                     listview.setVisibility(View.VISIBLE);
@@ -235,7 +230,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
             @Override
             public void onSucces(LobbiesData body) {
                 Log.d("test", new Gson().toJson(body.Missions));
-                listview.setAdapter(new MissionsAdapter(GameActivity.this,body.Missions));
+                listview.setAdapter(new MissionsAdapter(GameActivity.this, body.Missions));
                 gameData = body;
 
             }
@@ -253,5 +248,42 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
             }
         });
 
+    }
+
+    private List<LocationData> getPlayerLocations(){
+        List<LocationData> locationDatas= new ArrayList<>();
+        if(gameData != null) {
+            for (GamePlayerData playerData : gameData.Players) {
+                if (playerData.IsRequester) {
+                    LocationData myLocation = new LocationData();
+                    if(location != null) {
+                        myLocation.Altitude = location.getAltitude();
+                        myLocation.Latitude = location.getLatitude();
+                        myLocation.Longitude = location.getLongitude();
+                        myLocation.CreatedOn = DateTime.now();
+                        myLocation.PlayerName = playerData.Name;
+                        userTeam = playerData.Team;
+                        myLocation.Team = playerData.Team;
+
+                        locationDatas.add(myLocation);
+                    }
+                } else {
+                    LocationData loc = playerData.LatestLocation;
+                    if(loc != null) {
+                        loc.Team = playerData.Team;
+                        loc.PlayerName = playerData.Name;
+                        locationDatas.add(loc);
+                    }
+                }
+            }
+        }
+        return locationDatas;
+    }
+
+    public BitmapDescriptor getPlayerMapIcon(String team) {
+        if("Defender".equals(team)){
+            return BitmapDescriptorFactory.fromResource(R.drawable.defender);
+        }
+        return BitmapDescriptorFactory.fromResource(R.drawable.attacker);
     }
 }

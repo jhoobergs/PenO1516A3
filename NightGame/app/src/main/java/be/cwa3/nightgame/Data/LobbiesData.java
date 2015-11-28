@@ -12,7 +12,7 @@ public class LobbiesData {
     public String Name;
     public int MinPlayers;
     public int MaxPlayers;
-    public List<FriendSearchReturnItemData> Players;
+    public List<GamePlayerData> Players;
     public CenterLocation CenterLocation;
     public DateTime TimerDate;
     public Boolean IsStarted = false;

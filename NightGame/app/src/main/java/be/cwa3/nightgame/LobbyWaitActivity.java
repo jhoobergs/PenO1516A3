@@ -15,6 +15,7 @@ import java.lang.reflect.GenericArrayType;
 import at.grabner.circleprogress.CircleProgressView;
 
 import be.cwa3.nightgame.Adapters.FriendImageAdapter;
+import be.cwa3.nightgame.Adapters.LobbyWaitAdapter;
 import be.cwa3.nightgame.Data.ErrorData;
 import be.cwa3.nightgame.Data.GameGetDataRequestData;
 import be.cwa3.nightgame.Data.JoinLobbyRequestData;
@@ -77,7 +78,7 @@ public class LobbyWaitActivity extends AppCompatActivity implements CircleProgre
                     mCircleView.setAutoTextSize(true);
                     mCircleView.spin();
                     mCircleView.setText(String.format("Waiting %d / %d", gameData.Players.size(), gameData.MinPlayers));
-                    listView.setAdapter(new FriendImageAdapter(LobbyWaitActivity.this, gameData.Players));
+                    listView.setAdapter(new LobbyWaitAdapter(LobbyWaitActivity.this, gameData.Players));
                     //automatic refresh?
                 }
                 else if(gameData.TimerDate.isBefore(DateTime.now().getMillis())){
@@ -89,7 +90,7 @@ public class LobbyWaitActivity extends AppCompatActivity implements CircleProgre
                     mCircleView.setMaxValue(100);
                     Long Tminus = (gameData.TimerDate.getMillis() - DateTime.now().getMillis())/1000;
                     mCircleView.setValue((300 - Tminus) / 3);
-                    listView.setAdapter(new FriendImageAdapter(LobbyWaitActivity.this, gameData.Players));
+                    listView.setAdapter(new LobbyWaitAdapter(LobbyWaitActivity.this, gameData.Players));
                 }
             }
 
