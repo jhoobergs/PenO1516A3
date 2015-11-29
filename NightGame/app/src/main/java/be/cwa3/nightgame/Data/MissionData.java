@@ -11,4 +11,7 @@ public class MissionData {
     public Boolean OnPhoneCheckable;
     public LocationData Location;
     public int id;
+    public float HeightDifference;
+    public int AmountOfLight;
+    public int SpeedValue;
 }

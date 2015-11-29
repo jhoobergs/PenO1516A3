@@ -239,27 +239,36 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
 
 
     public double checkAltitudeChange(Location oldLocation, Location location, double altitudeClimbed, double altitudeDescended){
-        if (this.oldLocation.getAltitude() < this.location.getAltitude()) {
-            this.altitudeClimbed = this.altitudeClimbed + this.location.getAltitude() - this.oldLocation.getAltitude();
-            if (this.altitudeClimbed > hoe moet je de hoogte vragen die de challenge was?){
-                //delete de mission uit de lijst?
-                Toast.makeText(getApplicationContext(), "Mission completed!", Toast.LENGTH_LONG).show();
-            }
-            return this.altitudeClimbed;
-        }
-        else if (this.oldLocation.getAltitude() > this.location.getAltitude()){
-            this.altitudeDescended = this.altitudeDescended + this.oldLocation.getAltitude() - this.location.getAltitude();
-            if (this.altitudeDescended > de hoogte die de challenge was?){
-                //delete de mission uit de lijst
-                Toast.makeText(getApplicationContext(), "Mission completed!", Toast.LENGTH_LONG).show();
+        int type;
+        MissionData mission;
+        for (int i=0;i< body.Missions.size();i++) {
 
+            mission = body.Missions[i];
+            type = mission.id;
+            if (type == 2) {
+                if (this.oldLocation.getAltitude() < this.location.getAltitude()) {
+                    this.altitudeClimbed = this.altitudeClimbed + this.location.getAltitude() - this.oldLocation.getAltitude();
+                    if (this.altitudeClimbed > mission.HeightDifference) {
+                        //delete de mission uit de lijst?
+                        Toast.makeText(getApplicationContext(), "Mission completed!", Toast.LENGTH_LONG).show();
+                    }
+                    return this.altitudeClimbed;
+                } else if (this.oldLocation.getAltitude() > this.location.getAltitude()) {
+                    this.altitudeDescended = this.altitudeDescended + this.oldLocation.getAltitude() - this.location.getAltitude();
+                    if (this.altitudeDescended > mission.HeightDifference) {
+                        //delete de mission uit de lijst
+                        Toast.makeText(getApplicationContext(), "Mission completed!", Toast.LENGTH_LONG).show();
+
+                    }
+                    return -this.altitudeDescended;
+                }
             }
-            return -this.altitudeDescended;
         }
+
 
     }
     public boolean checkLocation(Location location){ //is boolean ok?
-        if (location.distanceTo(de locatie die de challenge is) < 50){
+        if (location.distanceTo(LocationData) < 50){
             //delete de missie
             Toast.makeText(getApplicationContext(), "Mission completed!", Toast.LENGTH_LONG).show();
         }
@@ -283,14 +292,14 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
 
     public void checkLightCollected(float sv, float collectedLight){
         collectedLight = collectedLight + sv; //is deze variabele nu veranderd?
-        if (collectedLight > licht dat moest worden verzameld){
+        if (collectedLight > AmountOfLight){
             //delete de missie
             Toast.makeText(getApplicationContext(), "Mission completed!", Toast.LENGTH_LONG).show();
         }
     }
 
     public void checkSpeed(Location location,Location oldLocation,long timeNewLocation, long timeOldLocation){
-        if (location.distanceTo(oldLocation)/(1000*(timeNewLocation-timeNewLocation))>de te behalen snelheid){
+        if (location.distanceTo(oldLocation)/(1000*(timeNewLocation-timeNewLocation))>SpeedValue){
             //delete de missie
             Toast.makeText(getApplicationContext(), "Mission completed!", Toast.LENGTH_LONG).show();
         }
