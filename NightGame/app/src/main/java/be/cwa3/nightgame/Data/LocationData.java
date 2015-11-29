@@ -6,4 +6,5 @@ package be.cwa3.nightgame.Data;
 public class LocationData {
     public double Latitude;
     public double Longitude;
+    public double Altitude;
 }

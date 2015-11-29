@@ -47,6 +47,8 @@ import be.cwa3.nightgame.Data.CreateLobbyReturnData;
 import be.cwa3.nightgame.Data.ErrorData;
 import be.cwa3.nightgame.Data.JoinLobbyRequestData;
 import be.cwa3.nightgame.Data.LobbiesData;
+import be.cwa3.nightgame.Data.LocationData;
+import be.cwa3.nightgame.Data.MissionData;
 import be.cwa3.nightgame.Data.ReturnData;
 import be.cwa3.nightgame.Utils.ApiUtil;
 import be.cwa3.nightgame.Utils.ErrorUtil;
@@ -70,7 +72,14 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
     private boolean mapHasBeenReady = false;
     LobbiesData gameData;
 
+    public double altitudeClimbed = 0;
+    public double altitudeDescended = 0;
     private Location location;
+    private Location oldLocation = location;
+    public boolean assembled = Boolean.FALSE;
+    public float collectedLight;
+    public long timeOldLocation = oldLocation.getTime();
+    public long timeNewLocation = location.getTime();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -101,12 +110,25 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
 
                 if (before != othersShouldBeInvisibile)
                     mapFragment.getMapAsync(GameActivity.this);
+                checkLightCollected(sv,collectedLight);
             }
 
             @Override
             public void locationChanged(Location newLocation) {
+                oldLocation = location; //is dit hoe je de oude locatie kan bijhouden?
                 location = newLocation;
+
                 mapFragment.getMapAsync(GameActivity.this);
+                if (checkAltitudeChange(oldLocation, location, altitudeClimbed,altitudeDescended)<0){
+                    altitudeDescended = -checkAltitudeChange(oldLocation, location, altitudeClimbed,altitudeDescended);
+                }
+                else {
+                    altitudeClimbed = checkAltitudeChange(oldLocation, location, altitudeClimbed,altitudeDescended);
+                }
+                checkLocation(location);
+                checkTeamAssembled(assembled);
+                checkSpeed(location,oldLocation,timeNewLocation,timeOldLocation);
+
             }
 
             @Override
@@ -163,6 +185,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
         return super.onCreateOptionsMenu(menu);
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -184,6 +207,8 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
         }
 
     }
+
+
 
     private void makeCall(ChallengeRequestData data){
         Call<ReturnData<LobbiesData>> call = new ApiUtil().getApiInterface(this).getChallengeData(data);
@@ -211,4 +236,66 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
         });
 
     }
+
+
+    public double checkAltitudeChange(Location oldLocation, Location location, double altitudeClimbed, double altitudeDescended){
+        if (this.oldLocation.getAltitude() < this.location.getAltitude()) {
+            this.altitudeClimbed = this.altitudeClimbed + this.location.getAltitude() - this.oldLocation.getAltitude();
+            if (this.altitudeClimbed > hoe moet je de hoogte vragen die de challenge was?){
+                //delete de mission uit de lijst?
+                Toast.makeText(getApplicationContext(), "Mission completed!", Toast.LENGTH_LONG).show();
+            }
+            return this.altitudeClimbed;
+        }
+        else if (this.oldLocation.getAltitude() > this.location.getAltitude()){
+            this.altitudeDescended = this.altitudeDescended + this.oldLocation.getAltitude() - this.location.getAltitude();
+            if (this.altitudeDescended > de hoogte die de challenge was?){
+                //delete de mission uit de lijst
+                Toast.makeText(getApplicationContext(), "Mission completed!", Toast.LENGTH_LONG).show();
+
+            }
+            return -this.altitudeDescended;
+        }
+
+    }
+    public boolean checkLocation(Location location){ //is boolean ok?
+        if (location.distanceTo(de locatie die de challenge is) < 50){
+            //delete de missie
+            Toast.makeText(getApplicationContext(), "Mission completed!", Toast.LENGTH_LONG).show();
+        }
+        return true;
+
+    }
+    public boolean checkTeamAssembled(Boolean assembled){ //location niet meegegeven, ok?
+        //hoe moet je de locatie van anderen opvragen?
+        assembled = Boolean.TRUE
+        for alle spelers van jouw team {
+            if (location.distanceTo(locatie teamspeler)>10){
+                assembled = Boolean.FALSE;
+            }
+
+        }
+        if (assembled = Boolean.TRUE){
+            //delete de missie
+            Toast.makeText(getApplicationContext(), "Mission completed!", Toast.LENGTH_LONG).show();}
+        return Boolean.TRUE;
+    }
+
+    public void checkLightCollected(float sv, float collectedLight){
+        collectedLight = collectedLight + sv; //is deze variabele nu veranderd?
+        if (collectedLight > licht dat moest worden verzameld){
+            //delete de missie
+            Toast.makeText(getApplicationContext(), "Mission completed!", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void checkSpeed(Location location,Location oldLocation,long timeNewLocation, long timeOldLocation){
+        if (location.distanceTo(oldLocation)/(1000*(timeNewLocation-timeNewLocation))>de te behalen snelheid){
+            //delete de missie
+            Toast.makeText(getApplicationContext(), "Mission completed!", Toast.LENGTH_LONG).show();
+        }
+    }
+
+
+
 }
