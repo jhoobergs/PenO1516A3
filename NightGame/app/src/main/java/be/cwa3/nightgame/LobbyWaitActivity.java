@@ -14,6 +14,7 @@ import java.lang.reflect.GenericArrayType;
 
 import at.grabner.circleprogress.CircleProgressView;
 
+import at.grabner.circleprogress.TextMode;
 import be.cwa3.nightgame.Adapters.FriendImageAdapter;
 import be.cwa3.nightgame.Adapters.LobbyWaitAdapter;
 import be.cwa3.nightgame.Data.ErrorData;
@@ -48,6 +49,7 @@ public class LobbyWaitActivity extends AppCompatActivity implements CircleProgre
         setContentView(R.layout.activity_lobbywait);
         listView = (ListView) findViewById(R.id.lobby_players_list);
         mCircleView = (CircleProgressView) findViewById(R.id.circleView);
+        mCircleView.setValue(0);
         mCircleView.setSeekModeEnabled(false);
 
         String gameId = new SettingsUtil(this).getString(SharedPreferencesKeys.GameIDString);
@@ -75,9 +77,11 @@ public class LobbyWaitActivity extends AppCompatActivity implements CircleProgre
                     startGameActivity();
                 }
                 else if (gameData.TimerDate== null) {
+                    mCircleView.setTextMode(TextMode.TEXT);
                     mCircleView.setAutoTextSize(true);
                     mCircleView.spin();
                     mCircleView.setText(String.format("Waiting %d / %d", gameData.Players.size(), gameData.MinPlayers));
+                    mCircleView.setShowTextWhileSpinning(true);
                     listView.setAdapter(new LobbyWaitAdapter(LobbyWaitActivity.this, gameData.Players));
                     //automatic refresh?
                 }
@@ -85,6 +89,7 @@ public class LobbyWaitActivity extends AppCompatActivity implements CircleProgre
                     startGameActivity();
                 }
                 else {
+                    mCircleView.setTextMode(TextMode.PERCENT);
                     mCircleView.setAutoTextSize(true);
                     mCircleView.stopSpinning();
                     mCircleView.setMaxValue(100);
