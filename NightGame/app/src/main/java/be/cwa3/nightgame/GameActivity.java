@@ -19,6 +19,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -59,10 +60,9 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
     private boolean mapHasBeenReady = false;
     private AccelerometerData accelerometerData;
     private String gameId;
-    private String userTeam;
     private LobbiesData gameData;
     private double proximity;
-    private double sv;
+    private float lightvalue;
 
     private Location location, oldLocation;
     private List<Integer> completedMissions = new ArrayList<>();
@@ -102,13 +102,14 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
 
             @Override
             public void lightChanged(float sv) {
+                lightvalue = sv;
                 boolean before = othersShouldBeInvisibile;
-                othersShouldBeInvisibile = sv < 90 || sv > 1500 || proximity == 0; // >1500 means cheating
-
+                othersShouldBeInvisibile = (sv < 90 || sv > 1500 || proximity == 0); // >1500 means cheating
+                Log.d("test", String.format("%f, %f", sv, proximity));
 
                 if (before != othersShouldBeInvisibile)
                     mapFragment.getMapAsync(GameActivity.this);
-                checkLightCollected(sv);
+                checkLightCollected();
             }
 
             @Override
@@ -130,9 +131,10 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
             }
 
             @Override
-            public void proximityChanged(float proximity) {
+            public void proximityChanged(float prox) {
+                proximity = prox;
                 boolean faking_light = othersShouldBeInvisibile;
-                othersShouldBeInvisibile = proximity == 0 || sv < 90 || sv > 1500; // 0 means cheating
+                othersShouldBeInvisibile = (proximity == 0 || lightvalue < 90 || lightvalue > 1500); // 0 means cheating
 
 
                 if (faking_light != othersShouldBeInvisibile)
@@ -170,7 +172,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
             LatLng latLng = new LatLng(loc.Latitude, loc.Longitude);
             bitmapDescriptor = getPlayerMapIcon(loc.Team);
 
-            if (loc.Team.equals(userTeam) || (!othersShouldBeInvisibile && "Attacker".equals(loc.Team) ))
+            if (loc.Team.equals(gameData.Player.Team) || (!othersShouldBeInvisibile && "Attacker".equals(gameData.Player.Team) ))
                 map.addMarker(new MarkerOptions()
                         .title(loc.PlayerName)
                         .snippet(String.format("%s (%s minuten geleden)", loc.Team, (DateTime.now().getMillis() - loc.CreatedOn.getMillis())/(1000*60)))
@@ -179,18 +181,30 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
 
         }
 
-        if(gameData != null && location != null) {
-            int type;
-            MissionData mission;
-            for (int i = 0; i < gameData.Missions.size(); i++) {
-                mission = gameData.Missions.get(i);
-                type = mission.Type;
-                if (type == 1) {
-                    LatLng loc = new LatLng(mission.Location.Latitude,mission.Location.Longitude);
-                    String goToLocation;
-                    map.addMarker(new MarkerOptions()
-                            .title("Challenge location").position(loc));
+        if(gameData != null) {
+            if(location != null) {
+                int type;
+                MissionData mission;
+                for (int i = 0; i < gameData.Missions.size(); i++) {
+                    mission = gameData.Missions.get(i);
+                    type = mission.Type;
+                    if (type == 1) {
+                        LatLng loc = new LatLng(mission.Location.Latitude, mission.Location.Longitude);
+                        String goToLocation;
+                        map.addMarker(new MarkerOptions()
+                                .title("Challenge location").position(loc));
+                    }
                 }
+            }
+            CircleOptions circleOptions = new CircleOptions()
+                    .center(new LatLng(gameData.CenterLocation.Latitude, gameData.CenterLocation.Longitude))
+                    .radius(gameData.CircleRadius); // In meters
+            map.addCircle(circleOptions);
+            if("Defender".equals(gameData.Player.Team)) {
+                circleOptions = new CircleOptions()
+                        .center(new LatLng(gameData.DefenderBase.Latitude, gameData.DefenderBase.Longitude))
+                        .radius(gameData.CircleRadius / 10); // In meters
+                map.addCircle(circleOptions);
             }
         }
 
@@ -370,11 +384,11 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
         }
         return true;
     }
-    public boolean checkLightCollected(float sv) {
+    public boolean checkLightCollected() {
         if (gameData != null) {
             List<MissionData> missionDatas = getNotFinishedMissionsOfType(4);
             for (MissionData mission : missionDatas) {
-                    collectedLight = collectedLight + sv;
+                    collectedLight = collectedLight + lightvalue;
                     Log.d("test", String.valueOf(collectedLight));
                     if (collectedLight > mission.AmountOfLight && !mission.IsFinished && !completedMissions.contains(mission.Id)) {
                         collectedLight = 0;
@@ -419,7 +433,6 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
                 myLocation.Longitude = location.getLongitude();
                 myLocation.CreatedOn = DateTime.now();
                 myLocation.PlayerName = gameData.Player.Name;
-                userTeam = gameData.Player.Team;
                 myLocation.Team = gameData.Player.Team;
 
                 locationDatas.add(myLocation);

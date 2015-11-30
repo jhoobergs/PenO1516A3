@@ -210,20 +210,24 @@ function fillAndReturnGetData(res, gamedata, user){
     item.DefenderLeader = gamedata.DefenderLeader;
     item.MinPlayers = gamedata.MinPlayers;
     item.MaxPlayers = gamedata.MaxPlayers;
+    item.DefenderBase = gamedata.DefenderBase;
+    item.CircleRadius = gamedata.CircleRadius;
     item.Players = [];
     var players = Object.keys(gamedata.Players);
     for(var player in players){
     var playerData = gamedata.Players[players[player]];
     var locations = playerData.Locations;
+    if(locations.length > 0){
     var latestLocation = locations[locations.length -1];
-    if(latestLocation != null){
+    if(latestLocation != null && gamedata.Timer != null){
         latestLocation.CreatedOn = latestLocation.CreatedOn.substring(0, gamedata.Timer.length-5) + "+00:00";
+    }
     }
     var playerReturnData = {
     "Name" : players[player],
     "ImageURL": defaultImage,
     "LatestLocation": latestLocation,
-    "IsRequester" : false
+    "HasFlag" : playerData.HasFlag
     }
     if(playerData.IsDefender){
     playerReturnData["Team"] = "Defender";
@@ -231,10 +235,15 @@ function fillAndReturnGetData(res, gamedata, user){
     else{
     playerReturnData["Team"] = "Attacker";
     }
-    if(players[player] == user){
+    /*if(players[player] == user){
     playerReturnData["IsRequester"] = true;
+    }*/
+    if(playerReturnData.Name != user){
+    item.Players.push(playerReturnData);
     }
-    item.Players.push(playerReturnData); 
+    else{
+    item.Player = playerReturnData;
+    }
     if(players[player] == user){
         item.Missions = gamedata.Players[players[player]].Missions;
         for(var mission in item.Missions){
@@ -246,7 +255,7 @@ function fillAndReturnGetData(res, gamedata, user){
     if(gamedata.Timer != null)
         item.TimerDate = gamedata.Timer.substring(0, gamedata.Timer.length-5) + "+00:00";
     item.IsStarted = gamedata.IsStarted;
-    //console.log(item);
+    console.log(item);
     returnData(res, 1, item, null);  
 }
     
@@ -295,17 +304,19 @@ user = getUserByToken(res, req.headers, function(user){
     
     
 app.post('/game/sendData',  function(req, res){
+    
     var dynamodbDoc = new AWS.DynamoDB.DocumentClient();
     if(req.body != null){
         if(req.body.GameId == null || req.body.Accelerometer == null || req.body.Location == null || req.body.CompletedMissions == null ||req.body.Died == null){
             returnData(res, 0, null, '{Not all params present}');
         }
         else{
+            console.log(req.body.GameId);
             user = getUserByToken(res, req.headers, function(user){
                 if(user != undefined){
                 getGame(req.body.GameId, function(data){
                 if (data == null) {
-                    console.error("Unable to query. Error:", JSON.stringify(err, null, 2));
+                    console.error("Game Doesn't exist");
                 }
                 else
                 {
@@ -362,6 +373,7 @@ putnewGameItem = function(data, username, id) {
     else
         amountAttackers +=1
     players.M[username] = getUserExpressionAttributes(isDefender, []);
+    var defenderBase = driveTo(data.CenterLocationLatitude, data.CenterLocationLongitude, data.CircleRadius);
     var item = {
 	    'GameId' : { 'S': id },
         'Name' : { 'S' : data.Name},
@@ -374,6 +386,12 @@ putnewGameItem = function(data, username, id) {
                             "M" : {
                                     Latitude:  {"N" : data.CenterLocationLatitude.toString()},
                                     Longitude: {"N" : data.CenterLocationLongitude.toString()}        
+                                   }
+        },
+        'DefenderBase' : {
+                            "M" : {
+                                    Latitude:  {"N" : defenderBase.Latitude.toString()},
+                                    Longitude: {"N" : defenderBase.Longitude.toString()}        
                                    }
         },
         'CircleRadius' : { 'N' : data.CircleRadius.toString()},
@@ -550,10 +568,18 @@ addDataToGame = function(gameId, user, data, gameData, callback){
         }
     }
     if(changed){
-        console.log(userMissions);
+        //console.log(userMissions);
         ExpressionAttributeNam["#attrMissions"] = "Missions";
         UpdateExpress += ", #attrName.#attrName2.#attrMissions = :missions";
         ExpressionAttributeVal[":missions"] = marshal(userMissions);
+    }
+    
+    if(getDistanceFromLatLonVincenty(gameData.DefenderBase.Latitude, gameData.DefenderBase.Longitude, data.Location.Longitude,
+                                     data.Location.Latitude) < gameData.CircleRadius /10 && !gameData.IsFlagCaptured && !gameData.Players[user].IsDefender){
+         ExpressionAttributeNam["#attrIsFlagCaptured"] = "IsFlagCaptured";
+        ExpressionAttributeNam["#attrHasFlag"] = "HasFlag";
+        UpdateExpress += ", #attrName.#attrName2.#attrHasFlag = :true, #attrIsFlagCaptured = := :true";
+        ExpressionAttributeVal[":true"] = marshal(true);
     }
     
     dd.updateItem({
@@ -584,6 +610,14 @@ function driveTo(latitude,longitude,straal){
 	start = [latitude,longitude]
 	var randomX = Math.random()/10000;
 	var randomY = Math.random()/10000;
+    
+    var randomSignX = Math.random();
+    var randomSignY = Math.random();
+    if(randomSignX > 0.5)
+        randomX = -1 * randomX;
+    if(randomSignY > 0.5)
+        randomY = -1 * randomY;
+    
 	var list = [];
     latitude = latitude + randomX;
 	longitude = longitude +randomY;
@@ -638,7 +672,7 @@ function type3Mission(difficulty){
             "Type": {'N' : '3'},
             "Description": {'S' : "Drive a height difference of " + difference + "m."},
             "HeightDifference" : { 'N' : difference.toString() },
-            "OnPhoneCheckable": {'BOOL' : false}
+            "OnPhoneCheckable": {'BOOL' : true}
            }
         };
 }
@@ -649,7 +683,7 @@ function type4Mission(difficulty){
             "IsFinished": {'BOOL':  false},
             "Type": {'N' : '4'},
             "Description": {'S' : "Search for light."},
-            "AmountOfLight" : {'N' : (difficulty*1000).toString() },
+            "AmountOfLight" : {'N' : (difficulty*50000).toString() },
             "OnPhoneCheckable": {'BOOL' : true}
            }
         };

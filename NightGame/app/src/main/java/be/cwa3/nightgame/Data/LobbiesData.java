@@ -1,5 +1,7 @@
 package be.cwa3.nightgame.Data;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import org.joda.time.DateTime;
 
 import java.util.List;
@@ -15,10 +17,13 @@ public class LobbiesData {
     public List<GamePlayerData> Players;
     public GamePlayerData Player;
     public CenterLocation CenterLocation;
+    public CenterLocation DefenderBase;
     public DateTime TimerDate;
     public Boolean IsStarted = false;
     public List<MissionData> Missions;
+    public double CircleRadius;
 
 
     public transient boolean isOpen = false; //Transient means that this data isn't server related.
+
 }
