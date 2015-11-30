@@ -21,7 +21,6 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.gson.Gson;
 
 import org.joda.time.DateTime;
 
@@ -37,6 +36,7 @@ import be.cwa3.nightgame.Data.GameSendDataRequestData;
 import be.cwa3.nightgame.Data.LocationData;
 import be.cwa3.nightgame.Adapters.MissionsAdapter;
 import be.cwa3.nightgame.Data.LobbiesData;
+import be.cwa3.nightgame.Data.MissionData;
 import be.cwa3.nightgame.Data.ReturnData;
 import be.cwa3.nightgame.Utils.ApiUtil;
 import be.cwa3.nightgame.Utils.ErrorUtil;
@@ -53,21 +53,26 @@ import retrofit.Call;
  */
 public class GameActivity extends SensorDataActivity implements OnMapReadyCallback {
 
-    MapFragment mapFragment;
-    ListView listview;
+    private MapFragment mapFragment;
+    private ListView listview;
     private boolean othersShouldBeInvisibile = false;
     private boolean mapHasBeenReady = false;
     private AccelerometerData accelerometerData;
     private String gameId;
     private String userTeam;
-    LobbiesData gameData;
-    double proximity;
-    double sv;
+    private LobbiesData gameData;
+    private double proximity;
+    private double sv;
 
-    private Location location;
+    private Location location, oldLocation;
+    private List<Integer> completedMissions = new ArrayList<>();
 
     private Handler customHandler = new Handler();
     private int delayTimeRequestData = 10000;
+    private double altitudeClimbed = 0;
+    private double altitudeDescended = 0;
+    private float collectedLight = 0;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -98,18 +103,27 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
             @Override
             public void lightChanged(float sv) {
                 boolean before = othersShouldBeInvisibile;
-                othersShouldBeInvisibile = sv < 90 || sv > 1500 || proximity ==0; // >1500 means cheating
+                othersShouldBeInvisibile = sv < 90 || sv > 1500 || proximity == 0; // >1500 means cheating
 
 
                 if (before != othersShouldBeInvisibile)
                     mapFragment.getMapAsync(GameActivity.this);
+                checkLightCollected(sv);
             }
 
             @Override
             public void locationChanged(Location newLocation) {
+                oldLocation = location;
+
                 boolean wasNull = (location == null);
                 location = newLocation;
                 mapFragment.getMapAsync(GameActivity.this);
+
+                checkAltitudeChange();
+                checkLocation();
+                checkTeamAssembled();
+                checkSpeed();
+
                 if (wasNull) {
                     customHandler.postDelayed(sendData, 100);
                 }
@@ -118,7 +132,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
             @Override
             public void proximityChanged(float proximity) {
                 boolean faking_light = othersShouldBeInvisibile;
-                othersShouldBeInvisibile = proximity ==0 || sv < 90 || sv > 1500 ; // 0 means cheating
+                othersShouldBeInvisibile = proximity == 0 || sv < 90 || sv > 1500; // 0 means cheating
 
 
                 if (faking_light != othersShouldBeInvisibile)
@@ -165,6 +179,21 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
 
         }
 
+        if(gameData != null && location != null) {
+            int type;
+            MissionData mission;
+            for (int i = 0; i < gameData.Missions.size(); i++) {
+                mission = gameData.Missions.get(i);
+                type = mission.Type;
+                if (type == 1) {
+                    LatLng loc = new LatLng(mission.Location.Latitude,mission.Location.Longitude);
+                    String goToLocation;
+                    map.addMarker(new MarkerOptions()
+                            .title("Challenge location").position(loc));
+                }
+            }
+        }
+
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -191,6 +220,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
         }
     }
 
+
     private Runnable sendData = new Runnable() {
         @Override
         public void run() {
@@ -203,7 +233,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
             locationData.Altitude = location.getAltitude();
             data.Location = locationData;
             data.Accelerometer = accelerometerData;
-            data.CompletedMissions = new ArrayList<>();
+            data.CompletedMissions = completedMissions;
             data.Died = false;  ///////////////// ge kunt wel dood gaan heeeeeeee gaaaast kempen rueles!!
             makeGameDataCall(data);
             }
@@ -217,6 +247,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
 
             @Override
             public void onSucces(Empty body) {
+                completedMissions.clear();
                 customHandler.postDelayed(sendData, delayTimeRequestData);
             }
 
@@ -240,7 +271,6 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
         requestUtil.makeRequest(new RequestInterface<LobbiesData>() {
             @Override
             public void onSucces(LobbiesData body) {
-                Log.d("test", new Gson().toJson(body.Missions));
                 listview.setAdapter(new MissionsAdapter(GameActivity.this, body.Missions));
                 gameData = body;
 
@@ -248,7 +278,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
 
             @Override
             public void onError(ErrorData error) {
-                if(error.Errors.contains(4) || error.Errors.contains(6)) {
+                if (error.Errors.contains(4) || error.Errors.contains(6)) {
                     new SettingsUtil(getApplicationContext()).setString(SharedPreferencesKeys.GameIDString, "");
                     Intent intent = new Intent(getApplicationContext(), PlayActivity.class);
                     startActivity(intent);
@@ -259,6 +289,115 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
             }
         });
 
+    }
+
+    public boolean checkAltitudeChange() {
+        if (gameData != null && location != null && oldLocation != null) {
+            List<MissionData> missionDatas = getNotFinishedMissionsOfType(3);
+            for (MissionData mission : missionDatas) {
+                if(oldLocation.hasAltitude() && location.hasAltitude()) {
+                    if (oldLocation.getAltitude() < location.getAltitude()) {
+                        altitudeClimbed = altitudeClimbed + location.getAltitude() - oldLocation.getAltitude();
+                        Log.d("testCl", String.valueOf(altitudeClimbed));
+                        Log.d("testCl", String.valueOf(location.getAccuracy()));
+                        if (altitudeClimbed > mission.HeightDifference) {
+                            completedMissions.add(mission.Id);
+                            Toast.makeText(getApplicationContext(), "'Drive a height difference': Mission completed!", Toast.LENGTH_LONG).show();
+                        }
+
+                    } else if (oldLocation.getAltitude() > location.getAltitude()) {
+                        altitudeDescended = altitudeDescended + oldLocation.getAltitude() - location.getAltitude();
+                        Log.d("testDe", String.valueOf(altitudeDescended));
+                        Log.d("testDe", String.valueOf(location.getAccuracy()));
+                        if (altitudeDescended > mission.HeightDifference) {
+                            completedMissions.add(mission.Id);
+                            Toast.makeText(getApplicationContext(), "'Drive a height difference': Mission completed!", Toast.LENGTH_LONG).show();
+
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+
+
+    public boolean checkLocation(){
+        if(gameData != null && location != null) {
+            List<MissionData> missionDatas = getNotFinishedMissionsOfType(1);
+            for (MissionData mission : missionDatas) {
+                    Location loc = new Location("");
+                    loc.setLongitude(mission.Location.Longitude);
+                    loc.setLatitude(mission.Location.Latitude);
+
+                    if (location.distanceTo(loc) < 10  && !mission.IsFinished && !completedMissions.contains(mission.Id)) {
+                        completedMissions.add(mission.Id);
+                        Toast.makeText(getApplicationContext(), "'Drive to location': Mission completed!", Toast.LENGTH_LONG).show();
+                    }
+            }
+        }
+        return true;
+
+    }
+    public boolean checkTeamAssembled() {
+        if (gameData != null&& location != null) {
+            double maxDistance = 10;
+            List<MissionData> missionDatas = getNotFinishedMissionsOfType(2);
+            for (MissionData mission : missionDatas) {
+                    boolean assembled = true;
+                    List<GamePlayerData> players = gameData.Players;
+                    for (GamePlayerData player : players) {
+                        if(player.Team.equals(gameData.Player.Team)) {
+                            if(player.LatestLocation == null){
+                                assembled = false;
+                                break;
+                            }
+                            Location loc = new Location("");
+                            loc.setLongitude(player.LatestLocation.Longitude);
+                            loc.setLatitude(player.LatestLocation.Latitude);
+                            if (location.distanceTo(loc) > maxDistance) {
+                                assembled = false;
+                                break;
+                            }
+                        }
+                    }
+                    if (assembled && !mission.IsFinished && !completedMissions.contains(mission.Id)) {
+                        completedMissions.add(mission.Id);
+                        Toast.makeText(getApplicationContext(), "'Gather with your team': Mission completed!", Toast.LENGTH_LONG).show();
+                    }
+              }
+        }
+        return true;
+    }
+    public boolean checkLightCollected(float sv) {
+        if (gameData != null) {
+            List<MissionData> missionDatas = getNotFinishedMissionsOfType(4);
+            for (MissionData mission : missionDatas) {
+                    collectedLight = collectedLight + sv;
+                    Log.d("test", String.valueOf(collectedLight));
+                    if (collectedLight > mission.AmountOfLight && !mission.IsFinished && !completedMissions.contains(mission.Id)) {
+                        collectedLight = 0;
+                        completedMissions.add(mission.Id);
+                        Toast.makeText(getApplicationContext(), "'Search for light': Mission completed!", Toast.LENGTH_LONG).show();
+                    }
+            }
+        }
+        return true;
+    }
+
+
+    public boolean checkSpeed(){
+        if (gameData != null&& location != null) {
+            List<MissionData> missionDatas = getNotFinishedMissionsOfType(5);
+            for (MissionData mission : missionDatas) {
+                    if (location.getSpeed() > mission.SpeedValue && !mission.IsFinished && !completedMissions.contains(mission.Id)) {
+                        completedMissions.add(mission.Id);
+                        Toast.makeText(getApplicationContext(), "'Get this speed': Mission completed!", Toast.LENGTH_LONG).show();
+                    }
+            }
+        }
+        return true;
     }
 
     private List<LocationData> getPlayerLocations(){
@@ -294,5 +433,17 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
             return BitmapDescriptorFactory.fromResource(R.drawable.defender);
         }
         return BitmapDescriptorFactory.fromResource(R.drawable.attacker);
+    }
+
+    public List<MissionData> getNotFinishedMissionsOfType(int type){
+        List<MissionData> missionDatas = new ArrayList<>();
+        for (int i = 0; i < gameData.Missions.size(); i++) {
+            MissionData mission = gameData.Missions.get(i);
+
+            if (mission.Type == type && !mission.IsFinished && mission.IsActive && !completedMissions.contains(mission.Id)) {
+                missionDatas.add(mission);
+            }
+        }
+        return missionDatas;
     }
 }

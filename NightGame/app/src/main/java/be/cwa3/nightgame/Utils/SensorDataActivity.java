@@ -191,5 +191,9 @@ public class SensorDataActivity extends AppCompatActivity implements GoogleApiCl
 
     }
 
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        sensorManager.unregisterListener(this);
+    }
 }

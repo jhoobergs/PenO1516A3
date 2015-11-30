@@ -39,7 +39,7 @@
     <string name="next">Next</string>
     <string name="start_lobby">Start Lobby</string>
     <string name="choose_centre_press_next">Choose the centre of the map by moving the marker and press Next</string>
-    <string name="mission_type_1">Drive to %s,%s.</string>
+    <string name="mission_type_1" formatted="false">Drive to (%s %s).</string>
     <string name="mission_type_2">Gather with your team.</string>
     <string name="mission_type_3">Drive a height difference of %s.</string>
     <string name="mission_type_4">Search for light.</string>

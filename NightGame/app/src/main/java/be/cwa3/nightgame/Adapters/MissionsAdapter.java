@@ -2,6 +2,7 @@ package be.cwa3.nightgame.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,7 +29,6 @@ public class MissionsAdapter extends ArrayAdapter<MissionData> {
         super(context, layoutResourceId,data);
         this.context = context;
         this.data = data;
-        Log.d("test", String.valueOf(data.size()));
     }
 
     @Override
@@ -49,7 +49,6 @@ public class MissionsAdapter extends ArrayAdapter<MissionData> {
             holder = (Holder) row.getTag();
         }
         MissionData listItem = data.get(position);
-        Log.d("test", "in");
 
         String description ="";
 
@@ -69,11 +68,13 @@ public class MissionsAdapter extends ArrayAdapter<MissionData> {
             description = String.format(context.getString(R.string.mission_type_5), String.valueOf(listItem.SpeedValue));
         }
 
-
         holder.Mission.setText(description);
 
         if (listItem.IsFinished){
             holder.Mission.setTextColor(context.getResources().getColor(R.color.colorPrimary));
+        }
+        else{
+            holder.Mission.setTextColor(Color.GRAY);
         }
 
         return row;

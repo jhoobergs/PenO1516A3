@@ -13,4 +13,5 @@ public class MissionData {
     public double HeightDifference;
     public double SpeedValue;
     public int Id;
+    public double AmountOfLight;
 }
