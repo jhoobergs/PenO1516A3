@@ -50,7 +50,31 @@ public class MissionsAdapter extends ArrayAdapter<MissionData> {
         }
         MissionData listItem = data.get(position);
         Log.d("test", "in");
-        holder.Mission.setText(listItem.Description);
+
+        String description ="";
+
+        if(listItem.Type == 1) {
+            description = String.format(context.getString(R.string.mission_type_1), String.valueOf(listItem.Location.Latitude),String.valueOf(listItem.Location.Longitude));
+        }
+        else if(listItem.Type == 2){
+            description = context.getString(R.string.mission_type_2);
+        }
+        else if(listItem.Type==3){
+            description = String.format(context.getString(R.string.mission_type_3), String.valueOf(listItem.HeightDifference));
+        }
+        else if(listItem.Type==4){
+            description = context.getString(R.string.mission_type_4);
+        }
+        else if(listItem.Type==5){
+            description = String.format(context.getString(R.string.mission_type_5), String.valueOf(listItem.SpeedValue));
+        }
+
+
+        holder.Mission.setText(description);
+
+        if (listItem.IsFinished){
+            holder.Mission.setTextColor(context.getResources().getColor(R.color.colorPrimary));
+        }
 
         return row;
     }

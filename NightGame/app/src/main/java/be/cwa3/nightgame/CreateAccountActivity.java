@@ -130,6 +130,9 @@ public class CreateAccountActivity extends AppCompatActivity {
                         || !repeatPassword.getText().toString().equals(enterPassword.getText().toString())) {
                     Toast.makeText(CreateAccountActivity.this, "Data not entered correctly!", Toast.LENGTH_LONG).show();
                 }
+                else if ( enterName.getText().toString().length()< 4) {
+                    Toast.makeText(CreateAccountActivity.this, "Name must be at least 3 characters!", Toast.LENGTH_LONG).show();
+                }
                 else{
                     CreateNewAccountRequestData data = new CreateNewAccountRequestData();
                     data.Username = enterName.getText().toString();

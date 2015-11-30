@@ -12,6 +12,6 @@
         android:layout_gravity="center_vertical"
         tools:text="Mission 1"
         android:id="@+id/Mission"
-        />
+        android:layout_margin="15dp" />
 
 </LinearLayout>
