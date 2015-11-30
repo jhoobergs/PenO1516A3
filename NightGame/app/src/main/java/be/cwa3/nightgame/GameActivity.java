@@ -96,10 +96,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
             @Override
             public void lightChanged(float sv) {
                 boolean before = othersShouldBeInvisibile;
-                if (sv < 90)
-                    othersShouldBeInvisibile = true;
-                else
-                    othersShouldBeInvisibile = false;
+                othersShouldBeInvisibile = sv < 90;
 
                 if (before != othersShouldBeInvisibile)
                     mapFragment.getMapAsync(GameActivity.this);
@@ -145,7 +142,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
             LatLng latLng = new LatLng(loc.Latitude, loc.Longitude);
             bitmapDescriptor = getPlayerMapIcon(loc.Team);
 
-            if (loc.Team.equals(userTeam) || othersShouldBeInvisibile)
+            if (loc.Team.equals(userTeam) || !othersShouldBeInvisibile)
                 map.addMarker(new MarkerOptions()
                         .title(loc.PlayerName)
                         .snippet(String.format("%s (%s minuten geleden)", loc.Team, (DateTime.now().getMillis() - loc.CreatedOn.getMillis())/(1000*60)))
@@ -218,7 +215,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
             @Override
             public void onFailure(Context context, View view, Throwable t) {
                 customHandler.postDelayed(sendData, delayTimeRequestData);
-                super.onFailure(context,view, t);
+                super.onFailure(context, view, t);
             }
         });
     }
@@ -254,27 +251,25 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
         List<LocationData> locationDatas= new ArrayList<>();
         if(gameData != null) {
             for (GamePlayerData playerData : gameData.Players) {
-                if (playerData.IsRequester) {
-                    LocationData myLocation = new LocationData();
-                    if(location != null) {
-                        myLocation.Altitude = location.getAltitude();
-                        myLocation.Latitude = location.getLatitude();
-                        myLocation.Longitude = location.getLongitude();
-                        myLocation.CreatedOn = DateTime.now();
-                        myLocation.PlayerName = playerData.Name;
-                        userTeam = playerData.Team;
-                        myLocation.Team = playerData.Team;
-
-                        locationDatas.add(myLocation);
-                    }
-                } else {
                     LocationData loc = playerData.LatestLocation;
                     if(loc != null) {
                         loc.Team = playerData.Team;
                         loc.PlayerName = playerData.Name;
                         locationDatas.add(loc);
                     }
-                }
+
+            }
+            LocationData myLocation = new LocationData();
+            if(location != null) {
+                myLocation.Altitude = location.getAltitude();
+                myLocation.Latitude = location.getLatitude();
+                myLocation.Longitude = location.getLongitude();
+                myLocation.CreatedOn = DateTime.now();
+                myLocation.PlayerName = gameData.Player.Name;
+                userTeam = gameData.Player.Team;
+                myLocation.Team = gameData.Player.Team;
+
+                locationDatas.add(myLocation);
             }
         }
         return locationDatas;

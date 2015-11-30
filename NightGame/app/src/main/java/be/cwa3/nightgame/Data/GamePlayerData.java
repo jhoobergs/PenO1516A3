@@ -9,5 +9,5 @@ public class GamePlayerData {
     public String ImageURL;
     public String Team;
     public LocationData LatestLocation;
-    public boolean IsRequester;
+    public boolean HasFlag;
 }

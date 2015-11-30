@@ -13,6 +13,7 @@ public class LobbiesData {
     public int MinPlayers;
     public int MaxPlayers;
     public List<GamePlayerData> Players;
+    public GamePlayerData Player;
     public CenterLocation CenterLocation;
     public DateTime TimerDate;
     public Boolean IsStarted = false;
