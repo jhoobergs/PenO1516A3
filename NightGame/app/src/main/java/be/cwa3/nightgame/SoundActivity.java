@@ -158,8 +158,22 @@ public class SoundActivity extends AppCompatActivity implements OnClickListener 
             String string = new Gson().toJson(toTransform);
             FileWriter outputStream;
 
+            /*
+            //external writing
             try {
                 outputStream = new FileWriter(Environment.getExternalStorageDirectory().toString() +"/geluid.txt",true);
+                Log.d("key",Environment.getExternalStorageDirectory().toString());
+                outputStream.append(string);
+                outputStream.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            */
+
+            //internal writing
+            try {
+                outputStream = new FileWriter(getFilesDir().toString() +"/geluid.txt",true);
+                Log.d("key",getFilesDir().toString());
                 outputStream.append(string);
                 outputStream.close();
             } catch (Exception e) {
