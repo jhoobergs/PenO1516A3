@@ -190,7 +190,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
             data.Location = locationData;
             data.Accelerometer = accelerometerData;
             data.CompletedMissions = new ArrayList<>();
-            data.Died = false;
+            data.Died = false;  ///////////////// ge kunt wel dood gaan heeeeeeee gaaaast kempen rueles!!
             makeGameDataCall(data);
             }
         }
