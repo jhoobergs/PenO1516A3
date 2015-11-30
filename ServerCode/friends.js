@@ -1,5 +1,5 @@
 exports = module.exports = function(app ,AWS, dd){
-
+var defaultImage = "http://52.26.187.234:8080/defaultProfile.jpg";
 app.get('/friends/list', function(req, res){
     user = getUserByToken(res, req.headers, function(user){
     if(user != undefined){
@@ -17,7 +17,7 @@ app.get('/friends/list', function(req, res){
                         getUser(i, function(friendData){
                             if(friendData != null){
                             if(friendData.Items[0].ImageURL == null)
-                                friendData.Items[0].ImageURL = 'http://www.benveldkamp.nl/images/PERS/Smurfen-bril.jpg';
+                                friendData.Items[0].ImageURL = defaultImage;
                                 //console.log(data.Items[0].Friends[friendData.Items[0].Username]);
                                 //console.log(friendData.Items[0].Username);
                             result.push(
@@ -77,7 +77,7 @@ app.post('/friends/search', function(req, res){
                     var item = {};
                     if(value.Username != user){
                     item.Name = data.Items[i].Username;
-                    item.ImageURL = 'http://www.benveldkamp.nl/images/PERS/Smurfen-bril.jpg';
+                    item.ImageURL = defaultImage;
                     if(value.ImageURL != null)
                         item.ImageURL = value.ImageURL;
                     result.push(item);

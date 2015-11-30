@@ -1,5 +1,5 @@
 exports = module.exports = function(app, AWS){
-
+var defaultImage = "http://52.26.187.234:8080/defaultProfile.jpg";
 app.get('/scoreboard/list', function(req, res){
 var dynamodbDoc = new AWS.DynamoDB.DocumentClient();
 user = getUserByToken(res, req.headers, function(user){
@@ -17,7 +17,7 @@ user = getUserByToken(res, req.headers, function(user){
                     value = data.Items[i];
                     var item = {};
                     item.Username = data.Items[i].Username;
-                    item.ImageURL = 'http://www.benveldkamp.nl/images/PERS/Smurfen-bril.jpg';
+                    item.ImageURL = defaultImage;
                     if(data.Items[i].ImageURL != null)
                         item.ImageURL = data.Items[i].ImageURL;
                     item.Wins = undefinedIntToZero(data.Items[i].Wins);
@@ -53,6 +53,7 @@ function undefinedIntToZero(val){
 }
 
 function checkIfBetter(type, prev, item){
+    //Not used, is implemented in the app
     if(type == "Wins"){
         if(prev.Wins != item.Wins)
             return prev.Wins < item.Wins;

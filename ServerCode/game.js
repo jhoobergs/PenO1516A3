@@ -1,5 +1,6 @@
 exports = module.exports = function(app, AWS, dd){
-
+var marshal = require('dynamodb-marshaler/marshal');
+var defaultImage = "http://52.26.187.234:8080/defaultProfile.jpg";
 app.post('/game/create', function(req, res){
     var dynamodbDoc = new AWS.DynamoDB.DocumentClient();
     if(req.body != null){
@@ -62,7 +63,10 @@ app.post('/game/join',  function(req, res){
                             var isDefender = true;
                             if(data.Items[0].AmountAttackers < data.Items[0].AmountDefenders)
                                 isDefender = false;
-                            addPlayerToGame(req.body.GameId, user, setTimer,isDefender, isStarted, function(succes){
+                            var isDefenderLeader = false;
+                            if(isDefender && data.Items[0].AmountDefenders == 0)
+                                isDefenderLeader = true;
+                            addPlayerToGame(req.body.GameId, user, setTimer,isDefender, isStarted, isDefenderLeader, function(succes){
                                 if(succes){
                                     if(isStarted){
                                         players[user] = {};
@@ -166,7 +170,7 @@ app.post('/game/getData',  function(req, res){
                         AddFirstMissions(req.body.GameId, gamedata, gamedata.Players, function(succes){
                             if(succes){
                                 getGame(req.body.GameId, function(newData){
-                                fillAndReturnGetData(res, newData.Items[0]);
+                                fillAndReturnGetData(res, newData.Items[0], user);
                                 });
                             }
                             else{
@@ -176,7 +180,7 @@ app.post('/game/getData',  function(req, res){
                         });
                     }
                     else{
-                        fillAndReturnGetData(res, gamedata);
+                        fillAndReturnGetData(res, gamedata, user);
                     }
                     
                         
@@ -198,20 +202,45 @@ app.post('/game/getData',  function(req, res){
     }
 });
     
-function fillAndReturnGetData(res, gamedata){
+function fillAndReturnGetData(res, gamedata, user){
     var item = {};
     item.GameId = gamedata.GameId;
     item.Name = gamedata.Name;
+    item.IsFlagCaptured = gamedata.IsFlagCaptured;
+    item.DefenderLeader = gamedata.DefenderLeader;
     item.MinPlayers = gamedata.MinPlayers;
     item.MaxPlayers = gamedata.MaxPlayers;
     item.Players = [];
     var players = Object.keys(gamedata.Players);
     for(var player in players){
-    var playerData = {
-    "Name" : players[player],
-    "ImageURL": "http://www.benveldkamp.nl/images/PERS/Smurfen-bril.jpg"
+    var playerData = gamedata.Players[players[player]];
+    var locations = playerData.Locations;
+    var latestLocation = locations[locations.length -1];
+    if(latestLocation != null){
+        latestLocation.CreatedOn = latestLocation.CreatedOn.substring(0, gamedata.Timer.length-5) + "+00:00";
     }
-    item.Players.push(playerData); 
+    var playerReturnData = {
+    "Name" : players[player],
+    "ImageURL": defaultImage,
+    "LatestLocation": latestLocation,
+    "IsRequester" : false
+    }
+    if(playerData.IsDefender){
+    playerReturnData["Team"] = "Defender";
+    }
+    else{
+    playerReturnData["Team"] = "Attacker";
+    }
+    if(players[player] == user){
+    playerReturnData["IsRequester"] = true;
+    }
+    item.Players.push(playerReturnData); 
+    if(players[player] == user){
+        item.Missions = gamedata.Players[players[player]].Missions;
+        for(var mission in item.Missions){
+            item.Missions[mission].Id = parseInt(mission);
+        }
+    }
     }
     item.CenterLocation = gamedata.CircleCenter;
     if(gamedata.Timer != null)
@@ -295,7 +324,7 @@ app.post('/game/sendData',  function(req, res){
                         }  
                         else
                         {
-                            addDataToGame(req.body.GameId, user, req.body, function(succes){
+                            addDataToGame(req.body.GameId, user, req.body, data.Items[0], function(succes){
                                 if(succes){
                                     var result = {};
                                     returnData(res, 1, result, null);
@@ -350,8 +379,13 @@ putnewGameItem = function(data, username, id) {
         'CircleRadius' : { 'N' : data.CircleRadius.toString()},
         'IsStarted' : { 'BOOL' : false},
         'AmountDefenders' : {'N' : amountDefenders.toString() },
-        'AmountAttackers' : {'N' : amountAttackers.toString() }
+        'AmountAttackers' : {'N' : amountAttackers.toString() },
+        'IsFlagCaptured' : { 'BOOL' : false}
     };	
+    if(isDefender){
+        item["DefenderLeader"] = {'S' : username};     
+    }
+    
     dd.putItem({
         'TableName': tableName,
         'Item': item
@@ -374,7 +408,7 @@ return {
     };
 } 
     
-addPlayerToGame = function(gameId, user, setTimer, isDefender, isStarted, callback){
+addPlayerToGame = function(gameId, user, setTimer, isDefender, isStarted, isDefenderLeader, callback){
     var startDate;
     var updateExpression = "SET #attrName.#attrName2 = :user, #attrStarted = :isStarted";
     var expressionAttributesVal = {
@@ -396,7 +430,12 @@ addPlayerToGame = function(gameId, user, setTimer, isDefender, isStarted, callba
         ExpressionAttributeN["#attrAmountAttackers"] = "AmountAttackers";
         updateExpression += ", #attrAmountAttackers = #attrAmountAttackers + :one";
         expressionAttributesVal[":one"] = {'N' : '1'};
-    }    
+    }   
+    if(isDefenderLeader){
+        ExpressionAttributeN["#attrDefenderLeader"] = "DefenderLeader";
+        updateExpression += ", #attrDefenderLeader = :username";
+        expressionAttributesVal[":username"] = {'S' : user};        
+    }
     /*if(missions.length > 0){
         ExpressionAttributeN["#attrMissions"] = "Missions";
         updateExpression += ", #attrName.#attrName2.#attrMissions = list_append(#attrName.#attrName2.#attrMissions, :missions)";
@@ -468,28 +507,15 @@ setMissionsForUser = function(gameId, user, missions, callback){
     });
 }
 
-addDataToGame = function(gameId, user, data, callback){
-    dd.updateItem({
-        TableName: "Games",
-        Key: {
-            "GameId": {
-                "S": gameId
-            }
-        },
-        //UpdateExpression: "ADD #attrName = :user",
-        //UpdateExpression : "SET #attrName = list_append(#attrName, :user)",
-        UpdateExpression: "SET #attrName.#attrName2.#attrName3 = list_append(#attrName.#attrName2.#attrName3, :location), #attrName.#attrName2.#attrName4 = list_append(#attrName.#attrName2.#attrName4, :accelerometer)",
-        ExpressionAttributeNames : {
-        "#attrName" : "Players",
-        "#attrName2" : user,
-        "#attrName3" : "Locations",
-        "#attrName4" : "AccelerometerData"
-        },
-        ExpressionAttributeValues: {
+addDataToGame = function(gameId, user, data, gameData, callback){
+    var UpdateExpress = "SET #attrName.#attrName2.#attrName3 = list_append(#attrName.#attrName2.#attrName3, :location), #attrName.#attrName2.#attrName4 = list_append(#attrName.#attrName2.#attrName4, :accelerometer)"
+    var ExpressionAttributeVal = {
             ":location": {
                "L": [{"M":{
+                    "CreatedOn" : {"S" : new Date().toISOString()},
                     "Longitude" : {"N" : data.Location.Longitude.toString()},
-                    "Latitude" : {"N": data.Location.Latitude.toString()}
+                    "Latitude" : {"N": data.Location.Latitude.toString()},
+                    "Altitude" : {"N": data.Location.Altitude.toString()}
                 }
             }]
             },
@@ -501,7 +527,47 @@ addDataToGame = function(gameId, user, data, callback){
                 }
             }]
             }
+        };
+    var ExpressionAttributeNam = {
+        "#attrName" : "Players",
+        "#attrName2" : user,
+        "#attrName3" : "Locations",
+        "#attrName4" : "AccelerometerData"
+        };
+    if(data.Died != null && data.Died){
+        ExpressionAttributeNam["#attrLives"] = "Lives";
+        UpdateExpress += ", #attrName.#attrName2.#attrLives = #attrName.#attrName2.#attrLives + :minusone";
+        ExpressionAttributeVal[":minusone"] = {"N": "-1"};
+    }
+    var changed = false;
+    var userMissions = gameData.Players[user].Missions;
+    for (var i in data.CompletedMissions){
+        var id = data.CompletedMissions[i];
+        //console.log(data.CompletedMissions[i]);
+        if(userMissions.length > id -1){
+            userMissions[id].IsFinished = true;
+            changed = true;
         }
+    }
+    if(changed){
+        console.log(userMissions);
+        ExpressionAttributeNam["#attrMissions"] = "Missions";
+        UpdateExpress += ", #attrName.#attrName2.#attrMissions = :missions";
+        ExpressionAttributeVal[":missions"] = marshal(userMissions);
+    }
+    
+    dd.updateItem({
+        TableName: "Games",
+        Key: {
+            "GameId": {
+                "S": gameId
+            }
+        },
+        //UpdateExpression: "ADD #attrName = :user",
+        //UpdateExpression : "SET #attrName = list_append(#attrName, :user)",
+        UpdateExpression: UpdateExpress,
+        ExpressionAttributeNames : ExpressionAttributeNam,
+        ExpressionAttributeValues: ExpressionAttributeVal
     }, function(err, data) {
         if(err){
             console.log(err);

@@ -14,6 +14,7 @@ app.use(function(req, res, next) {
   console.log('%s %s', req.method, req.url);
   next();
 });
+app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json()); //Body's in json format will be accepted.
 

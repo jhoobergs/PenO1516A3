@@ -453,23 +453,84 @@ private void makeNewAccountCall(CreateNewAccountRequestData data){
 {
   "statusCode": 1,
   "body": {
-    "GameId": "c7c68180-8fc6-11e5-9168-c9e0b2736a07",
-    "Name": "gk",
+    "GameId": "e7e71110-93b2-11e5-84cc-2d409f510548",
+    "Name": "nn",
     "MinPlayers": 2,
-    "MaxPlayers": 6,
+    "MaxPlayers": 3,
     "Players": [
-      "gke",
-      "test"
+      {
+        "Name": "Jesse",
+        "ImageURL": "http://www.benveldkamp.nl/images/PERS/Smurfen-bril.jpg"
+      },
+      {
+        "Name": "Kevin",
+        "ImageURL": "http://www.benveldkamp.nl/images/PERS/Smurfen-bril.jpg"
+      },
+      {
+        "Name": "Moran",
+        "ImageURL": "http://www.benveldkamp.nl/images/PERS/Smurfen-bril.jpg"
+      }
+    ],
+    "Missions": [
+      {
+        "Description": "Drive to (50.8624640534824, 4.699892644637739)",
+        "IsActive": true,
+        "Type": 1,
+        "IsFinished": false,
+        "OnPhoneCheckable": true,
+        "Location": {
+          "Latitude": 50.8624640534824,
+          "Longitude": 4.699892644637739
+        },
+        "id": 0
+      },
+      {
+        "Description": "Gather with your team.",
+        "IsActive": true,
+        "Type": 2,
+        "IsFinished": false,
+        "OnPhoneCheckable": false,
+        "id": 1
+      },
+      {
+        "Description": "Drive a height difference of 8.54m.",
+        "IsActive": true,
+        "Type": 3,
+        "IsFinished": false,
+        "OnPhoneCheckable": false,
+        "HeightDifference": 8.54,
+        "id": 2
+      },
+      {
+        "AmountOfLight": 1000,
+        "Description": "Search for light.",
+        "IsActive": true,
+        "Type": 4,
+        "IsFinished": false,
+        "OnPhoneCheckable": true,
+        "id": 3
+      },
+      {
+        "Description": "Get this speed",
+        "IsActive": true,
+        "Type": 5,
+        "IsFinished": false,
+        "OnPhoneCheckable": true,
+        "SpeedValue": 18,
+        "id": 4
+      }
     ],
     "CenterLocation": {
-      "Latitude": 50.0673677,
-      "Longitude": 10.1247541
+      "Latitude": 50.859995999999995,
+      "Longitude": 4.697604999999999
     },
-    "TimerDate": "2015-11-20T20:48:29.523Z"
+    "TimerDate": "2015-11-25T21:27:55+00:00",
+    "IsStarted": true
   },
   "error": null
 }
 
+</pre>
 <p>Mogelijke errors: 3</p>
 <h4>POST: /game/sendData</h4>
 <p>Op te sturen data:</p>
