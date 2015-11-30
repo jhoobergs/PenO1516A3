@@ -112,9 +112,12 @@ public class LobbyWaitActivity extends AppCompatActivity{
                     mCircleView.setTextMode(TextMode.PERCENT);
                     mCircleView.setAutoTextSize(true);
                     mCircleView.stopSpinning();
+                    mCircleView.setUnit("%");
                     mCircleView.setMaxValue(100);
-                    Long Tminus = (gameData.TimerDate.getMillis() - DateTime.now().getMillis())/1000;
-                    mCircleView.setValue((300 - Tminus) / 3);
+                    mCircleView.setUnitScale(0.9f);
+                    mCircleView.setTextMode(TextMode.PERCENT);
+                    Long Tminus = (gameData.TimerDate.getMillis() - DateTime.now().getMillis());
+                    mCircleView.setValueAnimated(0,100,Tminus);
                     listView.setAdapter(new LobbyWaitAdapter(LobbyWaitActivity.this, gameData.Players));
                 }
             }
