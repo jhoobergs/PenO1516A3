@@ -70,7 +70,7 @@ public class FriendsActivity extends AppCompatActivity {
 
     private void makeRemoveCall(FriendRemoveRequestData data) {
         Call<ReturnData<FriendRemoveReturnData>> call = new ApiUtil().getApiInterface(this).removeFriend(data);
-        RequestUtil<FriendRemoveReturnData> requestUtil = new RequestUtil<>(this, call);
+        RequestUtil<FriendRemoveReturnData> requestUtil = new RequestUtil<>(this,null, call);
         requestUtil.makeRequest(new RequestInterface<FriendRemoveReturnData>() {
 
             @Override
@@ -91,7 +91,7 @@ public class FriendsActivity extends AppCompatActivity {
 
     private void makeCall(){
         Call<ReturnData<FriendListData>> call = new ApiUtil().getApiInterface(this).loadFriends();
-        RequestUtil<FriendListData> requestUtil = new RequestUtil<>(this, call);
+        RequestUtil<FriendListData> requestUtil = new RequestUtil<>(this,null, call);
 
         noFriends = (TextView) findViewById(R.id.no_friends);
 

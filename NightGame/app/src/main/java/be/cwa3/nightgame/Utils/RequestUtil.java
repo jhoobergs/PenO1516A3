@@ -3,6 +3,7 @@ package be.cwa3.nightgame.Utils;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 import com.squareup.okhttp.ResponseBody;
 
@@ -21,9 +22,11 @@ import retrofit.Retrofit;
 public class RequestUtil<T> {
     Call<ReturnData<T>> call;
     Context context;
-    public RequestUtil(Context context, Call<ReturnData<T>> call){
+    View view;
+    public RequestUtil(Context context, View view, Call<ReturnData<T>> call){
         this.call = call;
         this.context = context;
+        this.view = view;
     }
 
     public void makeRequest(final RequestInterface<T> requestInterface){
@@ -53,7 +56,7 @@ public class RequestUtil<T> {
 
                 } else {
                     //We didn't get a succesful response of the server: We call onServerError
-                    requestInterface.onServerError(context, response.code(), response.errorBody());
+                    requestInterface.onServerError(context, response.code(),view, response.errorBody());
                 }
 
             }
@@ -61,7 +64,7 @@ public class RequestUtil<T> {
             @Override
             public void onFailure(Throwable t) {
                 //The request couldn't be made, we call onFailure
-                requestInterface.onFailure(context,t);
+                requestInterface.onFailure(context, view, t);
             }
         });
     }

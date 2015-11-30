@@ -104,7 +104,7 @@ public class FriendsAdapter extends ArrayAdapter<FriendData>{
     }
     private void makeAddCall(FriendAddRequestData friendAddRequestData, final FriendData menuItem, final int position, final Holder holder) {
         Call<ReturnData<FriendAddReturnData>> call = new ApiUtil().getApiInterface(context).addFriend(friendAddRequestData);
-        RequestUtil<FriendAddReturnData> requestUtil = new RequestUtil<>(context, call);
+        RequestUtil<FriendAddReturnData> requestUtil = new RequestUtil<>(context,null, call);
         requestUtil.makeRequest(new RequestInterface<FriendAddReturnData>() {
             @Override
             public void onSucces(FriendAddReturnData body) {

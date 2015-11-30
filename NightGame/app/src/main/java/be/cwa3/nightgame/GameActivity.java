@@ -201,7 +201,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
 
     private void makeGameDataCall(GameSendDataRequestData data){
         Call<ReturnData<Empty>> call = new ApiUtil().getApiInterface(this).sendGameDataRequest(data);
-        RequestUtil<Empty> requestUtil = new RequestUtil<>(this, call);
+        RequestUtil<Empty> requestUtil = new RequestUtil<>(this, null, call);
         requestUtil.makeRequest(new RequestInterface<Empty>() {
 
             @Override
@@ -216,16 +216,16 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
             }
 
             @Override
-            public void onFailure(Context context, Throwable t) {
+            public void onFailure(Context context, View view, Throwable t) {
                 customHandler.postDelayed(sendData, delayTimeRequestData);
-                super.onFailure(context, t);
+                super.onFailure(context,view, t);
             }
         });
     }
 
     private void makeCall(GameGetDataRequestData data){
         Call<ReturnData<LobbiesData>> call = new ApiUtil().getApiInterface(this).getLobbyData(data);
-        RequestUtil<LobbiesData> requestUtil = new RequestUtil<>(this, call);
+        RequestUtil<LobbiesData> requestUtil = new RequestUtil<>(this,null, call);
         requestUtil.makeRequest(new RequestInterface<LobbiesData>() {
             @Override
             public void onSucces(LobbiesData body) {

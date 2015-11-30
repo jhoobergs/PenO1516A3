@@ -167,7 +167,7 @@ public class CreateAccountActivity extends AppCompatActivity {
 
     private void makeNewAccountCall(CreateNewAccountRequestData data){
         Call<ReturnData<LoginReturnData>> call = new ApiUtil().getApiInterface(this).sendCreateNewAccountRequest(data);
-        RequestUtil<LoginReturnData> requestUtil = new RequestUtil<>(this, call);
+        RequestUtil<LoginReturnData> requestUtil = new RequestUtil<>(this,null, call);
         requestUtil.makeRequest(new RequestInterface<LoginReturnData>() {
             @Override
             public void onSucces(LoginReturnData body) {

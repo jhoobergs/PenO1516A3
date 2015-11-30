@@ -3,6 +3,8 @@ package be.cwa3.nightgame;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -121,7 +123,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private void makeLoginCall(LoginRequestData data){
         Call<ReturnData<LoginReturnData>> call = new ApiUtil().getApiInterface(this).sendLoginRequest(data);
-        RequestUtil<LoginReturnData> requestUtil = new RequestUtil<>(this, call);
+        final CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator);
+        RequestUtil<LoginReturnData> requestUtil = new RequestUtil<>(this,coordinatorLayout, call);
         requestUtil.makeRequest(new RequestInterface<LoginReturnData>() {
             @Override
             public void onSucces(LoginReturnData body) {
@@ -137,7 +140,8 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onError(ErrorData error) {
                 //Has to be overriden
-                Toast.makeText(getApplicationContext(), ErrorUtil.getErrorText(getApplicationContext(), error.Errors), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(), ErrorUtil.getErrorText(getApplicationContext(), error.Errors), Toast.LENGTH_SHORT).show();
+                Snackbar.make(coordinatorLayout, ErrorUtil.getErrorText(getApplicationContext(), error.Errors), Snackbar.LENGTH_INDEFINITE).show();
             }
 
         });

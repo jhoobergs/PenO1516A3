@@ -67,4 +67,6 @@
         the defending team will be aware of your location whilst holding the flag.
         If a defender kills you while holding the flag, the flag will respawn at the hidden location. Each attacker will start with three lives. The attacking team will also be able to accomplish challenges.
         They will be rewarder with special perks if they manage to complete these tasks. </string>
+    <string name="internal_server_error">Internal Server Error</string>
+    <string name="connect_to_internet_please">Connect to internet please!</string>
 </resources>

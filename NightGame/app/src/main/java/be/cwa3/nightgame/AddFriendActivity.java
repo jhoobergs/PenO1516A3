@@ -82,7 +82,7 @@ public class AddFriendActivity extends AppCompatActivity {
 
     private void makeSearchCall(FriendSearchRequestData data) {
         Call<ReturnData<FriendSearchReturnData>> call = new ApiUtil().getApiInterface(this).searchFriends(data);
-        RequestUtil<FriendSearchReturnData> requestUtil = new RequestUtil<>(this, call);
+        RequestUtil<FriendSearchReturnData> requestUtil = new RequestUtil<>(this,null, call);
         requestUtil.makeRequest(new RequestInterface<FriendSearchReturnData>() {
             @Override
             public void onSucces(FriendSearchReturnData body) {
@@ -99,7 +99,7 @@ public class AddFriendActivity extends AppCompatActivity {
     }
     private void makeAddCall(FriendAddRequestData data) {
         Call<ReturnData<FriendAddReturnData>> call = new ApiUtil().getApiInterface(this).addFriend(data);
-        RequestUtil<FriendAddReturnData> requestUtil = new RequestUtil<>(this, call);
+        RequestUtil<FriendAddReturnData> requestUtil = new RequestUtil<>(this,null, call);
         requestUtil.makeRequest(new RequestInterface<FriendAddReturnData>() {
             @Override
             public void onSucces(FriendAddReturnData body) {

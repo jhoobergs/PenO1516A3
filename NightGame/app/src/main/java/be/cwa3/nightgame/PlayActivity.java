@@ -98,7 +98,7 @@ public class PlayActivity extends SensorDataActivity {
 
     private void makeSearchCall(LobbySearchRequestData data) {
         Call<ReturnData<LobbiesListData>> call = new ApiUtil().getApiInterface(this).searchLobbies(data);
-        RequestUtil<LobbiesListData> requestUtil = new RequestUtil<>(this, call);
+        RequestUtil<LobbiesListData> requestUtil = new RequestUtil<>(this, null, call);
         requestUtil.makeRequest(new RequestInterface<LobbiesListData>() {
             @Override
             public void onSucces(LobbiesListData body) {
@@ -117,7 +117,7 @@ public class PlayActivity extends SensorDataActivity {
 
     private void makeCall(){
         Call<ReturnData<LobbiesListData>> call = new ApiUtil().getApiInterface(this).loadLobbyList();
-        RequestUtil<LobbiesListData> requestUtil = new RequestUtil<>(this, call);
+        RequestUtil<LobbiesListData> requestUtil = new RequestUtil<>(this, null, call);
         requestUtil.makeRequest(new RequestInterface<LobbiesListData>() {
             @Override
             public void onSucces(LobbiesListData body) {

@@ -136,7 +136,7 @@ public class LobbyAdapter extends ArrayAdapter<LobbiesData> {
 
     private void makeJoinLobbyCall(JoinLobbyRequestData data, final LobbiesData menuItem){
         Call<ReturnData<JoinLobbyReturnData>> call = new ApiUtil().getApiInterface(context).joinLobby(data);
-        RequestUtil<JoinLobbyReturnData> requestUtil = new RequestUtil<>(context, call);
+        RequestUtil<JoinLobbyReturnData> requestUtil = new RequestUtil<>(context,null, call);
         requestUtil.makeRequest(new RequestInterface<JoinLobbyReturnData>() {
             @Override
             public void onSucces(JoinLobbyReturnData body) {

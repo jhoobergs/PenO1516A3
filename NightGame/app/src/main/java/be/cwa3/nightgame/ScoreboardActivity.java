@@ -102,7 +102,7 @@ public class ScoreboardActivity extends AppCompatActivity {
     private void makeCall(){
         Call<ReturnData<ScoreboardListData>> call =
                 new ApiUtil().getApiInterface(this).loadScoreboard();
-        final RequestUtil<ScoreboardListData> requestUtil = new RequestUtil<>(this, call);
+        final RequestUtil<ScoreboardListData> requestUtil = new RequestUtil<>(this, null, call);
         requestUtil.makeRequest(new RequestInterface<ScoreboardListData>() {
             @Override
             public void onSucces(ScoreboardListData body) {

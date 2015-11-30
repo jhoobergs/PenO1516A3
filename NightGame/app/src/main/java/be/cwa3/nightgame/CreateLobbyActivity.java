@@ -226,7 +226,7 @@ public class CreateLobbyActivity extends SensorDataActivity implements OnMapRead
     }
     private void makeCreateLobbyCall(CreateLobbyRequestData data){
         Call<ReturnData<CreateLobbyReturnData>> call = new ApiUtil().getApiInterface(this).sendCreateLobbyRequest(data);
-        RequestUtil<CreateLobbyReturnData> requestUtil = new RequestUtil<>(this, call);
+        RequestUtil<CreateLobbyReturnData> requestUtil = new RequestUtil<>(this,null, call);
         requestUtil.makeRequest(new RequestInterface<CreateLobbyReturnData>() {
 
             @Override

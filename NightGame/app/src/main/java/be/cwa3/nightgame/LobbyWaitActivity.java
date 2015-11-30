@@ -67,7 +67,7 @@ public class LobbyWaitActivity extends AppCompatActivity implements CircleProgre
 
     private void makeCall(GameGetDataRequestData data){
         Call<ReturnData<LobbiesData>> call = new ApiUtil().getApiInterface(this).getLobbyData(data);
-        RequestUtil<LobbiesData> requestUtil = new RequestUtil<>(this, call);
+        RequestUtil<LobbiesData> requestUtil = new RequestUtil<>(this, null, call);
         requestUtil.makeRequest(new RequestInterface<LobbiesData>() {
             @Override
             public void onSucces(LobbiesData body) {
