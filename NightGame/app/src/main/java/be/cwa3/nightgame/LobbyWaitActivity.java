@@ -34,7 +34,7 @@ import retrofit.Call;
 /**
  * Created by kevin on 12/11/2015.
  */
-public class LobbyWaitActivity extends AppCompatActivity implements CircleProgressView.OnProgressChangedListener {
+public class LobbyWaitActivity extends AppCompatActivity {
 
     CircleProgressView mCircleView;
     ListView listView;
@@ -57,11 +57,6 @@ public class LobbyWaitActivity extends AppCompatActivity implements CircleProgre
 
 
 
-
-    }
-
-    @Override
-    public void onProgressChanged(float value) {
 
     }
 

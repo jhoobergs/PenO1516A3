@@ -121,6 +121,12 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        customHandler.removeCallbacks(sendData);
+    }
+
+    @Override
     public void onMapReady(GoogleMap map) {
 
         List<LocationData> locations = getPlayerLocations();
