@@ -96,7 +96,7 @@ public class LoginActivity extends AppCompatActivity {
                     makeLoginCall(data);
                 }
                 else{
-                    Toast.makeText(getApplicationContext(), "Fucking Android", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "This should not happen!", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -132,7 +132,7 @@ public class LoginActivity extends AppCompatActivity {
                 //Logged in
                 new SettingsUtil(getApplicationContext()).setString(SharedPreferencesKeys.TokenString, body.Token);
                 new SettingsUtil(getApplicationContext()).setString(SharedPreferencesKeys.UsernameString, body.Username);
-                Toast.makeText(getApplicationContext(), String.format("Ingelogd als %s", body.Username), Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), String.format(getString(R.string.signed_in_as), body.Username), Toast.LENGTH_LONG).show();
                 Intent i = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(i);
             }
