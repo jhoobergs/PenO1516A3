@@ -61,6 +61,8 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
     private String gameId;
     private String userTeam;
     LobbiesData gameData;
+    double proximity;
+    double sv;
 
     private Location location;
 
@@ -96,7 +98,8 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
             @Override
             public void lightChanged(float sv) {
                 boolean before = othersShouldBeInvisibile;
-                othersShouldBeInvisibile = sv < 90;
+                othersShouldBeInvisibile = sv < 90 || sv > 1500 || proximity ==0; // >1500 means cheating
+
 
                 if (before != othersShouldBeInvisibile)
                     mapFragment.getMapAsync(GameActivity.this);
@@ -114,7 +117,12 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
 
             @Override
             public void proximityChanged(float proximity) {
-                super.proximityChanged(proximity);
+                boolean faking_light = othersShouldBeInvisibile;
+                othersShouldBeInvisibile = proximity ==0 || sv < 90 || sv > 1500 ; // 0 means cheating
+
+
+                if (faking_light != othersShouldBeInvisibile)
+                    mapFragment.getMapAsync(GameActivity.this);
             }
         });
 
