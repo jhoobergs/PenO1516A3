@@ -65,7 +65,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
     private Location location;
 
     private Handler customHandler = new Handler();
-    private int delayTimeRequestData = 2000;
+    private int delayTimeRequestData = 10000;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -148,7 +148,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
             LatLng latLng = new LatLng(loc.Latitude, loc.Longitude);
             bitmapDescriptor = getPlayerMapIcon(loc.Team);
 
-            if (loc.Team.equals(userTeam) || !othersShouldBeInvisibile)
+            if (loc.Team.equals(userTeam) || (!othersShouldBeInvisibile && "Attacker".equals(loc.Team) ))
                 map.addMarker(new MarkerOptions()
                         .title(loc.PlayerName)
                         .snippet(String.format("%s (%s minuten geleden)", loc.Team, (DateTime.now().getMillis() - loc.CreatedOn.getMillis())/(1000*60)))
@@ -196,7 +196,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
             data.Location = locationData;
             data.Accelerometer = accelerometerData;
             data.CompletedMissions = new ArrayList<>();
-            data.Died = false;
+            data.Died = false;  ///////////////// ge kunt wel dood gaan heeeeeeee gaaaast kempen rueles!!
             makeGameDataCall(data);
             }
         }

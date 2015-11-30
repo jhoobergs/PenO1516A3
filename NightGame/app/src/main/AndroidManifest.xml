@@ -118,7 +118,7 @@
 
         <activity
             android:name=".LobbyWaitActivity"
-            android:label="loby_waiting"
+            android:label=""
             android:parentActivityName=".PlayActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
