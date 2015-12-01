@@ -1,4 +1,17 @@
 exports = module.exports = function(app, AWS, bcrypt,dd){
+app.get('/user/imagesList', function(req, res){
+    var images = [];
+    images.push("http://52.26.187.234:8080/defaultProfile.jpg");
+    images.push("http://52.26.187.234:8080/mario.png");
+    images.push("http://52.26.187.234:8080/afro.png");
+    images.push("http://52.26.187.234:8080/dexter.png");
+    images.push("http://52.26.187.234:8080/flappy.png");
+    images.push("http://52.26.187.234:8080/owl.png");
+    images.push("http://52.26.187.234:8080/penguin.png");
+    images.push("http://52.26.187.234:8080/pup.png");
+    images.push("http://52.26.187.234:8080/spongebob.png");
+    returnData(res, 1, {Images: images}, null);
+});
 app.post('/user/login', function(req, res) {
     var dynamodbDoc = new AWS.DynamoDB.DocumentClient();
 
@@ -91,6 +104,9 @@ putnewUserItem = function(data) {
         'Email' : { 'S' : data.Email},
         'Friends' : { 'M' : {}}
     };	
+    if(data.ImageURL != null){
+        item.ImageURL = { 'S' : data.ImageURL };
+    }
     dd.putItem({
         'TableName': tableName,
         'Item': item

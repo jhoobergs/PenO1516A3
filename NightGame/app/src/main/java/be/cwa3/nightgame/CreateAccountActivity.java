@@ -10,12 +10,16 @@ import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.squareup.picasso.Picasso;
 
 import be.cwa3.nightgame.Data.CreateNewAccountRequestData;
 import be.cwa3.nightgame.Data.ErrorData;
 import be.cwa3.nightgame.Data.LoginReturnData;
+import be.cwa3.nightgame.Data.ProfileImagesListData;
 import be.cwa3.nightgame.Data.ReturnData;
 import be.cwa3.nightgame.Utils.ApiUtil;
 import be.cwa3.nightgame.Utils.ErrorUtil;
@@ -33,9 +37,36 @@ public class CreateAccountActivity extends AppCompatActivity {
     private Button buttonCreate;
     private TextView termsConditions;
 
+    private ImageView imageViewProfileImage;
+    private ProfileImagesListData profileImagesListData;
+    private int showedImageId = 0;
+    private Button nextButton;
+    private Button previousButton;
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_new_account);
+
+        imageViewProfileImage = (ImageView) findViewById(R.id.ImageViewProfileImage);
+        getProfileImagesList();
+        nextButton = (Button) findViewById(R.id.nextButton);
+        previousButton = (Button) findViewById(R.id.previousButton);
+
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showedImageId++;
+                loadImage();
+            }
+        });
+
+        previousButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showedImageId--;
+                loadImage();
+            }
+        });
 
         enterName = (EditText) findViewById(R.id.enter_name);
         enterEmail = (EditText) findViewById(R.id.enter_email);
@@ -130,7 +161,7 @@ public class CreateAccountActivity extends AppCompatActivity {
                         || !repeatPassword.getText().toString().equals(enterPassword.getText().toString())) {
                     Toast.makeText(CreateAccountActivity.this, "Data not entered correctly!", Toast.LENGTH_LONG).show();
                 }
-                else if ( enterName.getText().toString().length()< 4) {
+                else if ( enterName.getText().toString().length()< 3) {
                     Toast.makeText(CreateAccountActivity.this, "Name must be at least 3 characters!", Toast.LENGTH_LONG).show();
                 }
                 else{
@@ -139,6 +170,8 @@ public class CreateAccountActivity extends AppCompatActivity {
                     data.Email = enterEmail.getText().toString();
                     data.Password = enterPassword.getText().toString();
                     data.PasswordRepeat = repeatPassword.getText().toString();
+                    if(profileImagesListData != null)
+                        data.ImageURL = profileImagesListData.Images.get(showedImageId);
                     makeNewAccountCall(data);
                 }
 
@@ -190,4 +223,42 @@ public class CreateAccountActivity extends AppCompatActivity {
 
         });
     }
+
+    private void getProfileImagesList(){
+        Call<ReturnData<ProfileImagesListData>> call = new ApiUtil().getApiInterface(this).getProfileImagesList();
+        final RequestUtil<ProfileImagesListData> requestUtil = new RequestUtil<>(this, null, call);
+        requestUtil.makeRequest(new RequestInterface<ProfileImagesListData>() {
+            @Override
+            public void onSucces(ProfileImagesListData body) {
+                profileImagesListData = body;
+                showedImageId = 0;
+                loadImage();
+            }
+
+            @Override
+            public void onError(ErrorData error) {
+                Toast.makeText(getApplicationContext(), ErrorUtil.getErrorText(getApplicationContext(), error.Errors), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void loadImage() {
+        if(profileImagesListData != null) {
+            previousButton.setEnabled(true);
+            nextButton.setEnabled(true);
+            if(showedImageId < 0)
+                showedImageId = 0;
+            if(showedImageId == profileImagesListData.Images.size())
+                showedImageId -= 1;
+            if(showedImageId == 0)
+                previousButton.setEnabled(false);
+            if(showedImageId == profileImagesListData.Images.size()-1)
+                nextButton.setEnabled(false);
+
+            Picasso.with(this).load(profileImagesListData.Images.get(showedImageId)).into(imageViewProfileImage);
+        }
+
+    }
+
+
 }

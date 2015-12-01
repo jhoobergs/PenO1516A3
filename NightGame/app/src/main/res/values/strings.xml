@@ -80,4 +80,5 @@
     <string name="refresh_data">The data will be automatically refreshed every 30 seconds.</string>
     <string name="lives">Lives:</string>
     <string name="name_minutes_ago" formatted="false">%s (%s minutes ago)</string>
+    <string name="previous">Previous</string>
 </resources>

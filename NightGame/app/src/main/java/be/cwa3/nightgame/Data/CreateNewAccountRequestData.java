@@ -8,4 +8,5 @@ public class CreateNewAccountRequestData {
     public String Password;
     public String PasswordRepeat;
     public String Email;
+    public String ImageURL;
 }

@@ -21,6 +21,7 @@ import be.cwa3.nightgame.Data.LobbiesListData;
 import be.cwa3.nightgame.Data.LobbySearchRequestData;
 import be.cwa3.nightgame.Data.LoginRequestData;
 import be.cwa3.nightgame.Data.LoginReturnData;
+import be.cwa3.nightgame.Data.ProfileImagesListData;
 import be.cwa3.nightgame.Data.ReturnData;
 import be.cwa3.nightgame.Data.ScoreboardListData;
 import retrofit.Call;
@@ -47,6 +48,9 @@ public interface ApiInterface {
 
     @GET("/scoreboard/list")
     Call<ReturnData<ScoreboardListData>> loadScoreboard();
+
+    @GET("/user/imagesList")
+    Call<ReturnData<ProfileImagesListData>> getProfileImagesList();
 
     @POST("/user/login")
     Call<ReturnData<LoginReturnData>> sendLoginRequest(@Body LoginRequestData data);

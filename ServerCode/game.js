@@ -89,7 +89,7 @@ app.post('/game/join',  function(req, res){
                                 }
                             });
                         }  
-                        else if(!found && players.length == data.Items[0].MaxPlayers){
+                        else if(!found && Object.keys(players).length == data.Items[0].MaxPlayers){
                             var error = {'Errors' : [5]};
                             returnData(res, 2, null, error);
                         }
@@ -117,11 +117,11 @@ var amountToDo = Object.keys(players).length;
 for (var i in players) {
 
 var missions = [];
- missions.push(type1Mission(gameData.CircleCenter.Latitude, gameData.CircleCenter.Longitude, gameData.CircleRadius));
- missions.push(type2Mission());
- missions.push(type3Mission(1));
- missions.push(type4Mission(1));
- missions.push(type5Mission(1));
+ missions.push(marshal(type1Mission(gameData.CircleCenter.Latitude, gameData.CircleCenter.Longitude, gameData.CircleRadius)));
+ missions.push(marshal(type2Mission()));
+ missions.push(marshal(type3Mission(1)));
+ missions.push(marshal(type4Mission(1)));
+ missions.push(marshal(type5Mission(1)));
 setMissionsForUser(GameId, i, missions, function(succes){
     amountDone++;
         if(succes){
@@ -559,6 +559,12 @@ addDataToGame = function(gameId, user, data, gameData, callback){
         ExpressionAttributeNam["#attrLives"] = "Lives";
         UpdateExpress += ", #attrName.#attrName2.#attrLives = #attrName.#attrName2.#attrLives + :minusone";
         ExpressionAttributeVal[":minusone"] = {"N": "-1"};
+        if(gameData.IsFlagCaptured && gameData.Players[user].HasFlag){
+            ExpressionAttributeNam["#attrIsFlagCaptured"] = "IsFlagCaptured";
+            ExpressionAttributeNam["#attrHasFlag"] = "HasFlag";
+            UpdateExpress += ", #attrName.#attrName2.#attrHasFlag = :false, #attrIsFlagCaptured = :false";
+            ExpressionAttributeVal[":false"] = marshal(false);
+        }
     }
     var changed = false;
     var userMissions = gameData.Players[user].Missions;
@@ -570,7 +576,20 @@ addDataToGame = function(gameId, user, data, gameData, callback){
             changed = true;
         }
     }
-    if(changed){
+    var AllCompleted = true; 
+    for (var i in userMissions){    
+         if(! userMissions[i].IsFinished)
+            AllCompleted = false;
+    }
+    if(AllCompleted){
+        userMissions.push(type1Mission(gameData.CircleCenter.Latitude, gameData.CircleCenter.Longitude, gameData.CircleRadius));
+ userMissions.push(type2Mission());
+ userMissions.push(type3Mission(1));
+ userMissions.push(type4Mission(1));
+ userMissions.push(type5Mission(1));
+    }
+    
+    if(changed || AllCompleted){
         //console.log(userMissions);
         ExpressionAttributeNam["#attrMissions"] = "Missions";
         UpdateExpress += ", #attrName.#attrName2.#attrMissions = :missions";
@@ -578,16 +597,16 @@ addDataToGame = function(gameId, user, data, gameData, callback){
     }
 
     if(!gameData.IsFlagCaptured && !gameData.Players[user].IsDefender && getDistanceFromLatLonVincenty(gameData.DefenderBase.Latitude, gameData.DefenderBase.Longitude, data.Location.Latitude,
-                                     data.Location.Longitude) < gameData.CircleRadius /10){
+                                     data.Location.Longitude) < gameData.CircleRadius /10 && !data.Died){
         console.log("Flag captured by: " + user);
-         ExpressionAttributeNam["#attrIsFlagCaptured"] = "IsFlagCaptured";
+        ExpressionAttributeNam["#attrIsFlagCaptured"] = "IsFlagCaptured";
         ExpressionAttributeNam["#attrHasFlag"] = "HasFlag";
         UpdateExpress += ", #attrName.#attrName2.#attrHasFlag = :true, #attrIsFlagCaptured = :true";
         ExpressionAttributeVal[":true"] = marshal(true);
     }
     
     if(gameData.IsFlagCaptured && gameData.Players[user].HasFlag && gameData.WinningTeam == null && getDistanceFromLatLonVincenty(gameData.CircleCenter.Latitude, gameData.CircleCenter.Longitude, data.Location.Latitude,
-                                     data.Location.Longitude) > gameData.CircleRadius){
+                                     data.Location.Longitude) > gameData.CircleRadius  && !data.Died){
         console.log("Flag brought to perimeter by: " + user);
         ExpressionAttributeNam["#attrWinningTeam"] = "WinningTeam";
         UpdateExpress += ", #attrWinningTeam = :attackers";
@@ -651,7 +670,7 @@ function driveTo(latitude,longitude,straal){
     
 function type1Mission(Latitude, Longitude, CircleRadius){
     var type1data = driveTo(Latitude, Longitude, CircleRadius);
-    return {"M" :{
+    /*return {"M" :{
             "IsActive" : {'BOOL':  true},
             "IsFinished": {'BOOL':  false},
             "Type": {'N' : '1'},
@@ -662,23 +681,38 @@ function type1Mission(Latitude, Longitude, CircleRadius){
             }},
             "OnPhoneCheckable": {'BOOL' : true}
            }
-        };
+        };*/
+    return {
+            "IsActive" :  true,
+            "IsFinished": false,
+            "Type": 1,
+            "Description": "Drive to (" + type1data.Latitude.toString() + ", " + type1data.Longitude.toString() + ")",
+            "Location": type1data,
+            "OnPhoneCheckable": true
+           };
 }
     
 function type2Mission(){
-    return {"M" :{
+    /*return {"M" :{
             "IsActive" : {'BOOL':  true},
             "IsFinished": {'BOOL':  false},
             "Type": {'N' : '2'},
             "Description": {'S' : "Gather with your team."},
             "OnPhoneCheckable": {'BOOL' : false}
            }
-        };
+        };*/
+    return {
+            "IsActive" : true,
+            "IsFinished": false,
+            "Type": 2,
+            "Description": "Gather with your team.",
+            "OnPhoneCheckable": false
+           };
 }
 
 function type3Mission(difficulty){
     var difference = rijHoogteverschil(difficulty);
-    return {"M" :{
+    /*return {"M" :{
             "IsActive" : {'BOOL':  true},
             "IsFinished": {'BOOL':  false},
             "Type": {'N' : '3'},
@@ -686,11 +720,19 @@ function type3Mission(difficulty){
             "HeightDifference" : { 'N' : difference.toString() },
             "OnPhoneCheckable": {'BOOL' : true}
            }
-        };
+        };*/
+    return {
+            "IsActive" : true,
+            "IsFinished": false,
+            "Type": 3,
+            "Description": "Drive a height difference of " + difference + "m.",
+            "HeightDifference" : difference,
+            "OnPhoneCheckable": true
+           };
 }
 
 function type4Mission(difficulty){
-    return {"M" :{
+    /*return {"M" :{
             "IsActive" : {'BOOL':  true},
             "IsFinished": {'BOOL':  false},
             "Type": {'N' : '4'},
@@ -698,11 +740,19 @@ function type4Mission(difficulty){
             "AmountOfLight" : {'N' : (difficulty*50000).toString() },
             "OnPhoneCheckable": {'BOOL' : true}
            }
-        };
+        };*/
+    return {
+            "IsActive" : true,
+            "IsFinished": false,
+            "Type": 4,
+            "Description": "Search for light.",
+            "AmountOfLight" : difficulty*50000,
+            "OnPhoneCheckable": true
+           };
 } 
     
 function type5Mission(difficulty){
-    return {"M" :{
+    /*return {"M" :{
             "IsActive" : {'BOOL':  true},
             "IsFinished": {'BOOL':  false},
             "Type": {'N' : '5'},
@@ -710,7 +760,15 @@ function type5Mission(difficulty){
             "SpeedValue" : {'N' : (15+3*difficulty).toString() },
             "OnPhoneCheckable": {'BOOL' : true}
            }
-        };
+        };*/
+    return {
+            "IsActive" : true,
+            "IsFinished": false,
+            "Type": 5,
+            "Description": "Get this speed",
+            "SpeedValue" : (15+3*difficulty),
+            "OnPhoneCheckable": true
+           };
 }
     
 function rijHoogteverschil(difficulty){
