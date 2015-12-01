@@ -133,14 +133,14 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(intent);
                 return true;
 
-            case R.id.sound:
+            /*case R.id.sound:
                 Intent intenta = new Intent(getApplicationContext(), SoundActivity.class);
                 startActivity(intenta);
                 return true;
             case R.id.accelerometer:
                 Intent intentb = new Intent(getApplicationContext(), AccelerometerActivity.class);
                 startActivity(intentb);
-                return true;
+                return true;*/
 
             case R.id.rules:
                 Intent intent1 = new Intent(getApplicationContext(), RulesActivity.class);

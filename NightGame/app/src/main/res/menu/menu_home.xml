@@ -6,6 +6,7 @@
         android:title="@string/log_out"
         android:showAsAction="always"
         app:showAsAction="always"/>
+    <!--
     <item
         android:id="@+id/sound"
         android:title="Sound"
@@ -16,6 +17,7 @@
         android:title="Acc"
         android:showAsAction="always"
         app:showAsAction="always"/>
+        -->
     <item
         android:id="@+id/rules"
         android:title="Rules"
