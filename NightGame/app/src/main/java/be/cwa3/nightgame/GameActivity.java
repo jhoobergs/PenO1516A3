@@ -5,6 +5,10 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.ContactsContract;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import android.util.Log;
@@ -73,6 +77,10 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
     private double altitudeDescended = 0;
     private float collectedLight = 0;
 
+    private TextView livesTextView;
+    private ImageView hasFlagImageView;
+    private RelativeLayout gameContainer;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,12 +93,15 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
             startActivity(intent);
             finish();
         }
-        makeCall(new GameGetDataRequestData(gameId));
+        makeGetDataCall(new GameGetDataRequestData(gameId)); //Only needed one time, this data is also returned by sendData
         location = getLocation();
         mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         listview = (ListView) findViewById(R.id.missions);
+        livesTextView = (TextView) findViewById(R.id.amountOfLivesTextView);
+        hasFlagImageView = (ImageView) findViewById(R.id.hasFlagImageView);
+        gameContainer = (RelativeLayout) findViewById(R.id.GameRelativeLayout);
         setSensorDataInterface(new SensorDataInterface() {
             @Override
             public void accelerometerChanged(float x, float y, float z) {
@@ -170,12 +181,12 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
         for (LocationData loc : locations) {
             BitmapDescriptor bitmapDescriptor;
             LatLng latLng = new LatLng(loc.Latitude, loc.Longitude);
-            bitmapDescriptor = getPlayerMapIcon(loc.Team);
+            bitmapDescriptor = getPlayerMapIcon(loc.Team, loc.HasFlag);
 
-            if (loc.Team.equals(gameData.Player.Team) || (!othersShouldBeInvisibile && "Attacker".equals(gameData.Player.Team) ))
+            if (loc.Team.equals(gameData.Player.Team) || loc.HasFlag || (!othersShouldBeInvisibile && "Attacker".equals(gameData.Player.Team) ))
                 map.addMarker(new MarkerOptions()
                         .title(loc.PlayerName)
-                        .snippet(String.format("%s (%s minuten geleden)", loc.Team, (DateTime.now().getMillis() - loc.CreatedOn.getMillis())/(1000*60)))
+                        .snippet(String.format(getString(R.string.name_minutes_ago), loc.Team, (DateTime.now().getMillis() - loc.CreatedOn.getMillis())/(1000*60)))
                                 .icon(bitmapDescriptor)
                                 .position(latLng));
 
@@ -220,12 +231,12 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
         switch (item.getItemId()) {
 
             case R.id.challenges:
-                if (mapFragment.getView().getVisibility() == View.VISIBLE) {
-                    makeCall(new GameGetDataRequestData(gameId));
-                    mapFragment.getView().setVisibility(View.GONE);
+                if (gameContainer.getVisibility() == View.VISIBLE) {
+                    makeGetDataCall(new GameGetDataRequestData(gameId));
+                    gameContainer.setVisibility(View.GONE);
                     listview.setVisibility(View.VISIBLE);
                 } else {
-                    mapFragment.getView().setVisibility(View.VISIBLE);
+                    gameContainer.setVisibility(View.VISIBLE);
                     listview.setVisibility(View.GONE);
                 }
                 return true;
@@ -255,19 +266,34 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
     };
 
     private void makeGameDataCall(GameSendDataRequestData data){
-        Call<ReturnData<Empty>> call = new ApiUtil().getApiInterface(this).sendGameDataRequest(data);
-        RequestUtil<Empty> requestUtil = new RequestUtil<>(this, null, call);
-        requestUtil.makeRequest(new RequestInterface<Empty>() {
+        Call<ReturnData<LobbiesData>> call = new ApiUtil().getApiInterface(this).sendGameDataRequest(data);
+        RequestUtil<LobbiesData> requestUtil = new RequestUtil<>(this, null, call);
+        requestUtil.makeRequest(new RequestInterface<LobbiesData>() {
 
             @Override
-            public void onSucces(Empty body) {
+            public void onSucces(LobbiesData body) {
                 completedMissions.clear();
+                listview.setAdapter(new MissionsAdapter(GameActivity.this, body.Missions));
+                gameData = body;
+                if(gameData.Player.HasFlag){
+                    hasFlagImageView.setVisibility(View.VISIBLE);
+                }
+                else{
+                    hasFlagImageView.setVisibility(View.GONE);
+                }
+                livesTextView.setText(String.valueOf(gameData.Player.Lives));
                 customHandler.postDelayed(sendData, delayTimeRequestData);
             }
 
             @Override
             public void onError(ErrorData error) {
                 customHandler.postDelayed(sendData, delayTimeRequestData);
+                if (error.Errors.contains(4) || error.Errors.contains(6)) {
+                    new SettingsUtil(getApplicationContext()).setString(SharedPreferencesKeys.GameIDString, "");
+                    Intent intent = new Intent(getApplicationContext(), PlayActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
                 Toast.makeText(getApplicationContext(), ErrorUtil.getErrorText(getApplicationContext(), error.Errors), Toast.LENGTH_SHORT).show();
             }
 
@@ -279,7 +305,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
         });
     }
 
-    private void makeCall(GameGetDataRequestData data){
+    private void makeGetDataCall(GameGetDataRequestData data){
         Call<ReturnData<LobbiesData>> call = new ApiUtil().getApiInterface(this).getLobbyData(data);
         RequestUtil<LobbiesData> requestUtil = new RequestUtil<>(this,null, call);
         requestUtil.makeRequest(new RequestInterface<LobbiesData>() {
@@ -287,7 +313,13 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
             public void onSucces(LobbiesData body) {
                 listview.setAdapter(new MissionsAdapter(GameActivity.this, body.Missions));
                 gameData = body;
-
+                if(gameData.Player.HasFlag){
+                    hasFlagImageView.setVisibility(View.VISIBLE);
+                }
+                else{
+                    hasFlagImageView.setVisibility(View.GONE);
+                }
+                livesTextView.setText(String.valueOf(gameData.Player.Lives));
             }
 
             @Override
@@ -422,6 +454,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
                     if(loc != null) {
                         loc.Team = playerData.Team;
                         loc.PlayerName = playerData.Name;
+                        loc.HasFlag = playerData.HasFlag;
                         locationDatas.add(loc);
                     }
 
@@ -441,7 +474,10 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
         return locationDatas;
     }
 
-    public BitmapDescriptor getPlayerMapIcon(String team) {
+    public BitmapDescriptor getPlayerMapIcon(String team, boolean hasFlag) {
+        if(hasFlag){
+            return BitmapDescriptorFactory.fromResource(R.drawable.flag_small);
+        }
         if("Defender".equals(team)){
             return BitmapDescriptorFactory.fromResource(R.drawable.defender);
         }

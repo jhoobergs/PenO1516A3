@@ -58,7 +58,7 @@ public interface ApiInterface {
     Call<ReturnData<CreateLobbyReturnData>> sendCreateLobbyRequest(@Body CreateLobbyRequestData data);
 
     @POST("/game/sendData")
-    Call<ReturnData<Empty>> sendGameDataRequest(@Body GameSendDataRequestData data);
+    Call<ReturnData<LobbiesData>> sendGameDataRequest(@Body GameSendDataRequestData data);
 
     @GET("/game/list")
     Call<ReturnData<LobbiesListData>> loadLobbyList();

@@ -10,4 +10,5 @@ public class GamePlayerData {
     public String Team;
     public LocationData LatestLocation;
     public boolean HasFlag;
+    public int Lives;
 }

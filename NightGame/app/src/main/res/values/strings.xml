@@ -78,4 +78,6 @@
     <string name="internal_server_error">Internal Server Error</string>
     <string name="connect_to_internet_please">Connect to internet please!</string>
     <string name="refresh_data">The data will be automatically refreshed every 30 seconds.</string>
+    <string name="lives">Lives:</string>
+    <string name="name_minutes_ago" formatted="false">%s (%s minutes ago)</string>
 </resources>

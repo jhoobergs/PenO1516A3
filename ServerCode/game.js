@@ -212,6 +212,7 @@ function fillAndReturnGetData(res, gamedata, user){
     item.MaxPlayers = gamedata.MaxPlayers;
     item.DefenderBase = gamedata.DefenderBase;
     item.CircleRadius = gamedata.CircleRadius;
+    item.WinningTeam = gamedata.WinningTeam;
     item.Players = [];
     var players = Object.keys(gamedata.Players);
     for(var player in players){
@@ -227,7 +228,8 @@ function fillAndReturnGetData(res, gamedata, user){
     "Name" : players[player],
     "ImageURL": defaultImage,
     "LatestLocation": latestLocation,
-    "HasFlag" : playerData.HasFlag
+    "HasFlag" : playerData.HasFlag,
+    "Lives" : playerData.Lives
     }
     if(playerData.IsDefender){
     playerReturnData["Team"] = "Defender";
@@ -255,7 +257,7 @@ function fillAndReturnGetData(res, gamedata, user){
     if(gamedata.Timer != null)
         item.TimerDate = gamedata.Timer.substring(0, gamedata.Timer.length-5) + "+00:00";
     item.IsStarted = gamedata.IsStarted;
-    console.log(item);
+    //console.log(item);
     returnData(res, 1, item, null);  
 }
     
@@ -337,8 +339,9 @@ app.post('/game/sendData',  function(req, res){
                         {
                             addDataToGame(req.body.GameId, user, req.body, data.Items[0], function(succes){
                                 if(succes){
-                                    var result = {};
-                                    returnData(res, 1, result, null);
+                                    getGame(req.body.GameId, function(newData){
+                                    fillAndReturnGetData(res, newData.Items[0], user);
+                                    });
                                 }
                                 else{
                                     returnData(res, 0, null, '{UpdateItemError}');
@@ -573,13 +576,22 @@ addDataToGame = function(gameId, user, data, gameData, callback){
         UpdateExpress += ", #attrName.#attrName2.#attrMissions = :missions";
         ExpressionAttributeVal[":missions"] = marshal(userMissions);
     }
-    
-    if(getDistanceFromLatLonVincenty(gameData.DefenderBase.Latitude, gameData.DefenderBase.Longitude, data.Location.Longitude,
-                                     data.Location.Latitude) < gameData.CircleRadius /10 && !gameData.IsFlagCaptured && !gameData.Players[user].IsDefender){
+
+    if(!gameData.IsFlagCaptured && !gameData.Players[user].IsDefender && getDistanceFromLatLonVincenty(gameData.DefenderBase.Latitude, gameData.DefenderBase.Longitude, data.Location.Latitude,
+                                     data.Location.Longitude) < gameData.CircleRadius /10){
+        console.log("Flag captured by: " + user);
          ExpressionAttributeNam["#attrIsFlagCaptured"] = "IsFlagCaptured";
         ExpressionAttributeNam["#attrHasFlag"] = "HasFlag";
-        UpdateExpress += ", #attrName.#attrName2.#attrHasFlag = :true, #attrIsFlagCaptured = := :true";
+        UpdateExpress += ", #attrName.#attrName2.#attrHasFlag = :true, #attrIsFlagCaptured = :true";
         ExpressionAttributeVal[":true"] = marshal(true);
+    }
+    
+    if(gameData.IsFlagCaptured && gameData.Players[user].HasFlag && gameData.WinningTeam == null && getDistanceFromLatLonVincenty(gameData.CircleCenter.Latitude, gameData.CircleCenter.Longitude, data.Location.Latitude,
+                                     data.Location.Longitude) > gameData.CircleRadius){
+        console.log("Flag brought to perimeter by: " + user);
+        ExpressionAttributeNam["#attrWinningTeam"] = "WinningTeam";
+        UpdateExpress += ", #attrWinningTeam = :attackers";
+        ExpressionAttributeVal[":attackers"] = marshal("Attackers");
     }
     
     dd.updateItem({
