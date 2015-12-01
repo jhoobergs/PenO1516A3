@@ -22,8 +22,9 @@ public class LobbiesData {
     public Boolean IsStarted = false;
     public List<MissionData> Missions;
     public double CircleRadius;
-
+    public String WinningTeam;
 
     public transient boolean isOpen = false; //Transient means that this data isn't server related.
+
 
 }

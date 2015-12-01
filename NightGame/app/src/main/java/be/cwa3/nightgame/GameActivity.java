@@ -2,10 +2,13 @@ package be.cwa3.nightgame;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.ContactsContract;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -80,6 +83,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
     private TextView livesTextView;
     private ImageView hasFlagImageView;
     private RelativeLayout gameContainer;
+    private CoordinatorLayout coordinatorLayout;
 
 
     @Override
@@ -102,6 +106,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
         livesTextView = (TextView) findViewById(R.id.amountOfLivesTextView);
         hasFlagImageView = (ImageView) findViewById(R.id.hasFlagImageView);
         gameContainer = (RelativeLayout) findViewById(R.id.GameRelativeLayout);
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator);
         setSensorDataInterface(new SensorDataInterface() {
             @Override
             public void accelerometerChanged(float x, float y, float z) {
@@ -158,7 +163,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        customHandler.removeCallbacks(sendData);
+        customHandler.removeCallbacks(sendData); //stop Async threads
     }
 
     @Override
@@ -283,6 +288,22 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
                 }
                 livesTextView.setText(String.valueOf(gameData.Player.Lives));
                 customHandler.postDelayed(sendData, delayTimeRequestData);
+                if(gameData.WinningTeam != null){
+                    customHandler.removeCallbacks(sendData); //stop Async threads
+                    Snackbar.make(coordinatorLayout, String.format("Game ended: The %s are the champions.", gameData.WinningTeam), Snackbar.LENGTH_INDEFINITE)
+                            .setAction("Close Game", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    new SettingsUtil(getApplicationContext()).setString(SharedPreferencesKeys.GameIDString, "");
+                                    Intent intent = new Intent(getApplicationContext(), PlayActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            })
+                            .setActionTextColor(Color.RED)
+                            .show();
+
+                }
             }
 
             @Override
