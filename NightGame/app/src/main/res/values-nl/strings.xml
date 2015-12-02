@@ -30,4 +30,40 @@
     <string name="play">Speel</string>
     <string name="repeat_password">Herhaal wachtwoord</string>
     <string name="wins">Overwinningen</string>
+    <string name="Challenge">Opdracht</string>
+    <string name="attackers">Aanvallers</string>
+    <string name="choose_centre_press_next">Kies het centrum van de map door de marker te verplaatsen en klik op Volgende.</string>
+    <string name="connect_to_internet_please">Verbind met internet aub!</string>
+    <string name="defenders">Verdedigers</string>
+    <string name="define_map">Kies locatie</string>
+    <string name="error1">Gebruikersnaam en wachtwoord komen niet overeen.</string>
+    <string name="error2">Deze gebruikersnaam is al in gebruik.</string>
+    <string name="error3">Sessie verlopen! Log opnieuw in.</string>
+    <string name="error4">Deze lobby bestaat niet!</string>
+    <string name="error5">Deze lobby heeft het maximum aantal spelers bereikt.</string>
+    <string name="error6">Je speelt niet mee in deze spelsessie.</string>
+    <string name="internal_server_error">Interne Server Error</string>
+    <string name="intro">Bike kNight is een nachtspel gebaseerd op het bekende \'Vlaggenroof\' spel. </string>
+    <string name="lives">Levens:</string>
+    <string name="log_out">Log Uit</string>
+    <string name="mission_type_1" formatted="false">Rij naar (%s %s).</string>
+    <string name="mission_type_2">Verzamel met je team.</string>
+    <string name="mission_type_3">Rij een hoogteverschil van %s m.</string>
+    <string name="mission_type_4">Zoek naar licht.</string>
+    <string name="mission_type_5">Behaal deze snelheid: %s km/uur.</string>
+    <string name="name_minutes_ago" formatted="false">%s (%s minuten geleden)</string>
+    <string name="next">Volgende</string>
+    <string name="no_friends">Geen vrienden toegevoegd tot nu toe.</string>
+    <string name="previous">Vorige</string>
+    <string name="refresh">herlaad</string>
+    <string name="refresh_data">De gegevens worden automatisch herladen elke 30 seconden.</string>
+    <string name="remove">Verwijder</string>
+    <string name="send">aanvraag verstuurd</string>
+    <string name="signed_in_as">Ingelogd als %s</string>
+    <string name="start_lobby">Start Lobby</string>
+    <string name="accept">Accepteer</string>
+    <string name="decline">Afwijzen</string>
+    <string name="terms_and_conditions">Algemene voorwaarden</string>
+    <string name="terms_and_conditions_text">Onze juridische afdeling adviseerde ons om deze knop te implementeren, hij heeft echter geen nut.</string>
+    <string name="rules">Regels</string>
 </resources>

@@ -182,7 +182,7 @@ public class CreateAccountActivity extends AppCompatActivity {
         termsConditions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(CreateAccountActivity.this, "Our legal department advised us to implement this button, however, it has no use.", Toast.LENGTH_LONG).show();
+                Toast.makeText(CreateAccountActivity.this, R.string.terms_and_conditions_text, Toast.LENGTH_LONG).show();
             }
         });
     }

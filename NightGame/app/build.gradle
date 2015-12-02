@@ -49,4 +49,6 @@ dependencies {
     //We use this lib to show images from url and automatic caching.
     compile 'com.github.jakob-grabner:Circle-Progress-View:v1.2.5'
     compile 'joda-time:joda-time:2.4'
+
+    compile 'com.github.futuresimple:android-floating-action-button:1.10.1'
 }

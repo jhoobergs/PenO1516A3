@@ -20,6 +20,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -85,6 +87,9 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
     private RelativeLayout gameContainer;
     private CoordinatorLayout coordinatorLayout;
 
+    private FloatingActionsMenu floatingActionsMenuShoot;
+    private List<FloatingActionButton> floatingActionButtonList;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -107,6 +112,8 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
         hasFlagImageView = (ImageView) findViewById(R.id.hasFlagImageView);
         gameContainer = (RelativeLayout) findViewById(R.id.GameRelativeLayout);
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator);
+        floatingActionsMenuShoot = (FloatingActionsMenu) findViewById(R.id.floatingActionsMenuShoot);
+        floatingActionButtonList = new ArrayList<>();
         setSensorDataInterface(new SensorDataInterface() {
             @Override
             public void accelerometerChanged(float x, float y, float z) {
@@ -287,6 +294,31 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
                     hasFlagImageView.setVisibility(View.GONE);
                 }
                 livesTextView.setText(String.valueOf(gameData.Player.Lives));
+                //floatingActionsMenuShoot.removeAllViewsInLayout();
+                for(FloatingActionButton floatingActionButton : floatingActionButtonList){
+                    floatingActionsMenuShoot.removeButton(floatingActionButton);
+                }
+                floatingActionButtonList.clear();
+                for(final GamePlayerData playerData : gameData.Players) {
+                    if("Attacker".equals(playerData.Team)) {
+                        FloatingActionButton floatingActionButton = new FloatingActionButton(getApplicationContext());
+                        floatingActionButton.setTitle(playerData.Name);
+                        floatingActionButton.setBackgroundResource(R.drawable.gun);
+                        floatingActionButton.setSize(FloatingActionButton.SIZE_NORMAL);
+                        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Toast.makeText(getApplicationContext(), playerData.Name, Toast.LENGTH_LONG).show();
+                            }
+                        });
+                        floatingActionsMenuShoot.addButton(floatingActionButton);
+                        floatingActionButtonList.add(floatingActionButton);
+                    }
+                }
+
+                /*final FloatingActionsMenu menuMultipleActions = (FloatingActionsMenu) findViewById(R.id.multiple_actions);
+                menuMultipleActions.addButton(actionC);*/
+
                 customHandler.postDelayed(sendData, delayTimeRequestData);
                 if(gameData.WinningTeam != null){
                     customHandler.removeCallbacks(sendData); //stop Async threads
@@ -341,6 +373,28 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
                     hasFlagImageView.setVisibility(View.GONE);
                 }
                 livesTextView.setText(String.valueOf(gameData.Player.Lives));
+
+                for(FloatingActionButton floatingActionButton : floatingActionButtonList){
+                    floatingActionsMenuShoot.removeButton(floatingActionButton);
+                }
+                floatingActionButtonList.clear();
+                for(final GamePlayerData playerData : gameData.Players) {
+                    if("Attacker".equals(playerData.Team)) {
+                        Log.d("test", "in");
+                        FloatingActionButton floatingActionButton = new FloatingActionButton(getApplicationContext());
+                        floatingActionButton.setTitle(playerData.Name);
+                        floatingActionButton.setBackgroundResource(R.drawable.gun);
+                        floatingActionButton.setSize(FloatingActionButton.SIZE_NORMAL);
+                        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Toast.makeText(getApplicationContext(), playerData.Name, Toast.LENGTH_LONG).show();
+                            }
+                        });
+                        floatingActionsMenuShoot.addButton(floatingActionButton);
+                        floatingActionButtonList.add(floatingActionButton);
+                    }
+                }
             }
 
             @Override

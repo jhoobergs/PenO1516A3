@@ -1,4 +1,6 @@
 <resources>
+    <string name="accept">Accept</string>
+    <string name="decline">Decline</string>
     <string name="app_name">Bike kNight</string>
     <string name="play">Play</string>
     <string name="scoreboard">Scoreboard</string>
@@ -38,12 +40,12 @@
     <string name="define_map">Define Map</string>
     <string name="next">Next</string>
     <string name="start_lobby">Start Lobby</string>
-    <string name="choose_centre_press_next">Choose the centre of the map by moving the marker and press Next</string>
+    <string name="choose_centre_press_next">Choose the centre of the map by moving the marker and press Next.</string>
     <string name="mission_type_1" formatted="false">Drive to (%s %s).</string>
     <string name="mission_type_2">Gather with your team.</string>
-    <string name="mission_type_3">Drive a height difference of %s.</string>
+    <string name="mission_type_3">Drive a height difference of %s m.</string>
     <string name="mission_type_4">Search for light.</string>
-    <string name="mission_type_5">Get this speed: %s.</string>
+    <string name="mission_type_5">Get this speed: %s km/hour.</string>
 
     <string name="send">request sent</string>
     <string name="remove">Remove</string>
@@ -81,4 +83,7 @@
     <string name="lives">Lives:</string>
     <string name="name_minutes_ago" formatted="false">%s (%s minutes ago)</string>
     <string name="previous">Previous</string>
+    <string name="terms_and_conditions">Terms and Conditions</string>
+    <string name="terms_and_conditions_text">Our legal department advised us to implement this button, however, it has no use.</string>
+    <string name="rules">Rules</string>
 </resources>

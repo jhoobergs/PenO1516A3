@@ -3,33 +3,36 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <LinearLayout
-        android:orientation="horizontal"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        >
         <Button
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_margin="5dp"
+            android:layout_alignParentLeft="true"
+            android:layout_marginRight="5dp"
             android:id="@+id/button_games"
             android:text="@string/games"
-            style="ButtonStyle"/>
+            style="@style/ButtonStyle"/>
         <Button
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginTop="5dp"
-            android:id="@+id/button_wins"
-            android:text="@string/wins"/>
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_margin="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_alignParentRight="true"
             android:id="@+id/button_missions"
-            android:text="@string/missions"/>
-    </LinearLayout>
+            android:text="@string/missions"
+            style="@style/ButtonStyle"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/button_missions"
+            android:layout_toRightOf="@id/button_games"
+            android:id="@+id/button_wins"
+            android:text="@string/wins"
+            style="@style/ButtonStyle"/>
+
+    </RelativeLayout>
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
