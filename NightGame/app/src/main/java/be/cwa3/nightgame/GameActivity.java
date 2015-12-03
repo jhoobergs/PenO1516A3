@@ -40,6 +40,7 @@ import java.util.List;
 import be.cwa3.nightgame.Data.AccelerometerData;
 import be.cwa3.nightgame.Data.Empty;
 import be.cwa3.nightgame.Data.ErrorData;
+import be.cwa3.nightgame.Data.GameAttackData;
 import be.cwa3.nightgame.Data.GameGetDataRequestData;
 import be.cwa3.nightgame.Data.GamePlayerData;
 import be.cwa3.nightgame.Data.GameSendDataRequestData;
@@ -271,7 +272,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
             data.Location = locationData;
             data.Accelerometer = accelerometerData;
             data.CompletedMissions = completedMissions;
-            data.Died = false;  ///////////////// ge kunt wel dood gaan heeeeeeee gaaaast kempen rueles!!
+            data.Died = false;
             makeGameDataCall(data);
             }
         }
@@ -294,35 +295,20 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
                     hasFlagImageView.setVisibility(View.GONE);
                 }
                 livesTextView.setText(String.valueOf(gameData.Player.Lives));
-                //floatingActionsMenuShoot.removeAllViewsInLayout();
-                for(FloatingActionButton floatingActionButton : floatingActionButtonList){
-                    floatingActionsMenuShoot.removeButton(floatingActionButton);
-                }
-                floatingActionButtonList.clear();
-                for(final GamePlayerData playerData : gameData.Players) {
-                    if("Attacker".equals(playerData.Team)) {
-                        FloatingActionButton floatingActionButton = new FloatingActionButton(getApplicationContext());
-                        floatingActionButton.setTitle(playerData.Name);
-                        floatingActionButton.setBackgroundResource(R.drawable.gun);
-                        floatingActionButton.setSize(FloatingActionButton.SIZE_NORMAL);
-                        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Toast.makeText(getApplicationContext(), playerData.Name, Toast.LENGTH_LONG).show();
-                            }
-                        });
-                        floatingActionsMenuShoot.addButton(floatingActionButton);
-                        floatingActionButtonList.add(floatingActionButton);
-                    }
-                }
 
-                /*final FloatingActionsMenu menuMultipleActions = (FloatingActionsMenu) findViewById(R.id.multiple_actions);
-                menuMultipleActions.addButton(actionC);*/
+                setAttackButtons();
 
                 customHandler.postDelayed(sendData, delayTimeRequestData);
-                if(gameData.WinningTeam != null){
+                if(gameData.WinningTeam != null || gameData.Player.Lives < 1){
                     customHandler.removeCallbacks(sendData); //stop Async threads
-                    Snackbar.make(coordinatorLayout, String.format("Game ended: The %s are the champions.", gameData.WinningTeam), Snackbar.LENGTH_INDEFINITE)
+                    String snackbarText;
+                    if(gameData.WinningTeam != null){
+                        snackbarText = String.format(getString(R.string.game_end), gameData.WinningTeam);
+                    }
+                    else{
+                        snackbarText = getString(R.string.dead);
+                    }
+                    Snackbar.make(coordinatorLayout, snackbarText, Snackbar.LENGTH_INDEFINITE)
                             .setAction("Close Game", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
@@ -374,27 +360,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
                 }
                 livesTextView.setText(String.valueOf(gameData.Player.Lives));
 
-                for(FloatingActionButton floatingActionButton : floatingActionButtonList){
-                    floatingActionsMenuShoot.removeButton(floatingActionButton);
-                }
-                floatingActionButtonList.clear();
-                for(final GamePlayerData playerData : gameData.Players) {
-                    if("Attacker".equals(playerData.Team)) {
-                        Log.d("test", "in");
-                        FloatingActionButton floatingActionButton = new FloatingActionButton(getApplicationContext());
-                        floatingActionButton.setTitle(playerData.Name);
-                        floatingActionButton.setBackgroundResource(R.drawable.gun);
-                        floatingActionButton.setSize(FloatingActionButton.SIZE_NORMAL);
-                        floatingActionButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Toast.makeText(getApplicationContext(), playerData.Name, Toast.LENGTH_LONG).show();
-                            }
-                        });
-                        floatingActionsMenuShoot.addButton(floatingActionButton);
-                        floatingActionButtonList.add(floatingActionButton);
-                    }
-                }
+                setAttackButtons();
             }
 
             @Override
@@ -410,6 +376,35 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
             }
         });
 
+    }
+
+    private void setAttackButtons(){
+        for(FloatingActionButton floatingActionButton : floatingActionButtonList){
+            floatingActionsMenuShoot.removeButton(floatingActionButton);
+        }
+        floatingActionButtonList.clear();
+        for(final GamePlayerData playerData : gameData.Players) {
+            if("Attacker".equals(playerData.Team)) {
+                final FloatingActionButton floatingActionButton = new FloatingActionButton(getApplicationContext());
+                floatingActionButton.setTitle(playerData.Name);
+                floatingActionButton.setBackgroundResource(R.drawable.gun);
+                floatingActionButton.setSize(FloatingActionButton.SIZE_NORMAL);
+                floatingActionButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        GameAttackData data = new GameAttackData();
+                        data.GameId = gameId;
+                        data.AttackedUser = playerData.Name;
+                        makeAttackCall(data);
+                        floatingActionButton.setEnabled(false);
+                        floatingActionButton.setBackgroundResource(R.drawable.bullet);
+                        customHandler.postDelayed(enableButton(floatingActionButton), 5000);
+                    }
+                });
+                floatingActionsMenuShoot.addButton(floatingActionButton);
+                floatingActionButtonList.add(floatingActionButton);
+            }
+        }
     }
 
     public boolean checkAltitudeChange() {
@@ -569,5 +564,31 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
             }
         }
         return missionDatas;
+    }
+    private void makeAttackCall (GameAttackData data) {
+        Call<ReturnData<Empty>> call = new ApiUtil().getApiInterface(this).getAttackData(data);
+        RequestUtil<Empty> requestUtil = new RequestUtil<>(this,null, call);
+        requestUtil.makeRequest(new RequestInterface<Empty>() {
+            @Override
+            public void onSucces(Empty body) {
+                Snackbar.make(coordinatorLayout,getString(R.string.on_hit),Snackbar.LENGTH_INDEFINITE).show();
+            }
+
+            @Override
+            public void onError(ErrorData error) {
+                Toast.makeText(getApplicationContext(), ErrorUtil.getErrorText(getApplicationContext(), error.Errors), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private Runnable enableButton(final FloatingActionButton floatingActionButton){
+        Runnable aRunnable =  new Runnable() {
+
+            @Override
+            public void run() {
+                floatingActionButton.setEnabled(true);
+                floatingActionButton.setBackgroundResource(R.drawable.gun);
+            }
+    };
+        return aRunnable;
     }
 }

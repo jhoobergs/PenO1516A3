@@ -36,7 +36,6 @@ public class SplashActivity extends AppCompatActivity {
                 }
                 else {
                     Intent i = new Intent(getApplicationContext(), LoginActivity.class);
-                    i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                     startActivity(i);
                 }
                 // close this activity

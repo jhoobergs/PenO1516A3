@@ -135,6 +135,7 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), String.format(getString(R.string.signed_in_as), body.Username), Toast.LENGTH_LONG).show();
                 Intent i = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(i);
+                finish();
             }
 
             @Override
