@@ -2,7 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/removeFriend"
+        android:layout_gravity="center_horizontal"
+        android:text="If you want to remove a friend, press the name until the 'remove'-button appears, then push the button."
+        />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

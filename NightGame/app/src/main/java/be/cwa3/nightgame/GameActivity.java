@@ -211,7 +211,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
                 for (int i = 0; i < gameData.Missions.size(); i++) {
                     mission = gameData.Missions.get(i);
                     type = mission.Type;
-                    if (type == 1) {
+                    if (!mission.IsFinished && type == 1) {
                         LatLng loc = new LatLng(mission.Location.Latitude, mission.Location.Longitude);
                         String goToLocation;
                         map.addMarker(new MarkerOptions()
