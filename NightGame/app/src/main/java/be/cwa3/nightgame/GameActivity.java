@@ -299,9 +299,16 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
                 setAttackButtons();
 
                 customHandler.postDelayed(sendData, delayTimeRequestData);
-                if(gameData.WinningTeam != null){
+                if(gameData.WinningTeam != null || gameData.Player.Lives < 1){
                     customHandler.removeCallbacks(sendData); //stop Async threads
-                    Snackbar.make(coordinatorLayout, String.format("Game ended: The %s are the champions.", gameData.WinningTeam), Snackbar.LENGTH_INDEFINITE)
+                    String snackbarText;
+                    if(gameData.WinningTeam != null){
+                        snackbarText = String.format(getString(R.string.game_end), gameData.WinningTeam);
+                    }
+                    else{
+                        snackbarText = getString(R.string.dead);
+                    }
+                    Snackbar.make(coordinatorLayout, snackbarText, Snackbar.LENGTH_INDEFINITE)
                             .setAction("Close Game", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
@@ -378,7 +385,6 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
         floatingActionButtonList.clear();
         for(final GamePlayerData playerData : gameData.Players) {
             if("Attacker".equals(playerData.Team)) {
-                Log.d("test", "in");
                 final FloatingActionButton floatingActionButton = new FloatingActionButton(getApplicationContext());
                 floatingActionButton.setTitle(playerData.Name);
                 floatingActionButton.setBackgroundResource(R.drawable.gun);
@@ -391,6 +397,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
                         data.AttackedUser = playerData.Name;
                         makeAttackCall(data);
                         floatingActionButton.setEnabled(false);
+                        floatingActionButton.setBackgroundResource(R.drawable.bullet);
                         customHandler.postDelayed(enableButton(floatingActionButton), 5000);
                     }
                 });
@@ -579,6 +586,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
             @Override
             public void run() {
                 floatingActionButton.setEnabled(true);
+                floatingActionButton.setBackgroundResource(R.drawable.gun);
             }
     };
         return aRunnable;
