@@ -295,8 +295,12 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
                     hasFlagImageView.setVisibility(View.GONE);
                 }
                 livesTextView.setText(String.valueOf(gameData.Player.Lives));
-
-                setAttackButtons();
+                if("Defender".equals(gameData.Player.Team)) {
+                    setAttackButtons();
+                }
+                else{
+                    floatingActionsMenuShoot.setVisibility(View.GONE);
+                }
 
                 customHandler.postDelayed(sendData, delayTimeRequestData);
                 if(gameData.WinningTeam != null || gameData.Player.Lives < 1){
@@ -359,8 +363,13 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
                     hasFlagImageView.setVisibility(View.GONE);
                 }
                 livesTextView.setText(String.valueOf(gameData.Player.Lives));
+                if("Defender".equals(gameData.Player.Team)) {
+                    setAttackButtons();
+                }
+                else{
+                    floatingActionsMenuShoot.setVisibility(View.GONE);
+                }
 
-                setAttackButtons();
             }
 
             @Override
@@ -379,6 +388,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
     }
 
     private void setAttackButtons(){
+        floatingActionsMenuShoot.setVisibility(View.VISIBLE);
         for(FloatingActionButton floatingActionButton : floatingActionButtonList){
             floatingActionsMenuShoot.removeButton(floatingActionButton);
         }
