@@ -78,7 +78,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
     private List<Integer> completedMissions = new ArrayList<>();
 
     private Handler customHandler = new Handler();
-    private int delayTimeRequestData = 10000;
+    private int delayTimeRequestData = 5000;
     private double altitudeClimbed = 0;
     private double altitudeDescended = 0;
     private float collectedLight = 0;
