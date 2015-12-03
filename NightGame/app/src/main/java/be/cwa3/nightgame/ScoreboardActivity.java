@@ -92,7 +92,7 @@ public class ScoreboardActivity extends AppCompatActivity {
                 Collections.sort(scoreboardListData.List, new Comparator<ScoreboardData>() {
                     @Override
                     public int compare(ScoreboardData lhs, ScoreboardData rhs) {
-                        return isBetter(rhs.Missions, lhs.Missions, rhs.Games, lhs.Games, rhs.Wins, lhs.Wins);
+                        return isBetter(rhs.Missions, lhs.Missions,lhs.Games, rhs.Games, rhs.Wins, lhs.Wins);
                     }
                 });
                 setListView();
