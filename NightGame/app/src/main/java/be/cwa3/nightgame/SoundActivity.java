@@ -13,6 +13,7 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -20,11 +21,21 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
+
+import com.google.gson.Gson;
+
+import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import ca.uol.aig.fftpack.RealDoubleFFT;
 
 public class SoundActivity extends AppCompatActivity implements OnClickListener {
 
-    int frequency = 8000;
+    int frequency = 44100;
     int channelConfiguration = AudioFormat.CHANNEL_CONFIGURATION_MONO;
     int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
     private RealDoubleFFT transformer;
@@ -123,6 +134,68 @@ public class SoundActivity extends AppCompatActivity implements OnClickListener 
             }
 
             imageView.invalidate();
+
+
+            double[] old;
+            old = toTransform[0].clone();
+            //Arrays.sort(old);
+            /*
+            int n= 0;
+            for(double value : toTransform[0]){
+                Log.d("test", String.format("%d Hz: %f", n * frequency / blockSize, value));
+                n++;
+            }*/
+            /*
+            for(int g =0; g<5; g++){
+                double toSearch = old[g];
+                int k =0;
+                for(double value : toTransform[0]) {
+                    if(value == toSearch){
+                        Log.d("test", String.format("%d %d Hz: %f", g, k * frequency / blockSize, value));
+                    }
+                    k++;
+                }
+            }*/
+            // WERKEND
+            double abssum = 0;
+            int begin = (12000 * blockSize / frequency);
+            int eind = (17000 * blockSize / frequency);
+            for(int g =begin; g<eind; g++) {
+                abssum += Math.abs(old[g]);
+            }
+            if(abssum > 5) {
+                //Log.d("test", String.valueOf(abssum));
+
+
+            List<Double> abssums = new ArrayList<>();
+            double thisSum = 0;
+            begin = 0;
+            eind = (20000 * blockSize / frequency);
+            for(int g =begin; g<eind; g++) {
+                int freq = g* frequency / blockSize;
+                int freqnext = (g+1)*frequency / blockSize;
+                if(freqnext/1000 > freq/1000){
+                    thisSum += Math.abs(old[g]);
+                    abssums.add(thisSum);
+                    thisSum = 0;
+                }
+            }
+            Log.d("test", new Gson().toJson(abssums));
+            }
+            /*
+            String string = new Gson().toJson(toTransform);
+            FileWriter outputStream;
+
+
+             //external writing
+             try {
+                 outputStream = new FileWriter(Environment.getExternalStorageDirectory().toString() +"/aData.txt",true);
+                 Log.d("key", Environment.getExternalStorageDirectory().toString());
+                 outputStream.append(string);
+                 outputStream.close();
+             } catch (Exception e) {
+                 e.printStackTrace();
+             }*/
 
             // TODO Auto-generated method stub
             // super.onProgressUpdate(values);
