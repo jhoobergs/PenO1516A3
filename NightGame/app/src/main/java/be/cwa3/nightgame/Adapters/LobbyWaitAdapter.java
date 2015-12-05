@@ -13,7 +13,6 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-import be.cwa3.nightgame.Data.FriendSearchReturnItemData;
 import be.cwa3.nightgame.Data.GamePlayerData;
 import be.cwa3.nightgame.R;
 
@@ -43,8 +42,8 @@ public View getView (int position, View convertView, ViewGroup parent){
         row = inflater.inflate(layoutResourceId, parent, false);
 
         holder = new Holder();
-        holder.textViewName = (TextView) row.findViewById(R.id.TextViewName);
-        holder.imageViewProfileImage = (ImageView) row.findViewById(R.id.ImageViewProfileImage);
+        holder.textViewName = (TextView) row.findViewById(R.id.textview_name);
+        holder.imageViewProfileImage = (ImageView) row.findViewById(R.id.imageview_profile_image);
 
 
         row.setTag(holder);

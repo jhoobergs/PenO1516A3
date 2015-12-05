@@ -17,7 +17,6 @@ import android.widget.TextView;
 
 public class RulesActivity extends AppCompatActivity {
     TextView titleDefenders, titleAttackers, textDefenders, textAttackers;
-    private boolean isVisible;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

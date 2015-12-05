@@ -16,7 +16,7 @@
     android:gravity="center">
 
     <at.grabner.circleprogress.CircleProgressView
-        android:id="@+id/circleView"
+        android:id="@+id/circleview"
         android:layout_width="277dp"
         android:layout_height="277dp"
         CircleProgressView:cpv_barColor="#00796B"

@@ -27,7 +27,7 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:id="@+id/name"
             android:text="@string/name"/>
-        <EditText android:id="@+id/editTextGroupName"
+        <EditText android:id="@+id/edittext_groupname"
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -55,7 +55,7 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:text="@string/min" />
             <NumberPicker
-                android:id="@+id/numberPickerMinValue"
+                android:id="@+id/numberpicker_min_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
             />
@@ -70,7 +70,7 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:text="@string/max" />
             <NumberPicker
-                android:id="@+id/numberPickerMaxValue"
+                android:id="@+id/numberpicker_max_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </LinearLayout>

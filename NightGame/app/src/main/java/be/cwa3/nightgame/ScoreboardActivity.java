@@ -1,6 +1,5 @@
 package be.cwa3.nightgame;
 
-import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,14 +11,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
 import java.util.Collections;
 import java.util.Comparator;
 
 import be.cwa3.nightgame.Adapters.ScoreboardAdapter;
 import be.cwa3.nightgame.Data.ErrorData;
-import be.cwa3.nightgame.Data.LoginReturnData;
 import be.cwa3.nightgame.Data.ReturnData;
 import be.cwa3.nightgame.Data.ScoreboardData;
 import be.cwa3.nightgame.Data.ScoreboardListData;
@@ -30,9 +26,6 @@ import be.cwa3.nightgame.Utils.RequestUtil;
 import be.cwa3.nightgame.Utils.SettingsUtil;
 import be.cwa3.nightgame.Utils.SharedPreferencesKeys;
 import retrofit.Call;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
 
 /**
  * Improved/Upgraded/Enhanced by Koen en Jean on 9/11/2015.
@@ -46,8 +39,8 @@ public class ScoreboardActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scoreboard);
-        makeCall();
-        listView = (ListView)findViewById(R.id.listViewScores);
+        makeGetScoreboardCall();
+        listView = (ListView)findViewById(R.id.listview_scores);
 
         buttonGames = (Button) findViewById(R.id.button_games);
         buttonMissions = (Button) findViewById(R.id.button_missions);
@@ -77,7 +70,8 @@ public class ScoreboardActivity extends AppCompatActivity {
                 Collections.sort(scoreboardListData.List, new Comparator<ScoreboardData>() {
                     @Override
                     public int compare(ScoreboardData lhs, ScoreboardData rhs) {
-                        return isBetter(rhs.Wins, lhs.Wins, lhs.Games, rhs.Games, rhs.Missions, lhs.Missions); //Games omgewisseld omdat minder gespeelde games bij hetzelfde aantal wins beter is
+                        return isBetter(rhs.Wins, lhs.Wins, lhs.Games, rhs.Games, rhs.Missions, lhs.Missions);
+                         //Games omgewisseld omdat minder gespeelde games bij hetzelfde aantal wins beter is
                     }
                 });
                 setListView();
@@ -99,7 +93,7 @@ public class ScoreboardActivity extends AppCompatActivity {
             }
         });
     }
-    private void makeCall(){
+    private void makeGetScoreboardCall(){
         Call<ReturnData<ScoreboardListData>> call =
                 new ApiUtil().getApiInterface(this).loadScoreboard();
         final RequestUtil<ScoreboardListData> requestUtil = new RequestUtil<>(this, null, call);
@@ -153,13 +147,13 @@ public class ScoreboardActivity extends AppCompatActivity {
                     else
                         linearLayoutExtraData.setVisibility(View.GONE);
                     textViewRelevantValue.setVisibility(View.VISIBLE);
-                    if(sorting.equals("Games")){
+                    if("Games".equals(sorting)){
                         makeBold(item.Games,textViewRelevantValue,view,R.id.TextViewTextGames,R.id.TextViewGames);
                     }
-                    else if(sorting.equals("Wins")){
+                    else if("Wins".equals(sorting)){
                         makeBold(item.Wins,textViewRelevantValue,view,R.id.TextViewTextWins,R.id.TextViewWins);
                     }
-                    else if(sorting.equals("Missions")){
+                    else if("Missions".equals(sorting)){
                         makeBold(item.Missions,textViewRelevantValue,view,R.id.TextViewTextMissions,R.id.TextViewMissions);
                     }
                     else{

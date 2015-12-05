@@ -72,6 +72,6 @@ public interface ApiInterface {
     Call<ReturnData<LobbiesData>> getLobbyData(@Body GameGetDataRequestData data);
 
     @POST ("/game/attack")
-    Call<ReturnData<Empty>> getAttackData(@Body GameAttackData data);
+    Call<ReturnData<Empty>> sendAttackData(@Body GameAttackData data);
 
 }

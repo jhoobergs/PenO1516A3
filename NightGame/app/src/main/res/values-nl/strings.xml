@@ -30,7 +30,7 @@
     <string name="play">Speel</string>
     <string name="repeat_password">Herhaal wachtwoord</string>
     <string name="wins">Overwinningen</string>
-    <string name="Challenge">Opdracht</string>
+    <string name="challenge">Opdracht</string>
     <string name="attackers">Aanvallers</string>
     <string name="choose_centre_press_next">Kies het centrum van de map door de marker te verplaatsen en klik op Volgende.</string>
     <string name="connect_to_internet_please">Verbind met internet aub!</string>
@@ -66,4 +66,12 @@
     <string name="terms_and_conditions">Algemene voorwaarden</string>
     <string name="terms_and_conditions_text">Onze juridische afdeling adviseerde ons om deze knop te implementeren, hij heeft echter geen nut.</string>
     <string name="rules">Regels</string>
+    <string name="dead">Je hebt al je levens verloren en bent dus uitgeschakeld.</string>
+    <string name="error7">De aanvaller is te ver weg van jou.</string>
+    <string name="error8">Eén van beide spelers heeft geen gekende locatie.</string>
+    <string name="error9">Deze feature is gereserveerd voor verdedigers.</string>
+    <string name="game_end">Spel afgelopen: De %s zijn de winnaars.</string>
+    <string name="on_hit">Raak!</string>
+    <string name="remove_friend_text">Als je een vriend wil verwijderen, druk op de naam totdat de \'verwijder\'-knop zichtbaar wordt.</string>
+    <string name="started">Bezig</string>
 </resources>

@@ -3,27 +3,21 @@ package be.cwa3.nightgame;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 
 import be.cwa3.nightgame.Adapters.LobbyAdapter;
 import be.cwa3.nightgame.Data.ErrorData;
 import be.cwa3.nightgame.Data.LobbiesData;
 import be.cwa3.nightgame.Data.LobbiesListData;
-import be.cwa3.nightgame.Data.LobbySearchRequestData;
 import be.cwa3.nightgame.Data.ReturnData;
 import be.cwa3.nightgame.Utils.ApiUtil;
 import be.cwa3.nightgame.Utils.ErrorUtil;
@@ -48,24 +42,23 @@ public class LobbyActivity extends SensorDataActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
 
-        makeCall();
+        makeLoadLobbyListCall();
+
+        listView = (ListView) findViewById(R.id.listViewLobbies);
+        setListView();
 
         setSensorDataInterface(new SensorDataInterface() {
             @Override
             public void locationChanged(Location newLocation) {
-                if(lobbiesListData != null && !hasLocation) {
+                if (lobbiesListData != null && !hasLocation) {
                     hasLocation = true;
                     setListView();
                 }
             }
         });
-
-        listView = (ListView) findViewById(R.id.listViewLobbies);
-
-        setListView();
     }
 
-    private void makeCall(){
+    private void makeLoadLobbyListCall(){
         Call<ReturnData<LobbiesListData>> call = new ApiUtil().getApiInterface(this).loadLobbyList();
         RequestUtil<LobbiesListData> requestUtil = new RequestUtil<>(this, null, call);
         requestUtil.makeRequest(new RequestInterface<LobbiesListData>() {
@@ -78,14 +71,13 @@ public class LobbyActivity extends SensorDataActivity {
             @Override
             public void onError(ErrorData error) {
                 Toast.makeText(getApplicationContext(), ErrorUtil.getErrorText(getApplicationContext(), error.Errors), Toast.LENGTH_SHORT).show();
-
             }
         });
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_play_activity, menu);
+        getMenuInflater().inflate(R.menu.menu_activity_lobby, menu);
         return super.onCreateOptionsMenu(menu);
     }
 

@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import be.cwa3.nightgame.Utils.SettingsUtil;
 import be.cwa3.nightgame.Utils.SharedPreferencesKeys;
@@ -25,8 +26,6 @@ public class HomeActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-
-
 
         buttonPlay = (Button) findViewById(R.id.button_play);
         buttonPlay.setOnClickListener(new View.OnClickListener() {
@@ -102,7 +101,7 @@ public class HomeActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_home, menu);
+        getMenuInflater().inflate(R.menu.menu_activity_home, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -115,15 +114,6 @@ public class HomeActivity extends AppCompatActivity {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 startActivity(intent);
                 return true;
-
-            /*case R.id.sound:
-                Intent intenta = new Intent(getApplicationContext(), SoundActivity.class);
-                startActivity(intenta);
-                return true;
-            case R.id.accelerometer:
-                Intent intentb = new Intent(getApplicationContext(), AccelerometerActivity.class);
-                startActivity(intentb);
-                return true;*/
 
             case R.id.rules:
                 Intent intent1 = new Intent(getApplicationContext(), RulesActivity.class);

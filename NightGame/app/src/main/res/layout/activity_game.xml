@@ -15,26 +15,26 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/GameRelativeLayout"
+        android:id="@+id/game_relativelayout"
         android:orientation="vertical">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/bottomBar"
+            android:id="@+id/bottom_bar"
             android:gravity="center_vertical"
             android:layout_marginTop="5dp"
             android:layout_alignParentBottom="true">
             <ImageView
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:id="@+id/hasFlagImageView"
+                android:id="@+id/hasflag_imageview"
                 android:visibility="gone"
                 android:src="@drawable/flag"/>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:id="@+id/LivesHolderLinearLayout">
+                android:id="@+id/livesholder_linearlayout">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -46,19 +46,19 @@
                 android:layout_height="match_parent"
                 android:gravity="center_vertical"
                 android:textSize="21sp"
-                android:id="@+id/amountOfLivesTextView"
+                android:id="@+id/amount_of_lives_textview"
                 android:text="3"/>
             </LinearLayout>
         </LinearLayout>
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         android:name="com.google.android.gms.maps.MapFragment"
-        android:layout_above="@id/bottomBar"
+        android:layout_above="@id/bottom_bar"
         android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:layout="@layout/activity_lobby" />
         <com.getbase.floatingactionbutton.FloatingActionsMenu
-            android:id="@+id/floatingActionsMenuShoot"
+            android:id="@+id/floatingactionsmenu_shoot"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
@@ -80,7 +80,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:id="@+id/missions"
+        android:id="@+id/missions_listview"
         />
 
 </LinearLayout>

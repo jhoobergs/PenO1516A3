@@ -47,7 +47,7 @@ public class CreateAccountActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_new_account);
 
-        imageViewProfileImage = (ImageView) findViewById(R.id.ImageViewProfileImage);
+        imageViewProfileImage = (ImageView) findViewById(R.id.imageview_profile_image);
         getProfileImagesList();
         nextButton = (Button) findViewById(R.id.nextButton);
         previousButton = (Button) findViewById(R.id.previousButton);
@@ -84,7 +84,7 @@ public class CreateAccountActivity extends AppCompatActivity {
 
         buttonCreate.setEnabled(false);
 
-        enterName.addTextChangedListener(new TextWatcher() {
+        TextWatcher textWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -92,65 +92,22 @@ public class CreateAccountActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                HandleButtonLogin();
+                HandleButtonCreate();
             }
 
             @Override
             public void afterTextChanged(Editable s) {
 
             }
-        });
+        };
 
-        enterEmail.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        enterName.addTextChangedListener(textWatcher);
 
-            }
+        enterEmail.addTextChangedListener(textWatcher);
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                HandleButtonLogin();
-            }
+        enterPassword.addTextChangedListener(textWatcher);
 
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
-        enterPassword.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                HandleButtonLogin();
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
-        repeatPassword.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                HandleButtonLogin();
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
+        repeatPassword.addTextChangedListener(textWatcher);
 
         buttonCreate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -159,10 +116,10 @@ public class CreateAccountActivity extends AppCompatActivity {
                         || enterName.getText().toString().equals("")
                         || enterPassword.getText().toString().equals("")
                         || !repeatPassword.getText().toString().equals(enterPassword.getText().toString())) {
-                    Toast.makeText(CreateAccountActivity.this, "Data not entered correctly!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(CreateAccountActivity.this, getString(R.string.data_not_entered_correctly), Toast.LENGTH_LONG).show();
                 }
                 else if ( enterName.getText().toString().length()< 3) {
-                    Toast.makeText(CreateAccountActivity.this, "Name must be at least 3 characters!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(CreateAccountActivity.this, getString(R.string.name_at_least_three_characters), Toast.LENGTH_LONG).show();
                 }
                 else{
                     CreateNewAccountRequestData data = new CreateNewAccountRequestData();
@@ -187,7 +144,8 @@ public class CreateAccountActivity extends AppCompatActivity {
         });
     }
 
-    public boolean HandleButtonLogin() {
+    public boolean HandleButtonCreate() {
+        // This function returns whether or not all fields are filled and handles the button state
         if (enterName.getText().toString().equals("") ||
                 enterEmail.getText().toString().equals("") ||
                 enterPassword.getText().toString().equals("") ||
@@ -207,17 +165,16 @@ public class CreateAccountActivity extends AppCompatActivity {
         requestUtil.makeRequest(new RequestInterface<LoginReturnData>() {
             @Override
             public void onSucces(LoginReturnData body) {
-                //Has to be overriden
                 //Logged in
                 new SettingsUtil(getApplicationContext()).setString(SharedPreferencesKeys.TokenString, body.Token);
-                Toast.makeText(getApplicationContext(), String.format("Ingelogd als %s", body.Username), Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), String.format(getString(R.string.signed_in_as), body.Username), Toast.LENGTH_LONG).show();
                 Intent i = new Intent(getApplicationContext(), HomeActivity.class);
                 startActivity(i);
+                finish();
             }
 
             @Override
             public void onError(ErrorData error) {
-                //Has to be overriden
                 Toast.makeText(getApplicationContext(), ErrorUtil.getErrorText(getApplicationContext(),error.Errors), Toast.LENGTH_SHORT).show();
             }
 

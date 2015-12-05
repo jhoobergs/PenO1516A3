@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/challenges"
-        android:title="@string/Challenge"
+        android:title="@string/challenge"
         android:showAsAction="always"
         app:showAsAction="always"/>
 

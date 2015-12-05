@@ -37,29 +37,26 @@ import retrofit.Call;
  */
 public class LobbyWaitActivity extends AppCompatActivity {
 
-
     private String gameId;
     CircleProgressView mCircleView;
     ListView listView;
-    Boolean mShowUnit = true;
     LobbiesData gameData;
 
     private Handler customHandler = new Handler();
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_lobbywait);
+        setContentView(R.layout.activity_lobby_wait);
         gameId = new SettingsUtil(this).getString(SharedPreferencesKeys.GameIDString);
-        if (gameId.equals("")){
+        if ("".equals(gameId)){
             Intent intent = new Intent(this, HomeActivity.class);
             startActivity(intent);
             finish();
         }
         listView = (ListView) findViewById(R.id.lobby_players_list);
-        mCircleView = (CircleProgressView) findViewById(R.id.circleView);
+        mCircleView = (CircleProgressView) findViewById(R.id.circleview);
         mCircleView.setValue(0);
         mCircleView.setSeekModeEnabled(false);
         CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator);
@@ -78,7 +75,7 @@ public class LobbyWaitActivity extends AppCompatActivity {
         requestUtil.makeRequest(new RequestInterface<LobbiesData>() {
             @Override
             public void onSucces(LobbiesData body) {
-                customHandler.postDelayed(getData, 30*1000);
+                customHandler.postDelayed(getData, 30*1000); //30 seconds
                 gameData = body;
                 if (getSupportActionBar() != null) {
                     getSupportActionBar().setTitle(gameData.Name);
@@ -91,10 +88,9 @@ public class LobbyWaitActivity extends AppCompatActivity {
                     mCircleView.setTextMode(TextMode.TEXT);
                     mCircleView.setAutoTextSize(true);
                     mCircleView.spin();
-                    mCircleView.setText(String.format("Waiting %d / %d", gameData.Players.size(), gameData.MinPlayers));
+                    mCircleView.setText(String.format(getString(R.string.waiting_d_d), gameData.Players.size(), gameData.MinPlayers));
                     mCircleView.setShowTextWhileSpinning(true);
                     listView.setAdapter(new LobbyWaitAdapter(LobbyWaitActivity.this, gameData.Players));
-                    //automatic refresh?
                 }
                 else if(gameData.TimerDate.isBefore(DateTime.now().getMillis())){
                     startGameActivity();
@@ -158,9 +154,7 @@ public class LobbyWaitActivity extends AppCompatActivity {
     private Runnable getData = new Runnable() {
         @Override
         public void run() {
-
             makeCall(new GameGetDataRequestData(gameId));
-
 
         }
     };

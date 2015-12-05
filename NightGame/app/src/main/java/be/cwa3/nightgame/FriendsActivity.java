@@ -3,7 +3,6 @@ package be.cwa3.nightgame;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,19 +14,15 @@ import android.widget.Toast;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 
 import be.cwa3.nightgame.Adapters.FriendsAdapter;
 import be.cwa3.nightgame.Data.ErrorData;
-import be.cwa3.nightgame.Data.FriendAddReturnData;
 
 import be.cwa3.nightgame.Data.FriendData;
 import be.cwa3.nightgame.Data.FriendListData;
 import be.cwa3.nightgame.Data.FriendRemoveRequestData;
 import be.cwa3.nightgame.Data.FriendRemoveReturnData;
-import be.cwa3.nightgame.Data.LoginReturnData;
 import be.cwa3.nightgame.Data.ReturnData;
-import be.cwa3.nightgame.Data.ScoreboardData;
 import be.cwa3.nightgame.Utils.ApiUtil;
 import be.cwa3.nightgame.Utils.ErrorUtil;
 import be.cwa3.nightgame.Utils.RequestInterface;
@@ -48,9 +43,6 @@ public class FriendsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friends);
 
-        makeCall();
-
-
         listView = (ListView)findViewById(R.id.listView);
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -68,6 +60,14 @@ public class FriendsActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //The list also needs to be refreshen when de app comes back to this activity from the AddFriendActivity
+        //This function is also called after onCreate when the activity is created.
+        makeGetFriendListCall();
+    }
+
     private void makeRemoveCall(FriendRemoveRequestData data) {
         Call<ReturnData<FriendRemoveReturnData>> call = new ApiUtil().getApiInterface(this).removeFriend(data);
         RequestUtil<FriendRemoveReturnData> requestUtil = new RequestUtil<>(this,null, call);
@@ -75,21 +75,19 @@ public class FriendsActivity extends AppCompatActivity {
 
             @Override
             public void onSucces(FriendRemoveReturnData body) {
-                Toast.makeText(getApplicationContext(), "Friend removed!", Toast.LENGTH_LONG).show();
-                makeCall();
-
+                Toast.makeText(getApplicationContext(), getString(R.string.friend_removed), Toast.LENGTH_LONG).show();
+                makeGetFriendListCall();
             }
 
             @Override
             public void onError(ErrorData error) {
                 Toast.makeText(getApplicationContext(), ErrorUtil.getErrorText(getApplicationContext(), error.Errors), Toast.LENGTH_SHORT).show();
-
             }
         });
     }
 
 
-    private void makeCall(){
+    private void makeGetFriendListCall(){
         Call<ReturnData<FriendListData>> call = new ApiUtil().getApiInterface(this).loadFriends();
         RequestUtil<FriendListData> requestUtil = new RequestUtil<>(this,null, call);
 
@@ -114,7 +112,6 @@ public class FriendsActivity extends AppCompatActivity {
             @Override
             public void onError(ErrorData error) {
                 Toast.makeText(getApplicationContext(), ErrorUtil.getErrorText(getApplicationContext(), error.Errors), Toast.LENGTH_SHORT).show();
-
             }
         });
     }
@@ -144,7 +141,7 @@ public class FriendsActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-            getMenuInflater().inflate(R.menu.friends_activity, menu);
+            getMenuInflater().inflate(R.menu.menu_activity_friends, menu);
             return super.onCreateOptionsMenu(menu);
         }
 

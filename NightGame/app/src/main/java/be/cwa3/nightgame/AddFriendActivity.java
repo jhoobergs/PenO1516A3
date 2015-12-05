@@ -38,10 +38,9 @@ public class AddFriendActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.add_friend);
+        setContentView(R.layout.activity_add_friend);
 
         enterFriendName = (EditText) findViewById(R.id.editTextFriend);
-
         listView = (ListView) findViewById(R.id.listViewRecentContact);
 
         enterFriendName.addTextChangedListener(new TextWatcher() {
@@ -93,7 +92,6 @@ public class AddFriendActivity extends AppCompatActivity {
             @Override
             public void onError(ErrorData error) {
                 Toast.makeText(getApplicationContext(), ErrorUtil.getErrorText(getApplicationContext(), error.Errors), Toast.LENGTH_SHORT).show();
-
             }
         });
     }
@@ -103,15 +101,13 @@ public class AddFriendActivity extends AppCompatActivity {
         requestUtil.makeRequest(new RequestInterface<FriendAddReturnData>() {
             @Override
             public void onSucces(FriendAddReturnData body) {
-                Toast.makeText(AddFriendActivity.this, "Friend added!", Toast.LENGTH_LONG).show();
-                Intent intent = new Intent(getApplicationContext(), FriendsActivity.class);
-                startActivity(intent);
+                Toast.makeText(AddFriendActivity.this, getString(R.string.friend_added), Toast.LENGTH_LONG).show();
+                finish();
             }
 
             @Override
             public void onError(ErrorData error) {
                 Toast.makeText(getApplicationContext(), ErrorUtil.getErrorText(getApplicationContext(), error.Errors), Toast.LENGTH_SHORT).show();
-
             }
         });
     }

@@ -3,8 +3,6 @@ package be.cwa3.nightgame.Adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.speech.tts.TextToSpeech;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,12 +49,12 @@ public class ScoreboardAdapter extends ArrayAdapter<ScoreboardData>{
             row = inflater.inflate(layoutResourceId, parent, false);
 
             holder = new Holder();
-            holder.textViewName = (TextView) row.findViewById(R.id.TextViewName);
+            holder.textViewName = (TextView) row.findViewById(R.id.textview_name);
             holder.textViewRelevantValue = (TextView) row.findViewById(R.id.TextViewRelevantValue);
             holder.textViewMissions = (TextView) row.findViewById(R.id.TextViewMissions);
             holder.textViewGames = (TextView) row.findViewById(R.id.TextViewGames);
             holder.textViewWins = (TextView) row.findViewById(R.id.TextViewWins);
-            holder.imageViewProfileImage = (ImageView) row.findViewById(R.id.ImageViewProfileImage);
+            holder.imageViewProfileImage = (ImageView) row.findViewById(R.id.imageview_profile_image);
             holder.linearLayoutExtraData = (LinearLayout) row.findViewById(R.id.LinearLayoutExtraData);
 
             row.setTag(holder);
@@ -68,7 +66,7 @@ public class ScoreboardAdapter extends ArrayAdapter<ScoreboardData>{
 
         holder.textViewName.setText(menuItem.Username);
         if (username.equals(menuItem.Username)){
-            holder.textViewName.setTextColor(context.getResources().getColor(R.color.colorPrimary));
+            holder.textViewName.setTextColor(context.getResources().getColor(R.color.color_primary));
         }
         else {
             holder.textViewName.setTextColor(Color.GRAY);

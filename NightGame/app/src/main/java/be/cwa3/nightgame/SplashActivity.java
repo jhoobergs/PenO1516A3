@@ -12,6 +12,7 @@ import be.cwa3.nightgame.Utils.SharedPreferencesKeys;
  * Created by jesse on 15/10/2015.
  */
 public class SplashActivity extends AppCompatActivity {
+    //This activity is launched when the app starts and shows the App logo for a small time
     private static int SPLASH_TIME_OUT = 3000;
 
     @Override
@@ -29,7 +30,6 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void run() {
                 // This method will be executed once the timer is over
-                // Start your app main activity
                 if(!new SettingsUtil(getApplicationContext()).getString(SharedPreferencesKeys.GameIDString).equals("")) {
                     Intent i = new Intent(getApplicationContext(), LobbyWaitActivity.class);
                     startActivity(i);

@@ -1,5 +1,6 @@
 package be.cwa3.nightgame;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -39,8 +41,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         if(!new SettingsUtil(this).getString(SharedPreferencesKeys.TokenString).equals("")){
-            Intent i = new Intent(this, HomeActivity.class);
-            startActivity(i);
+            loadHomeActivity();
         }
 
         buttonLogin = (Button) findViewById(R.id.button_login);
@@ -94,6 +95,12 @@ public class LoginActivity extends AppCompatActivity {
                 if(HandleButtonLogin()){
                     LoginRequestData data = new LoginRequestData(enterName.getText().toString(), enterPassword.getText().toString());
                     makeLoginCall(data);
+                    // Hide keyboard when clicked on the button
+                    View view = getCurrentFocus();
+                    if (view != null) {
+                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    }
                 }
                 else{
                     Toast.makeText(getApplicationContext(), "This should not happen!", Toast.LENGTH_LONG).show();
@@ -110,9 +117,16 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-        public boolean HandleButtonLogin() {
+    private void loadHomeActivity() {
+        Intent i = new Intent(this, HomeActivity.class);
+        startActivity(i);
+        finish();
+    }
+
+    public boolean HandleButtonLogin() {
+        // This function returns whether or not the fields are filled correct and also handles the state of the button.
         if (enterName.getText().toString().equals("") || enterPassword.getText().toString().equals("")){
-            buttonLogin.setEnabled(false);
+            buttonLogin.setEnabled(false); //Make sure they don't click twice
             return false;
         }
         else{
@@ -128,20 +142,15 @@ public class LoginActivity extends AppCompatActivity {
         requestUtil.makeRequest(new RequestInterface<LoginReturnData>() {
             @Override
             public void onSucces(LoginReturnData body) {
-                //Has to be overriden
                 //Logged in
                 new SettingsUtil(getApplicationContext()).setString(SharedPreferencesKeys.TokenString, body.Token);
                 new SettingsUtil(getApplicationContext()).setString(SharedPreferencesKeys.UsernameString, body.Username);
                 Toast.makeText(getApplicationContext(), String.format(getString(R.string.signed_in_as), body.Username), Toast.LENGTH_LONG).show();
-                Intent i = new Intent(getApplicationContext(), HomeActivity.class);
-                startActivity(i);
-                finish();
+                loadHomeActivity();
             }
 
             @Override
             public void onError(ErrorData error) {
-                //Has to be overriden
-                //Toast.makeText(getApplicationContext(), ErrorUtil.getErrorText(getApplicationContext(), error.Errors), Toast.LENGTH_SHORT).show();
                 Snackbar.make(coordinatorLayout, ErrorUtil.getErrorText(getApplicationContext(), error.Errors), Snackbar.LENGTH_INDEFINITE).show();
             }
 

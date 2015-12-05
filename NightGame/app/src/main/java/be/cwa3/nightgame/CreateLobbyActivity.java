@@ -6,15 +6,12 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -46,33 +43,28 @@ public class CreateLobbyActivity extends SensorDataActivity implements OnMapRead
     EditText editTextGroupName;
     TextView chooseCentre;
     LinearLayout layoutCreate, mapLayout;
-    Button buttonNext;
     MenuItem defineMap, startLobby;
-    private boolean mRequestingLocationUpdates = true;
     private boolean buttonStart;
-    private double gem, radius;
-    private GoogleApiClient mGoogleApiClient;
-    LocationRequest mLocationRequest;
+    private double radius;
     MapFragment mapFragment;
 
     private Location location;
     private Location centerLocation;
-    private LatLng locationlatlng;
     private boolean mapHasBeenReady = false;
 
     boolean clicked = false;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_createlobby);
+        setContentView(R.layout.activity_create_lobby);
 
         layoutCreate = (LinearLayout) findViewById(R.id.layout_create);
         mapLayout = (LinearLayout) findViewById(R.id.map_layout);
         chooseCentre = (TextView) findViewById(R.id.choose_centre_press_next);
-        editTextGroupName = (EditText) findViewById(R.id.editTextGroupName);
+        editTextGroupName = (EditText) findViewById(R.id.edittext_groupname);
 
-        numberPickerMaxValue = (NumberPicker) findViewById(R.id.numberPickerMaxValue);
-        numberPickerMinValue = (NumberPicker) findViewById(R.id.numberPickerMinValue);
+        numberPickerMaxValue = (NumberPicker) findViewById(R.id.numberpicker_max_value);
+        numberPickerMinValue = (NumberPicker) findViewById(R.id.numberpicker_min_value);
         setMinAndMaxOfNumberPicker(numberPickerMaxValue, 4, 10);
         setMinAndMaxOfNumberPicker(numberPickerMinValue, 4, 10);
 
@@ -112,7 +104,6 @@ public class CreateLobbyActivity extends SensorDataActivity implements OnMapRead
                         .center(latLng)
                         .radius(radius); // In meters
                 map.addCircle(circleOptions);
-                //buttonNext.setVisibility(View.VISIBLE);
             }
         });
         map.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
@@ -146,7 +137,7 @@ public class CreateLobbyActivity extends SensorDataActivity implements OnMapRead
 
         if(location != null && !clicked) {
             centerLocation = location;
-            locationlatlng = new LatLng(location.getLatitude(), location.getLongitude());
+            LatLng locationlatlng = new LatLng(location.getLatitude(), location.getLongitude());
             map.clear();
             map.setMyLocationEnabled(true);
             if (!mapHasBeenReady) {
@@ -185,10 +176,10 @@ public class CreateLobbyActivity extends SensorDataActivity implements OnMapRead
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_createlobby_activity, menu);
+        getMenuInflater().inflate(R.menu.menu_activity_createlobby, menu);
         return super.onCreateOptionsMenu(menu);
     }
-    //invalidateOptionsMenu();
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -197,7 +188,7 @@ public class CreateLobbyActivity extends SensorDataActivity implements OnMapRead
                 if (numberPickerMinValue.getValue() > numberPickerMaxValue.getValue()
                         || editTextGroupName.getText().toString().equals(""))
                 {
-                    Toast.makeText(CreateLobbyActivity.this, "Data not entered correctly!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(CreateLobbyActivity.this, getString(R.string.data_not_entered_correctly), Toast.LENGTH_LONG).show();
                 }
                 else {
                     layoutCreate.setVisibility(View.GONE);
@@ -205,7 +196,7 @@ public class CreateLobbyActivity extends SensorDataActivity implements OnMapRead
                     mapLayout.setVisibility(View.VISIBLE);
                     buttonStart = true;
                     invalidateOptionsMenu();
-                    gem = (numberPickerMaxValue.getValue()+numberPickerMinValue.getValue())/2;
+                    double gem = (numberPickerMaxValue.getValue()+numberPickerMinValue.getValue())/2;
                     radius = -0.538*gem*gem + 47.29*gem + 220;
                 }
                 return true;
@@ -218,7 +209,7 @@ public class CreateLobbyActivity extends SensorDataActivity implements OnMapRead
                     data.CenterLocationLatitude = userLocation.getLatitude();
                     data.CenterLocationLongitude = userLocation.getLongitude();
                     data.CircleRadius = radius;
-                    makeCreateLobbyCall(data);//
+                    makeCreateLobbyCall(data);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -233,6 +224,7 @@ public class CreateLobbyActivity extends SensorDataActivity implements OnMapRead
             public void onSucces(CreateLobbyReturnData body) {
                 new SettingsUtil(getApplicationContext()).setString(SharedPreferencesKeys.GameIDString, body.GameId);
                 Intent intent = new Intent(getApplicationContext(), LobbyWaitActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }
 

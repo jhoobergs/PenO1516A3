@@ -2,7 +2,6 @@ package be.cwa3.nightgame.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,13 +15,11 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-import be.cwa3.nightgame.AddFriendActivity;
 import be.cwa3.nightgame.Data.ErrorData;
 import be.cwa3.nightgame.Data.FriendAddRequestData;
 import be.cwa3.nightgame.Data.FriendAddReturnData;
 import be.cwa3.nightgame.Data.FriendData;
 import be.cwa3.nightgame.Data.ReturnData;
-import be.cwa3.nightgame.FriendsActivity;
 import be.cwa3.nightgame.R;
 import be.cwa3.nightgame.Utils.ApiUtil;
 
@@ -57,8 +54,8 @@ public class FriendsAdapter extends ArrayAdapter<FriendData>{
             row = inflater.inflate(layoutResourceId, parent, false);
 
             holder = new Holder();
-            holder.textViewName = (TextView) row.findViewById(R.id.TextViewName);
-            holder.imageViewProfileImage = (ImageView) row.findViewById(R.id.ImageViewProfileImage);
+            holder.textViewName = (TextView) row.findViewById(R.id.textview_name);
+            holder.imageViewProfileImage = (ImageView) row.findViewById(R.id.imageview_profile_image);
             holder.textViewSend = (TextView) row.findViewById(R.id.send);
             holder.button_accept = (Button) row.findViewById(R.id.button_accept);
 
@@ -108,7 +105,7 @@ public class FriendsAdapter extends ArrayAdapter<FriendData>{
         requestUtil.makeRequest(new RequestInterface<FriendAddReturnData>() {
             @Override
             public void onSucces(FriendAddReturnData body) {
-                Toast.makeText(context, "Friend accepted!", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, context.getString(R.string.friend_accepted), Toast.LENGTH_LONG).show();
                 menuItem.Accepted = true;
                 data.set(position, menuItem);
                 holder.button_accept.setVisibility(View.GONE);
@@ -117,7 +114,6 @@ public class FriendsAdapter extends ArrayAdapter<FriendData>{
             @Override
             public void onError(ErrorData error) {
                 Toast.makeText(context, ErrorUtil.getErrorText(context, error.Errors), Toast.LENGTH_SHORT).show();
-
             }
         });
     }

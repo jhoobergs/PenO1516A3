@@ -3,7 +3,6 @@ package be.cwa3.nightgame.Adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,6 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import be.cwa3.nightgame.Data.LobbiesData;
 import be.cwa3.nightgame.Data.MissionData;
 import be.cwa3.nightgame.R;
 
@@ -71,7 +69,7 @@ public class MissionsAdapter extends ArrayAdapter<MissionData> {
         holder.Mission.setText(description);
 
         if (listItem.IsFinished){
-            holder.Mission.setTextColor(context.getResources().getColor(R.color.colorPrimary));
+            holder.Mission.setTextColor(context.getResources().getColor(R.color.color_primary));
         }
         else{
             holder.Mission.setTextColor(Color.GRAY);

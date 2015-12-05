@@ -108,11 +108,6 @@ public class LobbyAdapter extends ArrayAdapter<LobbiesData> {
             holder.timer.setVisibility(View.GONE);
         }
 
-
-       // holder.location.setText((CharSequence) menuItem.CenterLocation);
-        //holder.timer.setText(menuItem.TimerDate.toString());
-
-
         holder.join_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -148,7 +143,6 @@ public class LobbyAdapter extends ArrayAdapter<LobbiesData> {
                 Intent intent = new Intent(context, LobbyWaitActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 context.startActivity(intent);
-
             }
 
             @Override
