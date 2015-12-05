@@ -38,9 +38,6 @@ public interface ApiInterface {
     @POST("/friends/search")
     Call<ReturnData<FriendSearchReturnData>> searchFriends(@Body FriendSearchRequestData data);
 
-    @POST("/lobbies/search")
-    Call<ReturnData<LobbiesListData>> searchLobbies (@Body LobbySearchRequestData data);
-
     @POST("/friends/add")
     Call<ReturnData<FriendAddReturnData>> addFriend(@Body FriendAddRequestData data);
 

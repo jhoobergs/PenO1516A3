@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -12,26 +11,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParser;
-
-import java.util.List;
-
-import be.cwa3.nightgame.Data.FriendData;
-import be.cwa3.nightgame.Data.FriendListData;
-import be.cwa3.nightgame.Http.Api.ApiInterface;
 import be.cwa3.nightgame.Utils.SettingsUtil;
 import be.cwa3.nightgame.Utils.SharedPreferencesKeys;
-import retrofit.Call;
-import retrofit.Callback;
-import retrofit.GsonConverterFactory;
-import retrofit.Response;
-import retrofit.Retrofit;
 
-import be.cwa3.nightgame.BuildConfig;
 /**
  * Created by jesse on 12/10/2015.
  */
@@ -50,7 +33,7 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 buttonPlay.setEnabled(false);
-                Intent intent = new Intent(getApplicationContext(), PlayActivity.class);
+                Intent intent = new Intent(getApplicationContext(), LobbyActivity.class);
                 startActivity(intent);
             }
         });

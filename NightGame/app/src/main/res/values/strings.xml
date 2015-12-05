@@ -93,5 +93,6 @@
     <string name="on_hit">Bullseye!</string>
     <string name="game_end">Game ended: The %s are the champions.</string>
     <string name="dead">You have lost all your lives and thereby are out of the game.</string>
+    <string name="started">Started</string>
 
 </resources>

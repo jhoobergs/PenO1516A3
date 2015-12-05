@@ -47,7 +47,7 @@
             android:label="@string/app_name" >
         </activity>
         <activity
-            android:name=".PlayActivity"
+            android:name=".LobbyActivity"
             android:label="@string/app_name"
             android:parentActivityName=".HomeActivity">
             <meta-data
@@ -81,10 +81,10 @@
         <activity
             android:name=".CreateLobbyActivity"
             android:label="@string/create_new_lobby"
-            android:parentActivityName=".PlayActivity">
+            android:parentActivityName=".LobbyActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".PlayActivity" />
+                android:value=".LobbyActivity" />
         </activity>
         <activity
             android:name=".LoginActivity"
@@ -119,10 +119,10 @@
         <activity
             android:name=".LobbyWaitActivity"
             android:label=""
-            android:parentActivityName=".PlayActivity">
+            android:parentActivityName=".LobbyActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".PlayActivity"/>
+                android:value=".LobbyActivity"/>
         </activity>
 
         <activity

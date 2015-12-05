@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,10 +21,8 @@ import be.cwa3.nightgame.Data.ErrorData;
 import be.cwa3.nightgame.Data.JoinLobbyRequestData;
 import be.cwa3.nightgame.Data.JoinLobbyReturnData;
 import be.cwa3.nightgame.Data.LobbiesData;
-import be.cwa3.nightgame.Data.LobbiesListData;
 import be.cwa3.nightgame.Data.ReturnData;
 import be.cwa3.nightgame.LobbyWaitActivity;
-import be.cwa3.nightgame.PlayActivity;
 import be.cwa3.nightgame.R;
 import be.cwa3.nightgame.Utils.ApiUtil;
 import be.cwa3.nightgame.Utils.ErrorUtil;
@@ -87,17 +84,24 @@ public class LobbyAdapter extends ArrayAdapter<LobbiesData> {
         location.setLatitude(menuItem.CenterLocation.Latitude);
         location.setLongitude(menuItem.CenterLocation.Longitude);
         if(myLocation != null) {
+            holder.location.setVisibility(View.VISIBLE);
             float dist = myLocation.distanceTo(location);
             if(dist < 1000)
                 holder.location.setText(String.format("%d m",Math.round(dist)));
             else{
-                holder.location.setText(String.format("%s km", String.valueOf(Math.round(dist/100)/10.0)));
+                holder.location.setText(String.format("%f km", Math.round(dist/100)/10.0));
             }
+        }
+        else{
+            holder.location.setVisibility(View.GONE);
         }
         if(menuItem.TimerDate != null) {
             long Tminus;
             Tminus = menuItem.TimerDate.getMillis() - DateTime.now().getMillis();
-            holder.timer.setText(String.valueOf(Tminus * 1000));
+            if(Tminus <= 0)
+                holder.timer.setText(context.getString(R.string.started));
+            else
+                holder.timer.setText(String.valueOf(Tminus * 1000));
             holder.timer.setVisibility(View.VISIBLE);
         }
         else{

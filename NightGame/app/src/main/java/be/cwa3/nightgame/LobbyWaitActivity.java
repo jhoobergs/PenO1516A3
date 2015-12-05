@@ -117,7 +117,7 @@ public class LobbyWaitActivity extends AppCompatActivity {
             public void onError(ErrorData error) {
                 if(error.Errors.contains(4) || error.Errors.contains(6)) {
                     new SettingsUtil(getApplicationContext()).setString(SharedPreferencesKeys.GameIDString, "");
-                    Intent intent = new Intent(getApplicationContext(), PlayActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), LobbyActivity.class);
                     startActivity(intent);
                     finish();
                 }

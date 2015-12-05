@@ -2,11 +2,9 @@ package be.cwa3.nightgame;
 
 import android.content.Intent;
 import android.location.Location;
-import android.media.audiofx.BassBoost;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,16 +31,14 @@ import be.cwa3.nightgame.Utils.RequestInterface;
 import be.cwa3.nightgame.Utils.RequestUtil;
 import be.cwa3.nightgame.Utils.SensorDataActivity;
 import be.cwa3.nightgame.Utils.SensorDataInterface;
-import be.cwa3.nightgame.Utils.SettingsUtil;
 import retrofit.Call;
 
 /**
  * Created by Koen on 19/10/2015.
  * Updated by Kevin on 12/11/2015
  */
-public class PlayActivity extends SensorDataActivity {
+public class LobbyActivity extends SensorDataActivity {
 
-    private EditText enterLobbyName;
     ListView listView;
     private boolean hasLocation = false;
 
@@ -50,7 +46,7 @@ public class PlayActivity extends SensorDataActivity {
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_play);
+        setContentView(R.layout.activity_lobby);
 
         makeCall();
 
@@ -64,56 +60,10 @@ public class PlayActivity extends SensorDataActivity {
             }
         });
 
-        enterLobbyName = (EditText) findViewById(R.id.editTextLobby);
-
         listView = (ListView) findViewById(R.id.listViewLobbies);
 
         setListView();
-
-        enterLobbyName.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (enterLobbyName.getText().toString().length() >= 3) {
-                    LobbySearchRequestData data = new LobbySearchRequestData(enterLobbyName.getText().toString());
-                    makeSearchCall(data);
-                } if (enterLobbyName.getText().toString().isEmpty()) {
-                    List<LobbiesData> empty = new ArrayList<LobbiesData>();
-                    lobbiesListData.List = empty;
-                    setListView();
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-
     }
-
-    private void makeSearchCall(LobbySearchRequestData data) {
-        Call<ReturnData<LobbiesListData>> call = new ApiUtil().getApiInterface(this).searchLobbies(data);
-        RequestUtil<LobbiesListData> requestUtil = new RequestUtil<>(this, null, call);
-        requestUtil.makeRequest(new RequestInterface<LobbiesListData>() {
-            @Override
-            public void onSucces(LobbiesListData body) {
-                lobbiesListData = body;
-                setListView();
-            }
-
-            @Override
-            public void onError(ErrorData error) {
-                Toast.makeText(getApplicationContext(), ErrorUtil.getErrorText(getApplicationContext(), error.Errors), Toast.LENGTH_SHORT).show();
-
-            }
-        });
-    }
-
 
     private void makeCall(){
         Call<ReturnData<LobbiesListData>> call = new ApiUtil().getApiInterface(this).loadLobbyList();
@@ -181,7 +131,7 @@ public class PlayActivity extends SensorDataActivity {
                     }
                 }
             });
-            listView.setAdapter(new LobbyAdapter(PlayActivity.this, lobbiesListData.List, getLocation()));
+            listView.setAdapter(new LobbyAdapter(LobbyActivity.this, lobbiesListData.List, getLocation()));
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

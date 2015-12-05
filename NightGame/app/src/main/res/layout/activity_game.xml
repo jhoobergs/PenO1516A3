@@ -56,7 +56,7 @@
         android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout="@layout/activity_play" />
+        tools:layout="@layout/activity_lobby" />
         <com.getbase.floatingactionbutton.FloatingActionsMenu
             android:id="@+id/floatingActionsMenuShoot"
             android:layout_width="wrap_content"

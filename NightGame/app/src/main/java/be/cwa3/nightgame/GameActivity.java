@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.ContactsContract;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.widget.ImageView;
@@ -317,7 +316,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
                                 @Override
                                 public void onClick(View v) {
                                     new SettingsUtil(getApplicationContext()).setString(SharedPreferencesKeys.GameIDString, "");
-                                    Intent intent = new Intent(getApplicationContext(), PlayActivity.class);
+                                    Intent intent = new Intent(getApplicationContext(), LobbyActivity.class);
                                     startActivity(intent);
                                     finish();
                                 }
@@ -333,7 +332,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
                 customHandler.postDelayed(sendData, delayTimeRequestData);
                 if (error.Errors.contains(4) || error.Errors.contains(6)) {
                     new SettingsUtil(getApplicationContext()).setString(SharedPreferencesKeys.GameIDString, "");
-                    Intent intent = new Intent(getApplicationContext(), PlayActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), LobbyActivity.class);
                     startActivity(intent);
                     finish();
                 }
@@ -376,7 +375,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
             public void onError(ErrorData error) {
                 if (error.Errors.contains(4) || error.Errors.contains(6)) {
                     new SettingsUtil(getApplicationContext()).setString(SharedPreferencesKeys.GameIDString, "");
-                    Intent intent = new Intent(getApplicationContext(), PlayActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), LobbyActivity.class);
                     startActivity(intent);
                     finish();
                 }
