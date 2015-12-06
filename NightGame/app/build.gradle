@@ -14,17 +14,27 @@ android {
         versionCode 1
         versionName "1.0"
     }
+    signingConfigs {
+        release {
+            storeFile file("key.keystore")
+            storePassword "R7GGB76"
+            keyAlias "RR"
+            keyPassword "lN37ZK"
+        }
+    }
     buildTypes {
         //BuildTypes are used to tell the compiler to do different things on a debug-build or a release-buidl
         //The Url of the server can be different for debug and release.
         //For debug you would typically use a testserver.
         debug{
+                applicationIdSuffix '.beta'
                 minifyEnabled false
                 proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
                 buildConfigField STRING, API_URL, "\"http://52.26.187.234:8080\""
         }
         release {
-            minifyEnabled false
+            signingConfig signingConfigs.release
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField STRING, API_URL, "\"http://52.26.187.234:8080\""
         }
@@ -49,6 +59,7 @@ dependencies {
     //We use this lib to show images from url and automatic caching.
     compile 'com.github.jakob-grabner:Circle-Progress-View:v1.2.5'
     compile 'joda-time:joda-time:2.4'
-
     compile 'com.github.futuresimple:android-floating-action-button:1.10.1'
+    compile 'com.cw1a3.sensordata:sensordata:1.0.0'
+    //compile project(':sensordata')
 }

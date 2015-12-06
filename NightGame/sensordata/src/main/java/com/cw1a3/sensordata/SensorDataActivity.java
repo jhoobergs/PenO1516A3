@@ -1,4 +1,4 @@
-package be.cwa3.nightgame.Utils;
+package com.cw1a3.sensordata;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -7,24 +7,15 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.gson.Gson;
 
 import java.text.DateFormat;
 import java.util.Date;
-
-import be.cwa3.nightgame.Data.AccelerometerData;
-import be.cwa3.nightgame.R;
 
 /**
  * Created by jesse on 15/10/2015.
@@ -36,8 +27,6 @@ public class SensorDataActivity extends AppCompatActivity implements GoogleApiCl
     private GoogleApiClient mGoogleApiClient;
     private SensorManager sensorManager;
     LocationRequest mLocationRequest;
-    MapFragment mapFragment;
-    private boolean othersShouldBeInvisibile = false;
 
     SensorDataInterface sensorDataInterface;
 
@@ -53,7 +42,6 @@ public class SensorDataActivity extends AppCompatActivity implements GoogleApiCl
         }
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        // add listener. The listener will be  (this) class
         sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                 sensorManager.SENSOR_DELAY_NORMAL);
 
@@ -90,7 +78,6 @@ public class SensorDataActivity extends AppCompatActivity implements GoogleApiCl
 
     @Override
     public void onConnected(Bundle connectionHint) {
-
         if (mRequestingLocationUpdates) {
             startLocationUpdates();
         }
@@ -151,7 +138,6 @@ public class SensorDataActivity extends AppCompatActivity implements GoogleApiCl
 
         int type = event.sensor.getType();
         if (type == Sensor.TYPE_ACCELEROMETER) {
-            // assign directions
             float x = event.values[0];
             float y = event.values[1];
             float z = event.values[2];
@@ -162,27 +148,12 @@ public class SensorDataActivity extends AppCompatActivity implements GoogleApiCl
             float proximity = event.values[0];
             if(sensorDataInterface != null)
                 sensorDataInterface.proximityChanged(proximity);
-            // Use the construction below for compatibility on every device.
-            //if (event.values[0] == 0 ){
-            //
-            //}
-            //else{
-            //
-            //}
         }
         else if (type == Sensor.TYPE_LIGHT) {
 
             float sv = event.values[0];
             if(sensorDataInterface != null)
                 sensorDataInterface.lightChanged(sv);
-            /*boolean before = othersShouldBeInvisibile;
-            if (sv < 90)
-                othersShouldBeInvisibile = true;
-            else
-                othersShouldBeInvisibile = false;*/
-
-           /* if (before != othersShouldBeInvisibile)
-                mapFragment.getMapAsync(this);*/
         }
     }
 

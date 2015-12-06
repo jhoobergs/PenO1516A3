@@ -1,4 +1,4 @@
-package be.cwa3.nightgame.Utils;
+package com.cw1a3.sensordata;
 
 import android.location.Location;
 

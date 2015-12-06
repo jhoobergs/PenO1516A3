@@ -12,6 +12,8 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cw1a3.sensordata.SensorDataActivity;
+import com.cw1a3.sensordata.SensorDataInterface;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -29,8 +31,6 @@ import be.cwa3.nightgame.Utils.ApiUtil;
 import be.cwa3.nightgame.Utils.ErrorUtil;
 import be.cwa3.nightgame.Utils.RequestInterface;
 import be.cwa3.nightgame.Utils.RequestUtil;
-import be.cwa3.nightgame.Utils.SensorDataActivity;
-import be.cwa3.nightgame.Utils.SensorDataInterface;
 import be.cwa3.nightgame.Utils.SettingsUtil;
 import be.cwa3.nightgame.Utils.SharedPreferencesKeys;
 import retrofit.Call;
