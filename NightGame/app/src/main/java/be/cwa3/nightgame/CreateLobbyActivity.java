@@ -57,6 +57,7 @@ public class CreateLobbyActivity extends SensorDataActivity implements OnMapRead
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_lobby);
+        enableLocationUpdates(1000, 2000);
 
         layoutCreate = (LinearLayout) findViewById(R.id.layout_create);
         mapLayout = (LinearLayout) findViewById(R.id.map_layout);

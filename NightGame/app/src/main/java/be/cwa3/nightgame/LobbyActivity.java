@@ -42,7 +42,7 @@ public class LobbyActivity extends SensorDataActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
-
+        enableLocationUpdates(1000, 2000);
         makeLoadLobbyListCall();
 
         listView = (ListView) findViewById(R.id.listViewLobbies);

@@ -24,10 +24,18 @@ public abstract class RequestInterface<T> {
     //The onServerError is called when the server can't be reached or doesn't respond.
     public void onServerError(Context context, int code, View view, ResponseBody responseBody){
         if(view == null) {
-            Toast.makeText(context, R.string.internal_server_error, Toast.LENGTH_LONG).show();
+            if(NetworkUtil.isNetworkAvailable(context)) {
+                Toast.makeText(context, R.string.internal_server_error, Toast.LENGTH_LONG).show();
+            }
+            else
+                Toast.makeText(context, R.string.connect_to_internet_please, Toast.LENGTH_LONG).show();
         }
         else {
-            Snackbar.make(view, R.string.internal_server_error, Snackbar.LENGTH_LONG).show();
+            if(NetworkUtil.isNetworkAvailable(context)) {
+                Snackbar.make(view, R.string.internal_server_error, Snackbar.LENGTH_LONG).show();
+            }
+            else
+                Snackbar.make(view, R.string.connect_to_internet_please, Snackbar.LENGTH_INDEFINITE).show();
         }
     };
     //The onFailure function is called when the request failed. (When you don't have internet for example)

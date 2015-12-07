@@ -12,7 +12,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import android.util.Log;
 import android.view.Menu;
@@ -77,7 +76,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
     private Location location, oldLocation;
     private List<Integer> completedMissions = new ArrayList<>();
 
-    private Handler customHandler = new Handler();
+    private Handler handler = new Handler();
     private int delayTimeRequestData = 5000;
     private double altitudeClimbed = 0;
     private double altitudeDescended = 0;
@@ -91,6 +90,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
 
     private FloatingActionsMenu floatingActionsMenuShoot;
     private List<FloatingActionButton> floatingActionButtonList;
+    private List<String> shootedPlayers;
 
 
     @Override
@@ -98,7 +98,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         enableAccelerometerSensor();
-        enableLocationUpdates(1000,2000);
+        enableLocationUpdates(1000, 2000);
         enableProximitySensor();
         enableLightSensor();
 
@@ -120,6 +120,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator);
         floatingActionsMenuShoot = (FloatingActionsMenu) findViewById(R.id.floatingactionsmenu_shoot);
         floatingActionButtonList = new ArrayList<>();
+        shootedPlayers = new ArrayList<>();
         setSensorDataInterface(new SensorDataInterface() {
             @Override
             public void accelerometerChanged(float x, float y, float z) {
@@ -154,7 +155,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
                 checkSpeed();
 
                 if (wasNull) {
-                    customHandler.postDelayed(sendData, 100);
+                    handler.postDelayed(sendData, 100);
                 }
             }
 
@@ -169,7 +170,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        customHandler.removeCallbacks(sendData); //stop Async threads
+        handler.removeCallbacks(sendData); //stop Async threads
     }
 
     @Override
@@ -276,31 +277,31 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
 
     private void makeGameDataCall(GameSendDataRequestData data){
         Call<ReturnData<LobbiesData>> call = new ApiUtil().getApiInterface(this).sendGameDataRequest(data);
-        RequestUtil<LobbiesData> requestUtil = new RequestUtil<>(this, null, call);
+        RequestUtil<LobbiesData> requestUtil = new RequestUtil<>(this, coordinatorLayout, call);
         requestUtil.makeRequest(new RequestInterface<LobbiesData>() {
 
             @Override
             public void onSucces(LobbiesData body) {
-                customHandler.postDelayed(sendData, delayTimeRequestData);
+                handler.postDelayed(sendData, delayTimeRequestData);
                 completedMissions.clear();
                 handleNewGameData(body);
             }
 
             @Override
             public void onError(ErrorData error) {
-                customHandler.postDelayed(sendData, delayTimeRequestData);
+                handler.postDelayed(sendData, delayTimeRequestData);
                 if (error.Errors.contains(4) || error.Errors.contains(6)) {
                     new SettingsUtil(getApplicationContext()).setString(SharedPreferencesKeys.GameIDString, "");
                     Intent intent = new Intent(getApplicationContext(), LobbyActivity.class);
                     startActivity(intent);
                     finish();
                 }
-                Toast.makeText(getApplicationContext(), ErrorUtil.getErrorText(getApplicationContext(), error.Errors), Toast.LENGTH_SHORT).show();
+                Snackbar.make(coordinatorLayout, ErrorUtil.getErrorText(getApplicationContext(), error.Errors), Snackbar.LENGTH_INDEFINITE).show();
             }
 
             @Override
             public void onFailure(Context context, View view, Throwable t) {
-                customHandler.postDelayed(sendData, delayTimeRequestData);
+                handler.postDelayed(sendData, delayTimeRequestData);
                 super.onFailure(context, view, t);
             }
         });
@@ -325,7 +326,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
         }
 
         if(gameData.WinningTeam != null || gameData.Player.Lives < 1){
-            customHandler.removeCallbacks(sendData); //stop Async threads
+            handler.removeCallbacks(sendData); //stop Async threads
             floatingActionsMenuShoot.setVisibility(View.GONE);
             String snackbarText;
             if(gameData.WinningTeam != null){
@@ -352,7 +353,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
 
     private void makeGetDataCall(GameGetDataRequestData data){
         Call<ReturnData<LobbiesData>> call = new ApiUtil().getApiInterface(this).getLobbyData(data);
-        RequestUtil<LobbiesData> requestUtil = new RequestUtil<>(this,null, call);
+        RequestUtil<LobbiesData> requestUtil = new RequestUtil<>(this,coordinatorLayout, call);
         requestUtil.makeRequest(new RequestInterface<LobbiesData>() {
             @Override
             public void onSucces(LobbiesData body) {
@@ -367,7 +368,8 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
                     startActivity(intent);
                     finish();
                 }
-                Toast.makeText(getApplicationContext(), ErrorUtil.getErrorText(getApplicationContext(), error.Errors), Toast.LENGTH_SHORT).show();
+                Snackbar.make(coordinatorLayout, ErrorUtil.getErrorText(getApplicationContext(), error.Errors), Snackbar.LENGTH_INDEFINITE).show();
+
             }
         });
 
@@ -382,8 +384,14 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
         for(final GamePlayerData playerData : gameData.Players) {
             if("Attacker".equals(playerData.Team)) {
                 final FloatingActionButton floatingActionButton = new FloatingActionButton(getApplicationContext());
+                if(shootedPlayers.contains(playerData.Name)){
+                    floatingActionButton.setBackgroundResource(R.drawable.bullet);
+                    floatingActionButton.setEnabled(false);
+                }
+                else{
+                    floatingActionButton.setBackgroundResource(R.drawable.gun);
+                }
                 floatingActionButton.setTitle(playerData.Name);
-                floatingActionButton.setBackgroundResource(R.drawable.gun);
                 floatingActionButton.setSize(FloatingActionButton.SIZE_NORMAL);
                 floatingActionButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -392,9 +400,8 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
                         data.GameId = gameId;
                         data.AttackedUser = playerData.Name;
                         makeAttackCall(data);
+                        shootedPlayers.add(data.AttackedUser);
                         floatingActionButton.setEnabled(false);
-                        floatingActionButton.setBackgroundResource(R.drawable.bullet);
-                        customHandler.postDelayed(enableButton(floatingActionButton), 5000);
                     }
                 });
                 floatingActionsMenuShoot.addButton(floatingActionButton);
@@ -414,7 +421,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
                         Log.d("testCl", String.valueOf(location.getAccuracy()));
                         if (altitudeClimbed > mission.HeightDifference) {
                             completedMissions.add(mission.Id);
-                            Toast.makeText(getApplicationContext(), getString(R.string.mission_height_difference_text), Toast.LENGTH_LONG).show();
+                            Snackbar.make(coordinatorLayout, getString(R.string.mission_height_difference_text), Snackbar.LENGTH_INDEFINITE).show();
                         }
 
                     } else if (oldLocation.getAltitude() > location.getAltitude()) {
@@ -423,7 +430,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
                         Log.d("testDe", String.valueOf(location.getAccuracy()));
                         if (altitudeDescended > mission.HeightDifference) {
                             completedMissions.add(mission.Id);
-                            Toast.makeText(getApplicationContext(), getString(R.string.mission_height_difference_text), Toast.LENGTH_LONG).show();
+                            Snackbar.make(coordinatorLayout, getString(R.string.mission_height_difference_text), Snackbar.LENGTH_INDEFINITE).show();
 
                         }
                     }
@@ -445,7 +452,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
 
                     if (location.distanceTo(loc) < 10  && !mission.IsFinished && !completedMissions.contains(mission.Id)) {
                         completedMissions.add(mission.Id);
-                        Toast.makeText(getApplicationContext(), getString(R.string.mission_drive_to_text), Toast.LENGTH_LONG).show();
+                        Snackbar.make(coordinatorLayout, getString(R.string.mission_drive_to_text), Snackbar.LENGTH_INDEFINITE).show();
                     }
             }
         }
@@ -476,7 +483,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
                     }
                     if (assembled && !mission.IsFinished && !completedMissions.contains(mission.Id)) {
                         completedMissions.add(mission.Id);
-                        Toast.makeText(getApplicationContext(), String.valueOf(R.string.mission_gather_text), Toast.LENGTH_LONG).show();
+                        Snackbar.make(coordinatorLayout, getString(R.string.mission_gather_text), Snackbar.LENGTH_INDEFINITE).show();
                     }
               }
         }
@@ -491,7 +498,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
                     if (collectedLight > mission.AmountOfLight && !mission.IsFinished && !completedMissions.contains(mission.Id)) {
                         collectedLight = 0;
                         completedMissions.add(mission.Id);
-                        Toast.makeText(getApplicationContext(), getString(R.string.mission_search_light_text), Toast.LENGTH_LONG).show();
+                        Snackbar.make(coordinatorLayout, getString(R.string.mission_search_light_text), Snackbar.LENGTH_INDEFINITE).show();
                     }
             }
         }
@@ -505,7 +512,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
             for (MissionData mission : missionDatas) {
                     if (location.getSpeed() > mission.SpeedValue && !mission.IsFinished && !completedMissions.contains(mission.Id)) {
                         completedMissions.add(mission.Id);
-                        Toast.makeText(getApplicationContext(), getString(R.string.mission_speed_text), Toast.LENGTH_LONG).show();
+                        Snackbar.make(coordinatorLayout, getString(R.string.mission_speed_text), Snackbar.LENGTH_INDEFINITE).show();
                     }
             }
         }
@@ -561,28 +568,37 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
         }
         return missionDatas;
     }
-    private void makeAttackCall (GameAttackData data) {
+    private void makeAttackCall (final GameAttackData data) {
         Call<ReturnData<Empty>> call = new ApiUtil().getApiInterface(this).sendAttackData(data);
-        RequestUtil<Empty> requestUtil = new RequestUtil<>(this,null, call);
+        RequestUtil<Empty> requestUtil = new RequestUtil<>(this,coordinatorLayout, call);
         requestUtil.makeRequest(new RequestInterface<Empty>() {
             @Override
             public void onSucces(Empty body) {
                 Snackbar.make(coordinatorLayout,getString(R.string.on_hit),Snackbar.LENGTH_INDEFINITE).show();
+                handler.postDelayed(enableButton(data.AttackedUser), 60 * 1000);
             }
 
             @Override
             public void onError(ErrorData error) {
-                Toast.makeText(getApplicationContext(), ErrorUtil.getErrorText(getApplicationContext(), error.Errors), Toast.LENGTH_SHORT).show();
+                handler.postDelayed(enableButton(data.AttackedUser), 5 * 1000);
+                Snackbar.make(coordinatorLayout, ErrorUtil.getErrorText(getApplicationContext(), error.Errors), Snackbar.LENGTH_INDEFINITE).show();
             }
         });
     }
-    private Runnable enableButton(final FloatingActionButton floatingActionButton){
+    private Runnable enableButton(final String attackUser){
         Runnable aRunnable =  new Runnable() {
 
             @Override
             public void run() {
-                floatingActionButton.setEnabled(true);
-                floatingActionButton.setBackgroundResource(R.drawable.gun);
+                for(FloatingActionButton floatingActionButton: floatingActionButtonList) {
+                    if(floatingActionButton.getTitle().equals(attackUser)) {
+                        floatingActionButton.setEnabled(true);
+                        floatingActionButton.setBackgroundResource(R.drawable.gun);
+                        shootedPlayers.remove(attackUser);
+                        break;
+                    }
+                }
+
             }
     };
         return aRunnable;
