@@ -97,6 +97,10 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+        enableAccelerometerSensor();
+        enableLocationUpdates(1000,2000);
+        enableProximitySensor();
+        enableLightSensor();
 
         gameId = new SettingsUtil(this).getString(SharedPreferencesKeys.GameIDString);
         if ("".equals(gameId)){

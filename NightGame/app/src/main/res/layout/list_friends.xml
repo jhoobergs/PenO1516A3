@@ -50,6 +50,7 @@
 
     </Button>
         <Button
+            android:focusable="false"
             android:id="@+id/buttonRemove"
             android:layout_gravity="right"
             android:textSize="10sp"

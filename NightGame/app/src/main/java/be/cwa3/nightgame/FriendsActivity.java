@@ -48,7 +48,11 @@ public class FriendsActivity extends AppCompatActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, final View view, final int position, long id) {
                 Button buttonRemove = (Button) view.findViewById(R.id.buttonRemove);
-                buttonRemove.setVisibility(View.VISIBLE);
+                if(buttonRemove.getVisibility() == View.GONE) {
+                    buttonRemove.setVisibility(View.VISIBLE);
+                }
+                else
+                    buttonRemove.setVisibility(View.GONE);
 
                 buttonRemove.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
