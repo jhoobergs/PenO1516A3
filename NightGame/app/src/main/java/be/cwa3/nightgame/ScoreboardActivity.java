@@ -1,8 +1,11 @@
 package be.cwa3.nightgame;
 
+import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -10,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewSwitcher;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -45,6 +49,7 @@ public class ScoreboardActivity extends AppCompatActivity {
         buttonGames = (Button) findViewById(R.id.button_games);
         buttonMissions = (Button) findViewById(R.id.button_missions);
         buttonWins = (Button) findViewById(R.id.button_wins);
+
 
         buttonGames.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,12 +91,71 @@ public class ScoreboardActivity extends AppCompatActivity {
                 Collections.sort(scoreboardListData.List, new Comparator<ScoreboardData>() {
                     @Override
                     public int compare(ScoreboardData lhs, ScoreboardData rhs) {
-                        return isBetter(rhs.Missions, lhs.Missions,lhs.Games, rhs.Games, rhs.Wins, lhs.Wins);
+                        return isBetter(rhs.Missions, lhs.Missions, lhs.Games, rhs.Games, rhs.Wins, lhs.Wins);
                     }
                 });
                 setListView();
             }
         });
+
+        View view = this.findViewById(android.R.id.content);
+        view.setOnTouchListener(new OnSwipeTouchListener(ScoreboardActivity.this) {
+            @Override
+            public void onSwipeLeft() {
+                if (buttonMissions.isEnabled()){
+                    buttonGames.setEnabled(true);
+                    buttonMissions.setEnabled(false);
+                    buttonWins.setEnabled(true);
+                    Collections.sort(scoreboardListData.List, new Comparator<ScoreboardData>() {
+                        @Override
+                        public int compare(ScoreboardData lhs, ScoreboardData rhs) {
+                            return isBetter(rhs.Missions, lhs.Missions,lhs.Games, rhs.Games, rhs.Wins, lhs.Wins);
+                        }
+                    });
+                    setListView();
+                }else if(buttonWins.isEnabled()){
+                    buttonGames.setEnabled(false);
+                    buttonMissions.setEnabled(true);
+                    buttonWins.setEnabled(true);
+                    Collections.sort(scoreboardListData.List, new Comparator<ScoreboardData>() {
+                        @Override
+                        public int compare(ScoreboardData lhs, ScoreboardData rhs) {
+                            return isBetter(rhs.Games, lhs.Games, rhs.Wins, lhs.Wins, rhs.Missions, lhs.Missions);
+                        }
+                    });
+                    setListView();
+                }
+            }
+
+            @Override
+            public void onSwipeRight() {
+                if (buttonGames.isEnabled()){
+                    buttonGames.setEnabled(true);
+                    buttonMissions.setEnabled(true);
+                    buttonWins.setEnabled(false);
+                    Collections.sort(scoreboardListData.List, new Comparator<ScoreboardData>() {
+                        @Override
+                        public int compare(ScoreboardData lhs, ScoreboardData rhs) {
+                            return isBetter(rhs.Wins, lhs.Wins, lhs.Games, rhs.Games, rhs.Missions, lhs.Missions);
+                            //Games omgewisseld omdat minder gespeelde games bij hetzelfde aantal wins beter is
+                        }
+                    });
+                    setListView();
+                }else if(buttonWins.isEnabled()){
+                    buttonGames.setEnabled(true);
+                    buttonMissions.setEnabled(false);
+                    buttonWins.setEnabled(true);
+                    Collections.sort(scoreboardListData.List, new Comparator<ScoreboardData>() {
+                        @Override
+                        public int compare(ScoreboardData lhs, ScoreboardData rhs) {
+                            return isBetter(rhs.Missions, lhs.Missions,lhs.Games, rhs.Games, rhs.Wins, lhs.Wins);
+                        }
+                    });
+                    setListView();
+                }
+            }
+        });
+
     }
     private void makeGetScoreboardCall(){
         Call<ReturnData<ScoreboardListData>> call =
@@ -197,4 +261,47 @@ public class ScoreboardActivity extends AppCompatActivity {
         Number.setTypeface(null, Typeface.BOLD);
     }
 
+    public class OnSwipeTouchListener implements View.OnTouchListener {
+
+        private final GestureDetector gestureDetector;
+
+        public OnSwipeTouchListener(Context context) {
+            gestureDetector = new GestureDetector(context, new GestureListener());
+        }
+
+        public void onSwipeLeft() {
+        }
+
+        public void onSwipeRight() {
+        }
+
+        public boolean onTouch(View v, MotionEvent event) {
+            return gestureDetector.onTouchEvent(event);
+        }
+
+        private final class GestureListener extends GestureDetector.SimpleOnGestureListener {
+
+            private static final int SWIPE_DISTANCE_THRESHOLD = 100;
+            private static final int SWIPE_VELOCITY_THRESHOLD = 100;
+
+            @Override
+            public boolean onDown(MotionEvent e) {
+                return true;
+            }
+
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                float distanceX = e2.getX() - e1.getX();
+                float distanceY = e2.getY() - e1.getY();
+                if (Math.abs(distanceX) > Math.abs(distanceY) && Math.abs(distanceX) > SWIPE_DISTANCE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
+                    if (distanceX > 0)
+                        onSwipeRight();
+                    else
+                        onSwipeLeft();
+                    return true;
+                }
+                return false;
+            }
+        }
+    }
 }
