@@ -74,4 +74,19 @@
     <string name="on_hit">Raak!</string>
     <string name="remove_friend_text">Als je een vriend wil verwijderen, druk op de naam totdat de \'verwijder\'-knop zichtbaar wordt.</string>
     <string name="started">Bezig</string>
+    <string name="challenge_location">Verander locatie</string>
+    <string name="close_game">Sluit spel</string>
+    <string name="data_not_entered_correctly">Gegevens verkeerd ingegeven</string>
+    <string name="friend_accepted">Vriend geaccepteerd</string>
+    <string name="friend_added">Vriend toegevoegd</string>
+    <string name="friend_removed">Vriend verwijderd</string>
+    <string name="mission_drive_to_text">\'Rijd naar de volgende locatie\': Missie voltooid!</string>
+    <string name="mission_gather_text">\'Verzamel met je team\': Missie voltooid!</string>
+    <string name="mission_height_difference_text">\'Rijd een hoogteverschil\': Missie voltooid!</string>
+    <string name="mission_search_light_text">\'Zoek naar licht\': Missie voltooid!</string>
+    <string name="mission_speed_text">\'Haal volgende snelheid\': Missie voltooid!</string>
+    <string name="name_at_least_three_characters">Gebruikersnaam moet minium 3 karakters lang zijn!</string>
+    <string name="text_attackers">Jouw doel is om de geheime basis te vinden van het verdedigende team.[...]</string>
+    <string name="text_defenders">Jouw doel is om jullie geheime basis te verdedigen.[...]</string>
+    <string name="waiting_d_d">wachten %d / %d</string>
 </resources>
