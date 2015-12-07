@@ -33,6 +33,7 @@ import ca.uol.aig.fftpack.RealDoubleFFT;
 
 public class SoundActivity extends AppCompatActivity implements OnClickListener {
 
+    int stop = 0;
     int frequency = 8000;
     int channelConfiguration = AudioFormat.CHANNEL_CONFIGURATION_MONO;
     int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
@@ -158,18 +159,22 @@ public class SoundActivity extends AppCompatActivity implements OnClickListener 
             String string = new Gson().toJson(toTransform);
             FileWriter outputStream;
 
-            /*
+
             //external writing
             try {
-                outputStream = new FileWriter(Environment.getExternalStorageDirectory().toString() +"/geluid.txt",true);
-                Log.d("key",Environment.getExternalStorageDirectory().toString());
-                outputStream.append(string);
-                outputStream.close();
+                if (stop < 80){
+                    outputStream = new FileWriter(Environment.getExternalStorageDirectory().toString() +"/Ageluid.txt",true);
+                    Log.d("key", Environment.getExternalStorageDirectory().toString());
+                    outputStream.append(string);
+                    outputStream.close();
+                    stop++;
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            */
 
+
+            /*
             //internal writing
             try {
                 outputStream = new FileWriter(getFilesDir().toString() +"/geluid.txt",true);
@@ -179,7 +184,7 @@ public class SoundActivity extends AppCompatActivity implements OnClickListener 
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
+            */
 
             // TODO Auto-generated method stub
             // super.onProgressUpdate(values);
