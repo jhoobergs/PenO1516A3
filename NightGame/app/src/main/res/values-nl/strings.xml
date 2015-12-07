@@ -86,7 +86,18 @@
     <string name="mission_search_light_text">\'Zoek naar licht\': Missie voltooid!</string>
     <string name="mission_speed_text">\'Haal volgende snelheid\': Missie voltooid!</string>
     <string name="name_at_least_three_characters">Gebruikersnaam moet minium 3 karakters lang zijn!</string>
-    <string name="text_attackers">Jouw doel is om de geheime basis te vinden van het verdedigende team.[...]</string>
-    <string name="text_defenders">Jouw doel is om jullie geheime basis te verdedigen.[...]</string>
-    <string name="waiting_d_d">wachten %d / %d</string>
+    <string name="text_attackers">Jullie hoofddoel is om de geheime basis te beschermen.
+De locatie van deze geheime basis wordt gekozen door de team-leider.
+Je kan de basis verdedidgen door op de "verdedig" knop te drukken, wanneer er een aanvaller in de buurt is.
+Dit zal de aanvaller buiten de perimeter van het spel sturen. Dit zal jullie wat tijd winnen en de aanvaller verliest ook een leven.
+Om het spel te winnen, zullen jullie enkele opdrachten krijgen.</string>
+    <string name="text_defenders">Wanneer jullie de geheime basis van de verdedigers binnengaan, bezitten jullie de vlag.
+Deze vlag moeten jullie naar de grens van de perimeter krijgen. Zo kunnen jullie winnen.
+Wanneer jullie in het bezit zijn van de vlag, zal elke verdediger jullie locatie zien.
+Als diegene met de vlag vermoord wordt, zal de vlag automatisch terug op de geheime basis verschijnen.
+Elke aanvaller begint met drie levens. Het aanvallend team zal ook opdrachten kunnen doen.
+Het volbrengen van deze opdrachten, zal de aanvallers extra hulpmiddelen geven.
+Zo kunnen de aanvallers bv. tijdelijk alle verdedigers zien op hun map, zolang ze onder straatlicht staan.
+Maar pas op, valsspelen met een zaklamp zal gedetecteerd worden.</string>
+    <string name="waiting_d_d" formatted="false">wachten %d / %d</string>
 </resources>
