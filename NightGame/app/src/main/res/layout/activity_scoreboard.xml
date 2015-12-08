@@ -34,9 +34,15 @@
             style="@style/ButtonStyle"/>
 
     </RelativeLayout>
+    <ViewSwitcher
+        android:id="@+id/viewswitcher"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="10">
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/listview_scores"
         android:layout_gravity="center_horizontal" />
+    </ViewSwitcher>
 </LinearLayout>

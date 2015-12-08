@@ -1,15 +1,21 @@
 package be.cwa3.nightgame;
 
+import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewSwitcher;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -21,6 +27,7 @@ import be.cwa3.nightgame.Data.ScoreboardData;
 import be.cwa3.nightgame.Data.ScoreboardListData;
 import be.cwa3.nightgame.Utils.ApiUtil;
 import be.cwa3.nightgame.Utils.ErrorUtil;
+import be.cwa3.nightgame.Utils.OnSwipeTouchListener;
 import be.cwa3.nightgame.Utils.RequestInterface;
 import be.cwa3.nightgame.Utils.RequestUtil;
 import be.cwa3.nightgame.Utils.SettingsUtil;
@@ -35,6 +42,13 @@ public class ScoreboardActivity extends AppCompatActivity {
     ListView listView;
     Button buttonGames, buttonWins, buttonMissions;
 
+    private OnSwipeTouchListener swipeListener;
+    private ViewSwitcher viewSwitcher;
+    private Animation inAnimationForward;
+    private Animation outAnimationForward;
+    private Animation inAnimationBackward;
+    private Animation outAnimationBackward;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,53 +60,105 @@ public class ScoreboardActivity extends AppCompatActivity {
         buttonMissions = (Button) findViewById(R.id.button_missions);
         buttonWins = (Button) findViewById(R.id.button_wins);
 
+        viewSwitcher = (ViewSwitcher) findViewById(R.id.viewswitcher);
+        inAnimationForward = AnimationUtils.loadAnimation(this, R.anim.slide_left_in);
+        outAnimationForward = AnimationUtils.loadAnimation(this, R.anim.slide_left_out);
+        inAnimationBackward = AnimationUtils.loadAnimation(this, R.anim.slide_right_in);
+        outAnimationBackward = AnimationUtils.loadAnimation(this, R.anim.slide_right_out);
+
+
         buttonGames.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                buttonGames.setEnabled(false);
-                buttonMissions.setEnabled(true);
-                buttonWins.setEnabled(true);
-                Collections.sort(scoreboardListData.List, new Comparator<ScoreboardData>() {
-                    @Override
-                    public int compare(ScoreboardData lhs, ScoreboardData rhs) {
-                        return isBetter(rhs.Games, lhs.Games, rhs.Wins, lhs.Wins, rhs.Missions, lhs.Missions);
-                    }
-                });
-                setListView();
+                showSortedOnGames();
             }
         });
         buttonWins.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                buttonGames.setEnabled(true);
-                buttonMissions.setEnabled(true);
-                buttonWins.setEnabled(false);
-                Collections.sort(scoreboardListData.List, new Comparator<ScoreboardData>() {
-                    @Override
-                    public int compare(ScoreboardData lhs, ScoreboardData rhs) {
-                        return isBetter(rhs.Wins, lhs.Wins, lhs.Games, rhs.Games, rhs.Missions, lhs.Missions);
-                         //Games omgewisseld omdat minder gespeelde games bij hetzelfde aantal wins beter is
-                    }
-                });
-                setListView();
+                showSortedOnWins();
             }
         });
         buttonMissions.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                buttonGames.setEnabled(true);
-                buttonMissions.setEnabled(false);
-                buttonWins.setEnabled(true);
-                Collections.sort(scoreboardListData.List, new Comparator<ScoreboardData>() {
-                    @Override
-                    public int compare(ScoreboardData lhs, ScoreboardData rhs) {
-                        return isBetter(rhs.Missions, lhs.Missions,lhs.Games, rhs.Games, rhs.Wins, lhs.Wins);
-                    }
-                });
-                setListView();
+                showSortedOnMissions();
             }
         });
+
+
+        swipeListener = new OnSwipeTouchListener(this) {
+            @Override
+            public void onSwipeLeft() {
+                viewSwitcher.setInAnimation(inAnimationForward);
+                viewSwitcher.setOutAnimation(outAnimationForward);
+                if (!buttonWins.isEnabled()){
+                    showSortedOnMissions();
+                }else if(!buttonGames.isEnabled()){
+                    showSortedOnWins();
+                }
+            }
+
+            @Override
+            public void onSwipeRight() {
+                viewSwitcher.setInAnimation(inAnimationBackward);
+                viewSwitcher.setOutAnimation(outAnimationBackward);
+                if (!buttonMissions.isEnabled()){
+                    showSortedOnWins();
+                }else if(!buttonWins.isEnabled()){
+                    showSortedOnGames();
+                }
+            }
+        };
+
     }
+
+    private void showSortedOnMissions() {
+        buttonGames.setEnabled(true);
+        buttonMissions.setEnabled(false);
+        buttonWins.setEnabled(true);
+        Collections.sort(scoreboardListData.List, new Comparator<ScoreboardData>() {
+            @Override
+            public int compare(ScoreboardData lhs, ScoreboardData rhs) {
+                return isBetter(rhs.Missions, lhs.Missions, lhs.Games, rhs.Games, rhs.Wins, lhs.Wins);
+            }
+        });
+        setListView();
+    }
+
+    private void showSortedOnWins() {
+        buttonGames.setEnabled(true);
+        buttonMissions.setEnabled(true);
+        buttonWins.setEnabled(false);
+        Collections.sort(scoreboardListData.List, new Comparator<ScoreboardData>() {
+            @Override
+            public int compare(ScoreboardData lhs, ScoreboardData rhs) {
+                return isBetter(rhs.Wins, lhs.Wins, lhs.Games, rhs.Games, rhs.Missions, lhs.Missions);
+                //Games omgewisseld omdat minder gespeelde games bij hetzelfde aantal wins beter is
+            }
+        });
+        setListView();
+    }
+
+    private void showSortedOnGames() {
+        buttonGames.setEnabled(false);
+        buttonMissions.setEnabled(true);
+        buttonWins.setEnabled(true);
+        Collections.sort(scoreboardListData.List, new Comparator<ScoreboardData>() {
+            @Override
+            public int compare(ScoreboardData lhs, ScoreboardData rhs) {
+                return isBetter(rhs.Games, lhs.Games, rhs.Wins, lhs.Wins, rhs.Missions, lhs.Missions);
+            }
+        });
+        setListView();
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        swipeListener.onTouch(null, ev);
+        return super.dispatchTouchEvent(ev);
+    }
+
     private void makeGetScoreboardCall(){
         Call<ReturnData<ScoreboardListData>> call =
                 new ApiUtil().getApiInterface(this).loadScoreboard();
@@ -196,5 +262,6 @@ public class ScoreboardActivity extends AppCompatActivity {
         TextView Number = (TextView) view.findViewById(number);
         Number.setTypeface(null, Typeface.BOLD);
     }
+
 
 }

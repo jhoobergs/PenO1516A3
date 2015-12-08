@@ -3,6 +3,9 @@ app.get('/user/imagesList', function(req, res){
     var images = [];
     images.push("http://52.26.187.234:8080/defaultProfile.jpg");
     images.push("http://52.26.187.234:8080/mario.png");
+    images.push("http://52.26.187.234:8080/luigi.png");
+    images.push("http://52.26.187.234:8080/daisy.png");
+    images.push("http://52.26.187.234:8080/peach.png");
     images.push("http://52.26.187.234:8080/afro.png");
     images.push("http://52.26.187.234:8080/dexter.png");
     images.push("http://52.26.187.234:8080/flappy.png");
@@ -10,6 +13,9 @@ app.get('/user/imagesList', function(req, res){
     images.push("http://52.26.187.234:8080/penguin.png");
     images.push("http://52.26.187.234:8080/pup.png");
     images.push("http://52.26.187.234:8080/spongebob.png");
+    images.push("http://52.26.187.234:8080/tom.png");
+    images.push("http://52.26.187.234:8080/jerry.png");    
+    
     returnData(res, 1, {Images: images}, null);
 });
 app.post('/user/login', function(req, res) {

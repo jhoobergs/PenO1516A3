@@ -174,6 +174,7 @@ require('./Websocket.js')();
 
 
 returnData = function(res, status, result, error){
+    //console.log(result);
     res.send({
         'statusCode' : status,
         'body' : result,
