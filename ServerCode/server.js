@@ -3,7 +3,7 @@ var bodyParser = require('body-parser');
 var bcrypt = require('bcrypt');
 var express = require('express');
 var AWS = require('aws-sdk');
-AWS.config.update({accessKeyId: 'AKIAJEF2PONKFQ3LGT5A', secretAccessKey: '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'});
+AWS.config.update({accessKeyId: 'AKIAJEF2PONKFQ3LGT5B', secretAccessKey: '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'});
 AWS.config.update({region: 'us-west-2'});
 var dd = new AWS.DynamoDB();
 var app = express();

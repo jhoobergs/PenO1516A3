@@ -121,26 +121,23 @@ public class FriendsActivity extends AppCompatActivity {
     }
 
     private int Sorting(Boolean accepted, Boolean accepted1, Boolean isSender, Boolean isSender1, String name, String name1) {
-        if (!accepted && !accepted1) {
-            if (isSender && isSender1) {
-                return name.compareTo(name1);
-            }
-            else if (!isSender && !isSender1) {
-                return name.compareTo(name1);
-            }
-            else if (isSender && !isSender1) {
-                return 1;
-            }
-            else {
-                return -1;
-            }
+        if (accepted && !accepted1) {
+            return -1;
         }
-        if(!accepted && accepted1) {
+        else if(!accepted && accepted1) {
             return 1;
         }
+        else if(accepted && accepted1){
+            return name1.compareTo(name);
+        }
         else {
-            return name.compareTo(name1);
-            }
+            if(isSender && !isSender1)
+                return -1;
+            else if(!isSender && isSender1)
+                return 1;
+            else
+                return name1.compareTo(name);
+        }
     }
 
     @Override

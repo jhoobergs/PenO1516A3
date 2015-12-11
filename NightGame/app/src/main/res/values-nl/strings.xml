@@ -74,7 +74,7 @@
     <string name="on_hit">Raak!</string>
     <string name="remove_friend_text">Als je een vriend wil verwijderen, druk op de naam totdat de \'verwijder\'-knop zichtbaar wordt.</string>
     <string name="started">Bezig</string>
-    <string name="challenge_location">Verander locatie</string>
+    <string name="challenge_location">Opdracht locatie</string>
     <string name="close_game">Sluit spel</string>
     <string name="data_not_entered_correctly">Gegevens verkeerd ingegeven</string>
     <string name="friend_accepted">Vriend geaccepteerd</string>

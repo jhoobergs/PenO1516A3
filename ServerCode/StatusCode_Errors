@@ -1,9 +1,0 @@
-StatusCodes:
-0: Failed (fout in data)
-1: Succes (geen error)
-2: Error (zie error in json-output)
-
-Errors:
-0: Deze gebruiker bestaat niet.
-1: Gebruikersnaam en wachtwoord komen niet overeen.
-2: Gebruikersnaam bestaat al.
