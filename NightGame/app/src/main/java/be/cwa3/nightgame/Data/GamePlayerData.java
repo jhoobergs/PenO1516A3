@@ -11,4 +11,5 @@ public class GamePlayerData {
     public LocationData LatestLocation;
     public boolean HasFlag;
     public int Lives;
+    public boolean IsShaking;
 }

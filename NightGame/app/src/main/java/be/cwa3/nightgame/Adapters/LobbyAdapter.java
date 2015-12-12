@@ -18,6 +18,7 @@ import org.joda.time.DateTime;
 import java.util.List;
 
 import be.cwa3.nightgame.Data.ErrorData;
+import be.cwa3.nightgame.Data.GamePlayerData;
 import be.cwa3.nightgame.Data.JoinLobbyRequestData;
 import be.cwa3.nightgame.Data.JoinLobbyReturnData;
 import be.cwa3.nightgame.Data.LobbiesData;
@@ -67,8 +68,7 @@ public class LobbyAdapter extends ArrayAdapter<LobbiesData> {
             holder.lobbies_data = (RelativeLayout) row.findViewById(R.id.Lobbies_data);
             holder.location = (TextView) row.findViewById(R.id.location);
             holder.timer = (TextView) row.findViewById(R.id.timer);
-
-
+            holder.players = (TextView) row.findViewById(R.id.players);
 
             row.setTag(holder);
         }else{
@@ -100,8 +100,9 @@ public class LobbyAdapter extends ArrayAdapter<LobbiesData> {
             Tminus = menuItem.TimerDate.getMillis() - DateTime.now().getMillis();
             if(Tminus <= 0)
                 holder.timer.setText(context.getString(R.string.started));
-            else
-                holder.timer.setText(String.valueOf(Tminus * 1000));
+            else {
+                holder.timer.setText(menuItem.TimerDate.toString("HH:mm:ss"));
+            }
             holder.timer.setVisibility(View.VISIBLE);
         }
         else{
@@ -122,13 +123,20 @@ public class LobbyAdapter extends ArrayAdapter<LobbiesData> {
             holder.lobbies_data.setVisibility(View.VISIBLE);
         else
             holder.lobbies_data.setVisibility(View.GONE);
+        holder.players.setText("");
+        for(GamePlayerData player : menuItem.Players){
+            String subString ="\n";
+            if(holder.players.getText().equals(""))
+                subString = "";
+            holder.players.setText(holder.players.getText() + subString + player.Name);
+        }
 
         return row;
 
     }
 
     static class Holder {
-        TextView lobbies,playersRatio,timer, location;
+        TextView lobbies,playersRatio,timer, location, players;
         Button join_button;
         RelativeLayout lobbies_data;
     }

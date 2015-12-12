@@ -107,6 +107,8 @@
     <string name="waiting_d_d" formatted="false">Waiting %d / %d</string>
     <string name="challenge_location">Challenge location</string>
     <string name="close_game">Close Game</string>
+    <string name="d_seconds">%d seconds</string>
+    <string name="game">Game</string>
 
 
 </resources>

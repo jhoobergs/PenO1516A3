@@ -16,5 +16,5 @@ public class LocationData {
     public transient String PlayerName;
     public transient String Team;
     public transient boolean HasFlag;
-
+    public transient boolean IsShaking;
 }

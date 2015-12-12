@@ -42,18 +42,28 @@
             android:textSize="20sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="timer"
+            tools:text="timer"
             android:id="@+id/timer"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
 
         <TextView
+        android:textSize="20sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="location"
+        android:id="@+id/location"
+        android:layout_below="@+id/timer"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+        <TextView
             android:textSize="20sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="location"
-            android:id="@+id/location"
-            android:layout_below="@+id/timer"
+            tools:text="players"
+            android:id="@+id/players"
+            android:layout_below="@+id/location"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true" />
 
@@ -70,7 +80,6 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="players"
             android:id="@+id/see_players"
             android:focusable="false"
             android:layout_below="@+id/join_button"

@@ -195,7 +195,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
             LatLng latLng = new LatLng(loc.Latitude, loc.Longitude);
             bitmapDescriptor = getPlayerMapIcon(loc.Team, loc.HasFlag);
 
-            if (loc.Team.equals(gameData.Player.Team) || loc.HasFlag || (!othersShouldBeInvisibile && "Attacker".equals(gameData.Player.Team) ))
+            if (loc.Team.equals(gameData.Player.Team) || loc.HasFlag || loc.IsShaking || (!othersShouldBeInvisibile && "Attacker".equals(gameData.Player.Team) ))
                 map.addMarker(new MarkerOptions()
                         .title(loc.PlayerName)
                         .snippet(String.format(getString(R.string.name_minutes_ago), loc.Team, (DateTime.now().getMillis() - loc.CreatedOn.getMillis())/(1000*60)))
@@ -245,9 +245,11 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
                 if (gameContainer.getVisibility() == View.VISIBLE) {
                     gameContainer.setVisibility(View.GONE);
                     listview.setVisibility(View.VISIBLE);
+                    item.setTitle(R.string.game);
                 } else {
                     gameContainer.setVisibility(View.VISIBLE);
                     listview.setVisibility(View.GONE);
+                    item.setTitle(R.string.challenge);
                 }
                 return true;
             default:
@@ -528,6 +530,7 @@ public class GameActivity extends SensorDataActivity implements OnMapReadyCallba
                         loc.Team = playerData.Team;
                         loc.PlayerName = playerData.Name;
                         loc.HasFlag = playerData.HasFlag;
+                        loc.IsShaking = playerData.IsShaking;
                         locationDatas.add(loc);
                     }
 
