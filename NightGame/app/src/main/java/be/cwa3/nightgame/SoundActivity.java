@@ -17,12 +17,18 @@ import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
+
+import org.w3c.dom.Text;
 
 import java.io.FileWriter;
 import java.util.ArrayList;
@@ -31,6 +37,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import be.cwa3.nightgame.Utils.SoundHelper;
 import ca.uol.aig.fftpack.RealDoubleFFT;
 
 public class SoundActivity extends AppCompatActivity implements OnClickListener {
@@ -39,7 +46,8 @@ public class SoundActivity extends AppCompatActivity implements OnClickListener 
     int channelConfiguration = AudioFormat.CHANNEL_CONFIGURATION_MONO;
     int audioEncoding = AudioFormat.ENCODING_PCM_16BIT;
     private RealDoubleFFT transformer;
-    int blockSize = 256;
+    int blockSize = 1024;
+    double[] soundData;
 
     Button startStopButton;
     boolean started = false;
@@ -47,6 +55,8 @@ public class SoundActivity extends AppCompatActivity implements OnClickListener 
     RecordAudio recordTask;
 
     ImageView imageView;
+    ListView recognizedListView;
+    TextView recognizedTextview;
     Bitmap bitmap;
     Canvas canvas;
     Paint paint;
@@ -57,9 +67,54 @@ public class SoundActivity extends AppCompatActivity implements OnClickListener 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sound);
+        soundData = new double[blockSize];
+        Arrays.fill(soundData, 0);
+        startStopButton = (Button) findViewById(R.id.StartStopButton);
+        recognizedTextview = (TextView) findViewById(R.id.recognized_sound);
+        recognizedListView = (ListView) findViewById(R.id.recognized_sound_list);
 
-        startStopButton = (Button) this.findViewById(R.id.StartStopButton);
-        startStopButton.setOnClickListener(this);
+        startStopButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                    Log.d("sound", "started");
+                    recognizedTextview.setText("");
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),
+                            android.R.layout.simple_list_item_1, android.R.id.text1, new ArrayList<String>());
+                    recognizedListView.setAdapter(adapter);
+                    started= true;
+                    startStopButton.setText("Buzy");
+                    recordTask = new RecordAudio();
+                    recordTask.execute();
+                } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                    started = false;
+                    startStopButton.setText("Waiting");
+                    recordTask.cancel(true);
+                    List<Double> abssums = new ArrayList<>();
+                    double thisSum = 0;
+                    int begin = 0;
+                    int eind = (4000 * blockSize / frequency);
+                    for(int g =begin; g<eind; g++) {
+                        int freq = g* frequency / blockSize;
+                        int freqnext = (g+1)*frequency / blockSize;
+                        if(Math.floor(freqnext/100) > Math.floor(freq/100) || g==eind-1){
+                            thisSum += Math.abs(soundData[g]);
+                            abssums.add(thisSum);
+                            thisSum = 0;
+                        }
+                        //Log.d("sound", String.valueOf(freq));
+                    }
+                    recognizedTextview.setText(SoundHelper.getBestAnswer(abssums));
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),
+                            android.R.layout.simple_list_item_1, android.R.id.text1, SoundHelper.getAnswerList(abssums));
+                    recognizedListView.setAdapter(adapter);
+                    Log.d("sound", new Gson().toJson(abssums));
+                    Arrays.fill(soundData, 0);
+                }
+                return false;
+
+            }
+        });
 
         transformer = new RealDoubleFFT(blockSize);
 
@@ -136,8 +191,8 @@ public class SoundActivity extends AppCompatActivity implements OnClickListener 
             imageView.invalidate();
 
 
-            double[] old;
-            old = toTransform[0].clone();
+            //double[] old;
+            //old = toTransform[0].clone();
             //Arrays.sort(old);
             /*
             int n= 0;
@@ -156,8 +211,11 @@ public class SoundActivity extends AppCompatActivity implements OnClickListener 
                     k++;
                 }
             }*/
+            for(int i=0; i<toTransform[0].length; i++){
+                soundData[i] += toTransform[0][i];
+            }
             // WERKEND
-            double abssum = 0;
+            /*double abssum = 0;
             int begin = (12000 * blockSize / frequency);
             int eind = (17000 * blockSize / frequency);
             for(int g =begin; g<eind; g++) {
@@ -181,7 +239,7 @@ public class SoundActivity extends AppCompatActivity implements OnClickListener 
                 }
             }
             Log.d("test", new Gson().toJson(abssums));
-            }
+            }*/
             /*
             String string = new Gson().toJson(toTransform);
             FileWriter outputStream;

@@ -5,14 +5,32 @@
     android:layout_height="fill_parent"
     android:gravity="center_horizontal"
     >
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:orientation="vertical">
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/recognized_sound"
         android:text=""
         />
+        <ListView
+            android:layout_width="fill_parent"
+            android:layout_height="200dp"
+            android:id="@+id/recognized_sound_list"
+            />
     <ImageView android:id="@+id/ImageView1" android:layout_width="match_parent"
         android:layout_height="wrap_content"></ImageView>
-    <Button android:text="Start"
-    android:id="@+id/StartStopButton" android:layout_width="wrap_content"
-    android:layout_height="wrap_content"></Button>
+        <Button android:text="Start"
+            android:layout_gravity="bottom"
+            android:id="@+id/StartStopButton" android:layout_width="match_parent"
+            android:layout_height="200dp"></Button>
+    </LinearLayout>
+    </ScrollView>
+
+
 </LinearLayout>
