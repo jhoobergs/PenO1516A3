@@ -19,7 +19,7 @@ android {
         //The Url of the server can be different for debug and release.
         //For debug you would typically use a testserver.
         debug{
-                applicationIdSuffix '.beta'
+                applicationIdSuffix '.beta.sound'
                 minifyEnabled false
                 proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
                 buildConfigField STRING, API_URL, "\"http://52.26.187.234:8080\""

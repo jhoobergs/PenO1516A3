@@ -1,7 +1,7 @@
 <resources>
     <string name="accept">Accept</string>
     <string name="decline">Decline</string>
-    <string name="app_name">Bike kNight</string>
+    <string name="app_name">Bike kNight: Sound</string>
     <string name="play">Play</string>
     <string name="scoreboard">Scoreboard</string>
     <string name="friends">Friends</string>
