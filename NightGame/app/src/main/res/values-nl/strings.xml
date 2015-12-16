@@ -100,4 +100,6 @@ Het volbrengen van deze opdrachten, zal de aanvallers extra hulpmiddelen geven.
 Zo kunnen de aanvallers bv. tijdelijk alle verdedigers zien op hun map, zolang ze onder straatlicht staan.
 Maar pas op, valsspelen met een zaklamp zal gedetecteerd worden.</string>
     <string name="waiting_d_d" formatted="false">wachten %d / %d</string>
+    <string name="d_seconds">%d seconden</string>
+    <string name="game">Spel</string>
 </resources>
