@@ -25,6 +25,7 @@ android {
                 buildConfigField STRING, API_URL, "\"http://52.26.187.234:8080\""
         }
         release {
+            applicationIdSuffix '.beta.sound'
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             buildConfigField STRING, API_URL, "\"http://52.26.187.234:8080\""

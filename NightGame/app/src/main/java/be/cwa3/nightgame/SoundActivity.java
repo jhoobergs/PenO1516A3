@@ -80,7 +80,7 @@ public class SoundActivity extends AppCompatActivity implements OnClickListener 
                     Log.d("sound", "started");
                     recognizedTextview.setText("");
                     ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(),
-                            android.R.layout.simple_list_item_1, android.R.id.text1, new ArrayList<String>());
+                            R.layout.list_sound, R.id.tv, new ArrayList<String>());
                     recognizedListView.setAdapter(adapter);
                     started= true;
                     startStopButton.setText("Buzy");
